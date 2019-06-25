@@ -1,0 +1,27 @@
+{
+    "name": "testname",
+    "version": "0.1.0",
+    "inputs": [
+        {
+            "input_type": "GitRepoCommit",
+            "repo_url": "https://github.com/agronholm/pythonfutures",
+            "commit_hash": "1f9c23f82cf760e4d085561cce21c5a52155905b"
+        },
+        {
+            "input_type": "GitRepoCommit",
+            "repo_url": "https://github.com/pallets/werkzeug",
+            "commit_hash": "e8d63a238070aa3487e69eab88342af3ffb06693"
+        },
+        {
+            "input_type": "GitRepoCommit",
+            "repo_url": "https://github.com/docker/docker-py",
+            "commit_hash": "20b5491363a9124dbf53b00fb6562f8f257a6228"
+        },
+        {
+            "input_type": "GitRepoCommit",
+            "repo_url": "https://github.com/aio-libs/multidict",
+            "commit_hash": "4f563c6c0ffd4673e7f2450033ffb777a67150dc"
+        }
+    ],
+    "author": "testperson"
+}
