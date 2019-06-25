@@ -15,15 +15,16 @@ class SourceArgument(Argument):
         kwargs['type'] = Choice(['<path>', '<source>'])
         super().__init__(*args, **kwargs)
 
-    def handle_parse_result(self, ctx, opts: dict, args: list):
+    def handle_parse_result(self, ctx, opts: dict, args: list) -> tuple:
+        # set the parser type
         if '.' in opts['source']:
             # source is likely a file path
             self.type = Path(exists=True)
-            return super().handle_parse_result(ctx, opts, args)
         else:
             # source is likely a web source
             self.type = Choice(self.sources[opts['type_']])
-            return super().handle_parse_result(ctx, opts, args)
+
+        return super().handle_parse_result(ctx, opts, args)
 
 
 class SortOption(Option):
@@ -74,9 +75,10 @@ class SortOption(Option):
         # ... and replace it with our own
         parser.process = override_process
 
-    def handle_parse_result(self, ctx, opts: dict, args: list):
+    def handle_parse_result(self, ctx, opts: dict, args: list) -> tuple:
         # convert sort opt from list(list()) to list(); needed due to
         # overriding the option's default add_to_parser()
         if opts.get('sort'):
             opts['sort'] = opts['sort'][0]
+
         return super().handle_parse_result(ctx, opts, args)
