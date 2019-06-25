@@ -50,7 +50,7 @@ class SortOption(Option):
     def __init__(self, *args, **kwargs):
         self.parser_process = None
 
-        kwargs['type'] = Choice(['asc', 'desc', 'popularity', 'date', 'alpha'])
+        kwargs['type'] = Choice(['asc', 'desc', 'popularity', 'date', 'name'])
         kwargs['multiple'] = True
         super().__init__(*args, **kwargs)
 
