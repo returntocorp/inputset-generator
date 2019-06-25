@@ -2,8 +2,9 @@
 
 from click import Choice, argument, command, option
 from click_custom import SourceArgument, SortOption
+from util import get_user_name, get_user_email
 
-types = {
+registries = {
     'npm': {
         'url': '',
         'lists': {}
@@ -20,24 +21,37 @@ types = {
         }
     }
 }
-sources = {t: [s for s in data['lists']] for t, data in types.items()}
+sources = {t: [s for s in data['lists']] for t, data in registries.items()}
 
 
 @command()
-@argument('type_', type=Choice(types.keys()))
+@argument('registry', type=Choice(registries.keys()))
 @argument('source', cls=SourceArgument, sources=sources)
 @option('--get', type=Choice(['latest', 'major', 'all']))
-@option('--sort', cls=SortOption, multiple=True,
+@option('--sort', cls=SortOption, multiple=True, help='Optional',
         type=Choice(['asc', 'desc', 'popularity', 'date', 'name']))
-@option('--head', type=int)
-@option('--sample', type=int)
-def generate_inputset(type_: str, source: str, get: str, sort: tuple,
-                      head: int, sample: int):
+@option('--head', type=int, help='Optional')
+@option('--sample', type=int, help='Optional')
+@option('--name', prompt='Filename')
+@option('--version', prompt='Version')
+@option('--description', prompt='Description', default='', help='Optional')
+@option('--readme', prompt='Readme', default='', help='Optional')
+@option('--author', prompt='Author', default=get_user_name, help='Defaults to git user.name')
+@option('--email', prompt='Email', default=get_user_email, help='Defaults to git user.email')
+def generate_inputset(registry: str, source: str,
+                      get: str, sort: tuple,
+                      head: int, sample: int,
+                      name: str, version: str,
+                      description: str, readme: str,
+                      author: str, email: str):
     """Generate an input set from one of the named source types."""
-    if sort is None:
-        print('happy')
+    temp = 5
+    pass
 
-    print('%s' % type_)
+    """
+    Note: Possible email validator here:
+    https://stackoverflow.com/questions/48679819/python-click-cli-library-retry-input-prompt-on-validation-error
+    """
 
 
 if __name__ == '__main__':
