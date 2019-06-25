@@ -3,7 +3,7 @@
 ```
 cd inputset-generator
 source venv/bin/activate
-./inputset.py type source --get str --sort str str [...] --head int --sample int --meta str str str str
+./inputset.py type source --get str --sort str str [...] --head int --sample int --name str --description str --version str --readme str --author str --email str
 ```
 
 Where:
@@ -13,4 +13,9 @@ Where:
 - **-\-sort** is any combination of [asc, desc, popularity, latest, name]
 - **-\-head** is any positive integer
 - **-\-sample** is any positive integer
-- **-\-meta** is followed by input set name, description, author, and email [I'm still thinking through this]
+- **-\-name** is a string
+- **-\-version** is a string
+- **-\-description** is a string
+- **-\-readme** is a string
+- **-\-author** is a string
+- **-\-email** is a string
