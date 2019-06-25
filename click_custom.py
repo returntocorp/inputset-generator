@@ -21,7 +21,7 @@ class SourceArgument(Argument):
             self.type = Path(exists=True)
             return super().handle_parse_result(ctx, opts, args)
         else:
-            # source is likely a web list
+            # source is likely a web source
             self.type = Choice(self.sources[opts['type_']])
             return super().handle_parse_result(ctx, opts, args)
 
@@ -31,7 +31,7 @@ class SortOption(Option):
     A custom option that accepts an asc/desc value followed by any
     number of sort criteria.
 
-    This code is loosely based on this example:
+    This code is loosely based on the following example:
     https://stackoverflow.com/questions/48391777/nargs-equivalent-for-options-in-click
     """
 
