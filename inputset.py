@@ -77,8 +77,9 @@ class SortOption(Option):
         our_parser.process = parser_process
 
     def handle_parse_result(self, ctx, opts, args):
-        """Custom argument validation method."""
-        opts['sort'] = opts['sort'][0]
+        # convert sort opt from list(list()) to list()
+        if opts.get('sort'):
+            opts['sort'] = opts['sort'][0]
         return super().handle_parse_result(ctx, opts, args)
 
 
