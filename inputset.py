@@ -32,7 +32,7 @@ class SourceArgument(Argument):
         kwargs['type'] = Choice(['<path>', '<source>'])
         super().__init__(*args, **kwargs)
 
-    def handle_parse_result(self, ctx, opts, args):
+    def handle_parse_result(self, ctx, opts: dict, args: list):
         if '.' in opts['source']:
             # source is likely a file path
             self.type = Path(exists=True)
@@ -76,7 +76,7 @@ class SortOption(Option):
         self.parser_process = our_parser.process
         our_parser.process = parser_process
 
-    def handle_parse_result(self, ctx, opts, args):
+    def handle_parse_result(self, ctx, opts: dict, args: list):
         # convert sort opt from list(list()) to list()
         if opts.get('sort'):
             opts['sort'] = opts['sort'][0]
@@ -90,7 +90,8 @@ class SortOption(Option):
 @option('--sort', cls=SortOption)
 @option('--head', type=int)
 @option('--sample', type=int)
-def generate_inputset(type_, source, get, sort, head, sample):
+def generate_inputset(type_: str, source: str, get: str, sort: tuple,
+                      head: int, sample: int):
     """Generate an input set from one of the named source types."""
     if sort is None:
         print('happy')
