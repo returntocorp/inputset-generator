@@ -46,6 +46,17 @@ def generate_inputset(registry: str, source: dict,
                       get: str, sort: tuple,
                       head: int, sample: int):
     """Generate an input set from one of the named source types."""
+
+    # instantiate the appropriate registry
+    registry = registries[registry]()
+
+    if source['type'] == 'weblist':
+        # download the weblist
+        registry.load_weblist(source['value'])
+    else:
+        # load the file
+        registry.load_file(source['value'])
+
     print('Success!!!')
 
     # Todo: add email validator?
