@@ -12,7 +12,7 @@ class SourceArgument(Argument):
 
         # init a choice of either <path> or <source>; this Choice will
         # be overriden by handle_parse_result()
-        kwargs['type'] = Choice(['<path>', '<source>'])
+        kwargs['type'] = Choice(['<filepath>', '<listname>'])
         super().__init__(*args, **kwargs)
 
     def handle_parse_result(self, ctx, opts: dict, args: list) -> tuple:
@@ -20,11 +20,21 @@ class SourceArgument(Argument):
         if '.' in opts['source']:
             # source is likely a file path
             self.type = Path(exists=True)
-        else:
-            # source is likely a web source
-            self.type = Choice(self.sources[opts['type_']])
+            source_type = 'file'
 
-        return super().handle_parse_result(ctx, opts, args)
+        else:
+            # source is likely a weblist name
+            self.type = Choice(self.sources[opts['registry']])
+            source_type = 'weblist'
+
+        # parse the argument
+        parsed = super().handle_parse_result(ctx, opts, args)
+
+        # add source type to params to be passed to generate_inputset
+        ctx.params['source'] = {'type': source_type,
+                                'value': ctx.params['source']}
+
+        return parsed
 
 
 class SortOption(Option):
