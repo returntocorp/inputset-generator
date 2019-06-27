@@ -2,8 +2,8 @@
 
 from click import Choice, argument, command, option
 from click_custom import SourceArgument, SortOption
-from util import get_user_name, get_user_email
 from registries import registries, sources
+from dataset import Dataset
 
 
 
@@ -48,14 +48,19 @@ def generate_inputset(registry: str, source: dict,
     """Generate an input set from one of the named source types."""
 
     # get the appropriate registry
-    registry = registries[registry]
+    ds = Dataset(registry)
 
-    if source['type'] == 'weblist':
-        # download the weblist
-        registry.load_weblist(source['value'])
+    # load the initial data
+    if source['type'] == 'file':
+        # read in a file
+        ds.load_file(source['path'])
     else:
-        # load the file
-        registry.load_file(source['value'])
+        # download the weblist
+        ds.load_weblist(source['name'])
+
+    # Todo: perform transformations
+    # Todo: add meta info
+    # Todo: save to disk
 
     print('Success!!!')
 
