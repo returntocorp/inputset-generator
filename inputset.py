@@ -47,8 +47,8 @@ def generate_inputset(registry: str, source: dict,
                       head: int, sample: int):
     """Generate an input set from one of the named source types."""
 
-    # instantiate the appropriate registry
-    registry = registries[registry]()
+    # get the appropriate registry
+    registry = registries[registry]
 
     if source['type'] == 'weblist':
         # download the weblist
