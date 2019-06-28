@@ -1,3 +1,4 @@
+from ._base import Registry
 from .pypi import PypiRegistry
 
 # create a central mapping of all registries
