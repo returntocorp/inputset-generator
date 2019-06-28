@@ -83,3 +83,16 @@ class Dataset:
 
         # save to disk
         JsonFileHandler.save(self, name)
+
+    """
+    def head(self, n) -> None:
+        # trim all but the first n projects
+        self.projects = self.projects[:n]
+        
+    def sample(self, n) -> None:
+        pass
+
+    def sort(self, args: List[str]) -> None:
+        #getattr(self, str, default)
+        pass
+    """

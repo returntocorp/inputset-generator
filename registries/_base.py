@@ -30,17 +30,6 @@ class Registry(ABC):
         # parse the data (calls the registered parser)
         weblist['parser'](data)
 
-    def head(self, n) -> None:
-        # trim all but the first n projects
-        self.projects = self.projects[:n]
-
-    def sample(self, n) -> None:
-        pass
-
-    def sort(self, args: List[str]) -> None:
-        #getattr(self, str, default)
-        pass
-
     @abstractmethod
     def get_meta(self, project: Project) -> None: pass
 
