@@ -69,14 +69,9 @@ def generate_inputset(registry: str, source: dict,
         ds.load_weblist(source['name'])
 
     # Todo: perform transformations
-    # Todo: add meta info
-    # Todo: save to disk
 
-    print('Success!!!')
-
-    # Todo: add email validator?
-    # see https://stackoverflow.com/questions/48679819/python-click-cli-library-retry-input-prompt-on-validation-error
-
+    # save the result to disk
+    ds.save()
 
 if __name__ == '__main__':
     generate_inputset()

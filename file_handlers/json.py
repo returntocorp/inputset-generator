@@ -13,7 +13,10 @@ class JsonFileHandler(FileHandler):
         }
 
         self.jsonifiers = {
-            'r2c': self._jsonify_r2c
+            'GitRepo': self._jsonify_gitrepo,
+            'GitRepoCommit': self._jsonify_gitrepocommit,
+            'HttpUrl': self._jsonify_httpurl,
+            'PackageVersion': self._jsonify_packageversion
         }
 
     def load(self, ds: Dataset, filepath: str, parser: str = 'r2c') -> None:
@@ -32,22 +35,6 @@ class JsonFileHandler(FileHandler):
         except:
             raise Exception('Json file does not match expected schema.')
 
-    def save(self, ds: Dataset, filepath: str, jsonifier: str = 'r2c') -> None:
-        """Writes a dataset to json. Unique to json filetype."""
-        # check if the parsing schema exists
-        if jsonifier not in self.jsonifiers:
-            raise Exception('Unrecognized jsonify schema.')
-
-        # run the appropriate parser
-        try:
-            data = self.jsonifiers[jsonifier](ds)
-        except:
-            raise Exception('Json file does not match expected schema.')
-
-        # write to file
-        with open(filepath, 'w') as file:
-            json.dump(data, file)
-
     @staticmethod
     def _parse_r2c(ds: Dataset, data: dict):
         # don't overwrite previously set metadata
@@ -60,7 +47,13 @@ class JsonFileHandler(FileHandler):
         ds.author = ds.author or data.get('author', None)
         ds.email = ds.email or data.get('email', None)
 
+        # check that there's at least one input line
+        # (caller will catch any exceptions)
+        data['inputs'][0]
+
         # generate the projects and versions
+        # note: to add more input types, simply expand the p_keys and
+        # v_keys lists to include the appropriate new values
         for input in data['inputs']:
             # some parts of the input are at the project level...
             p_keys = ['repo_url', 'url', 'package_name']
@@ -73,6 +66,72 @@ class JsonFileHandler(FileHandler):
             if v_dict:
                 project._get_or_add_version(**v_dict)
 
+    def save(self, ds: Dataset, filepath: str) -> None:
+        """Writes a dataset to json. Unique to json filetype."""
+
+        # jsonify the dataset
+        data = self._jsonify(ds)
+        '''try:
+            
+        except:
+            raise Exception('Error jsonifying the dataset.')'''
+
+        # save the json to file
+        with open(filepath, 'w') as file:
+            json.dump(data, file)
+
+    def _jsonify(self, ds: Dataset) -> dict:
+        # add the dataset's metadata
+        d = dict()
+        d['name'] = ds.name
+        d['version'] = ds.version
+        if ds.description: d['description'] = ds.description
+        if ds.readme: d['readme'] = ds.readme
+        if ds.author: d['author'] = ds.author
+        if ds.email: d['email'] = ds.email
+
+        # convert the dataset's projects and versions to inputs
+        if hasattr(ds.projects[0], 'repo_url'):
+            if len(ds.projects[0].versions) == 0:
+                d['inputs'] = self.jsonifiers['GitRepo'](ds)
+            else:
+                d['inputs'] = self.jsonifiers['GitRepoCommit'](ds)
+        elif hasattr(ds.projects[0], 'url'):
+            d['inputs'] = self.jsonifiers['HttpUrl'](ds)
+        elif hasattr(ds.projects[0], 'package_name'):
+            d['inputs'] = self.jsonifiers['PackageVersion'](ds)
+        else:
+            # unrecognized dataset type (caller will handle)
+            raise Exception
+
+        return d
+
     @staticmethod
-    def _jsonify_r2c(ds: Dataset):
-        pass
+    def _jsonify_gitrepo(ds: Dataset) -> list:
+        return [{
+            'input_type': 'GitRepo',
+            'repo_url': getattr(project, 'repo_url')
+        } for project in ds.projects]
+
+    @staticmethod
+    def _jsonify_gitrepocommit(ds: Dataset) -> list:
+        return [{
+            'input_type': 'GitRepoCommit',
+            'repo_url': getattr(project, 'repo_url'),
+            'commit_hash': getattr(version, 'commit_hash')
+        } for project in ds.projects for version in project.versions]
+
+    @staticmethod
+    def _jsonify_httpurl(ds: Dataset) -> list:
+        return [{
+            'input_type': 'HttpUrl',
+            'url': getattr(project, 'url')
+        } for project in ds.projects]
+
+    @staticmethod
+    def _jsonify_packageversion(ds: Dataset) -> list:
+        return [{
+            'input_type': 'PackageVersion',
+            'package_name': getattr(project, 'package_name'),
+            'version': getattr(version, 'version')
+        } for project in ds.projects for version in project.versions]
