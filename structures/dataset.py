@@ -84,6 +84,24 @@ class Dataset:
         # save to disk
         JsonFileHandler.save(self, name)
 
+    def get_project(self, params: dict):
+        """Gets a project matching all parameters or returns None."""
+        for p in self.projects:
+            match = True
+            for param, val in params.items():
+                if getattr(p, param, None) != val:
+                    match = False
+                    break
+
+            if match:
+                return p
+
+        return None
+
+    def get_or_create_project(self, params: dict):
+        if not self.get_project(params):
+            self.projects.append(Project())
+
     """
     def head(self, n) -> None:
         # trim all but the first n projects

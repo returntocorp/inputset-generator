@@ -1,7 +1,7 @@
 import json
 
 from file_handlers import FileHandler
-from structures import Dataset, Project
+from structures import Dataset, Project, Version
 
 
 class JsonFileHandler(FileHandler):
@@ -55,23 +55,109 @@ class JsonFileHandler(FileHandler):
 
     @staticmethod
     def _r2c_git_repo(ds: Dataset, data: dict):
+        """
+        GIT_REPO = {
+            "repo_url": "GIT_URL",
+            "input_type": "GitRepo"
+        }
+        """
+
         # parse the vals held in common (primarily dataset meta info)
         JsonFileHandler._r2c_common(ds, data)
+
+        # generate the projects and versions
+        for d in data['inputs']:
+            # get or create the project
+            url = d['repo_url']
+            project = ds.get_project({'url': url})
+            if not project:
+                # project not found; create a new one
+                project = Project(url=url)
+                ds.projects.append(project)
 
     @staticmethod
     def _r2c_git_repo_commit(ds: Dataset, data: dict):
+        """
+         GIT_REPO_COMMIT = {
+             "repo_url": "GIT_URL",
+             "COMMIT_HASH": "COMMIT_HASH",
+             "input_type": "GitRepo"
+         }
+         """
+
         # parse the vals held in common (primarily dataset meta info)
         JsonFileHandler._r2c_common(ds, data)
+
+        # generate the projects and versions
+        for d in data['inputs']:
+            # get or create the project
+            name = d['package_name']
+            project = ds.get_project({'name': name})
+            if not project:
+                # project not found; create a new one
+                project = Project(name=name)
+                ds.projects.append(project)
+
+            # add the current version to the project
+            version = Version(version_string=d['version'])
+            project.versions.append(version)
 
     @staticmethod
     def _r2c_http_url(ds: Dataset, data: dict):
+        """
+        HTTP_URL = {
+            "url": "HTTP_URL",
+            "input_type": "HttpUrl"
+        }
+        """
+
         # parse the vals held in common (primarily dataset meta info)
         JsonFileHandler._r2c_common(ds, data)
+
+        # generate the projects and versions
+        for d in data['inputs']:
+            # get or create the project
+            url = d['url']
+            project = ds.get_project({'url': url})
+            if not project:
+                # project not found; create a new one
+                project = Project(url=url)
+                ds.projects.append(project)
 
     @staticmethod
     def _r2c_package_version(ds: Dataset, data: dict):
+        """
+        PACKAGE_VERSION = {
+            "package_name": "PACKAGE_NAME",
+            "version": "VERSION_STRING",
+            "input_type": "PackageVersion"
+        }
+        """
+
         # parse the vals held in common (primarily dataset meta info)
         JsonFileHandler._r2c_common(ds, data)
 
-        ds.projects = [Project() for i in data['inputs']]
-        print('happy')
+        # generate the projects and versions
+        for d in data['inputs']:
+            # get or create the project
+            name = d['package_name']
+            project = ds.get_project({'name': name})
+            if not project:
+                # project not found; create a new one
+                project = Project(name=name)
+                ds.projects.append(project)
+
+            # add the current version to the project
+            version = Version(version_string=d['version'])
+            project.versions.append(version)
+
+    @staticmethod
+    def _find_or_add_pkg(ds: Dataset, name: str = None, url: str = None):
+
+
+
+        return next(
+            (p for p in ds.projects if ds.name == name),
+            Project(name=name)
+        )
+
