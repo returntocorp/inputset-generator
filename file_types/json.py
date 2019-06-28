@@ -1,8 +1,7 @@
 import json
-from typing import List
 
 from file_types import FileType
-from structures import Project
+from structures import Dataset
 
 
 file_formats = {
@@ -15,7 +14,7 @@ file_formats = {
 
 class JsonFileType(FileType):
     @staticmethod
-    def read(path: str, file_format: str = None) -> List[Project]:
+    def read(path: str, file_format: str = None) -> Dataset:
         """Default json parser."""
 
         # load the file

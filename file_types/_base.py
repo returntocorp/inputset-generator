@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import List
 
-from structures import Project
+from structures import Dataset
 
 
 class FileType(ABC):
     @staticmethod
     @abstractmethod
-    def read(path: str) -> List[Project]: pass
+    def read(path: str) -> Dataset: pass

@@ -2,13 +2,13 @@ from pathlib import Path
 from typing import List
 
 from .project import Project
-from registries import registries, sources
-from file_types import file_types
-from util import get_user_name, get_user_email
 
 
 class Dataset:
     def __init__(self, registry: str = None):
+        from registries import registries
+        from util import get_user_name, get_user_email
+
         # link to the appropriate registry
         self.registry = registries.get(registry, None)
 
@@ -26,6 +26,8 @@ class Dataset:
         self.projects: List[Project] = []
 
     def load_file(self, path: str):
+        from file_types import file_types
+
         # check if the path is valid
         if not Path(path).is_file():
             raise Exception('Invalid path; file does not exist.')

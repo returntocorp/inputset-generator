@@ -1,8 +1,7 @@
-from pathlib import Path
-from typing import List
+import csv
 
 from file_types import FileType
-from structures import Project
+from structures import Dataset
 
 
 # for now, file formats match precisely to registry types
@@ -18,7 +17,7 @@ file_formats['default'] = file_formats['npm']
 
 class CsvFileType(FileType, ):
     @staticmethod
-    def read(path: str, file_format: str = None) -> List[Project]:
+    def read(path: str, file_format: str = None) -> Dataset:
         """Default csv parser."""
 
         # Todo: read in file, pick parsing format
