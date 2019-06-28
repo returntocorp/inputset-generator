@@ -6,17 +6,9 @@ from .project import Project
 
 class Dataset:
     def __init__(self, registry: str = None):
-        from registries import registries
         from util import get_user_name, get_user_email
 
-        # link to the appropriate registry
-        self.registry = registries.get(registry, None)
-
-        # if the user specified a registry, ensure it's valid
-        if registry and registry not in registries:
-            raise Exception('Invalid registry. Valid types are: %s'
-                            % list(registries))
-
+        self.registry = None
         self.name = None
         self.version = None
         self.description = None
@@ -25,7 +17,24 @@ class Dataset:
         self.email = get_user_email()
         self.projects: List[Project] = []
 
+        # set the registry, if the user provided it
+        if registry:
+            self.set_registry(registry)
+
+    def set_registry(self, registry: str) -> None:
+        """Loads up the specified registry."""
+        from registries import registries
+
+        # check if the registry name is valid
+        if registry not in registries:
+            raise Exception('Invalid registry. Valid types are: %s'
+                            % list(registries))
+
+        # link to the appropriate registry
+        self.registry = registries[registry]
+
     def load_file(self, path: str):
+        """Uses a file handler to load a dataset from file."""
         from file_handlers import file_handlers
 
         # check if the path is valid
@@ -43,7 +52,8 @@ class Dataset:
         file.load(self, path)
 
     def load_weblist(self, name: str):
-        from registries import registries, sources
+        """Uses the dataset's registry to """
+        from registries import registries
 
         # check if the registry has been set
         if not self.registry:
@@ -52,8 +62,8 @@ class Dataset:
 
         # check if the name is valid
         reg_name = self.registry.name
-        if name not in sources[reg_name]:
-            list_names = list(self.registry.weblists)
+        list_names = list(self.registry.weblists)
+        if name not in list_names:
             raise Exception('Invalid weblist for registry %s. Valid '
                             'names are: %s' % (reg_name, list_names))
 

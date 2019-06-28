@@ -3,7 +3,17 @@ from click import Choice, argument, command, option
 
 from click_custom import SourceArgument, SortOption
 from structures import Dataset
-from registries import registries, sources
+from registries import registries
+
+
+# generate a mapping of registry names to available weblist names
+# (used to generate intelligent weblist name suggestions to click)
+source_args = {k: [s for s in r.weblists] for k, r in registries.items()}
+
+# add a 'noreg' registry argument so click doesn't complain when the
+# user doesn't want to specify a registry
+registry_args = registries
+registry_args['noreg'] = None
 
 
 
@@ -29,8 +39,8 @@ author: str, email: str):
 
 
 @command()
-@argument('registry', type=Choice(registries))
-@argument('source', cls=SourceArgument, sources=sources)
+@argument('registry', type=Choice(registry_args))
+@argument('source', cls=SourceArgument, sources=source_args)
 @option('--get', type=Choice(['latest', 'major', 'monthly', 'all']),
         default='all', help='Which versions/commits to obtain. '
                             'Defaults to all.')
