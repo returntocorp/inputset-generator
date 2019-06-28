@@ -42,7 +42,10 @@ class Project:
         return version
 
     def __repr__(self):
-        return 'Project(%s)' % (self.name or self.url)
-
-    def __str__(self):
-        return repr(self)
+        return 'Project(%s)' % ', '.join([
+            '%s=%s' % (a, repr(getattr(self, a)))
+            for a in dir(self)
+            if getattr(self, a)
+               and not a.startswith('__')
+               and not callable(getattr(self, a))
+        ])

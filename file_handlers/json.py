@@ -1,7 +1,7 @@
 import json
 
 from file_handlers import FileHandler
-from structures import Dataset, Project, Version
+from structures import Dataset
 
 
 class JsonFileHandler(FileHandler):
