@@ -3,7 +3,7 @@
 from click import Choice, argument, command, option
 from click_custom import SourceArgument, SortOption
 from registries import registries, sources
-from dataset import Dataset
+from structures.dataset import Dataset
 
 
 

@@ -1,4 +1,5 @@
-from ._base import Registry, Project
+from registries import Registry
+from structures import Project
 
 
 class PypiRegistry(Registry):
@@ -21,16 +22,12 @@ class PypiRegistry(Registry):
             }
         })
 
-    def get_meta(self):
+    def get_meta(self, project: Project):
         pass
 
-    def get_versions(self):
+    def get_versions(self, project: Project):
         pass
 
     def _parse_hugovk(self, data: dict):
         # hugovk datasets provide names and download counts
-        self.projects = [PypiProject(r['project']) for r in data['rows']]
-
-
-class PypiProject(Project):
-    pass
+        self.projects = [Project(r['project']) for r in data['rows']]
