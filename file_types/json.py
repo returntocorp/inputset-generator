@@ -14,7 +14,7 @@ file_formats = {
 
 class JsonFileType(FileType):
     @staticmethod
-    def read(path: str, file_format: str = None) -> Dataset:
+    def load(dataset: Dataset, path: str, file_format: str = None) -> None:
         """Default json parser."""
 
         # load the file
@@ -36,6 +36,7 @@ class JsonFileType(FileType):
 
         stop = 'here'
 
-    def write(self, path: str) -> None:
-        """Function to write json to file."""
+    @staticmethod
+    def save(dataset: Dataset, name: str = ''):
+        """Writes a dataset to json. Unique to json filetype."""
         pass

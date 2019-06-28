@@ -6,4 +6,4 @@ from structures import Dataset
 class FileType(ABC):
     @staticmethod
     @abstractmethod
-    def read(path: str) -> Dataset: pass
+    def load(dataset: Dataset, path: str) -> None: pass

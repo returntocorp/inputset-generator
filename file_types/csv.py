@@ -17,7 +17,7 @@ file_formats['default'] = file_formats['npm']
 
 class CsvFileType(FileType, ):
     @staticmethod
-    def read(path: str, file_format: str = None) -> Dataset:
+    def load(dataset: Dataset, path: str, file_format: str = None) -> None:
         """Default csv parser."""
 
         # Todo: read in file, pick parsing format
