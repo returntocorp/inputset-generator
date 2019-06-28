@@ -17,10 +17,10 @@ class Dataset:
             raise Exception('Invalid registry. Valid types are: %s'
                             % list(registries))
 
-        self.name = ''
-        self.version = ''
-        self.description = ''
-        self.readme = ''
+        self.name = None
+        self.version = None
+        self.description = None
+        self.readme = None
         self.author = get_user_name()
         self.email = get_user_email()
         self.projects: List[Project] = []
@@ -40,9 +40,11 @@ class Dataset:
 
         # load initial data from the file
         file = file_types[extension]
-        self.projects = file.read(path)
+        file.load(self, path)
 
     def load_weblist(self, name: str):
+        from registries import registries, sources
+
         # check if the registry has been set
         if not self.registry:
             raise Exception('Registry has not been set. Valid types '
@@ -56,4 +58,18 @@ class Dataset:
                             'names are: %s' % (reg_name, list_names))
 
         # load initial data from the weblist
-        self.projects = self.registry.load_weblist(name)
+        self.registry.load_weblist(self, name)
+
+    def save(self, name: str = None):
+        from file_types import JsonFileType
+
+        # check that all necessary meta values have been set
+        if not (self.name and self.version):
+            # name and version are mandatory
+            raise Exception('Dataset name and/or version are missing.')
+
+        # file name is dataset name, if not provided by user
+        name = name or self.name + '.json'
+
+        # save to disk
+        JsonFileType.save(self, name)
