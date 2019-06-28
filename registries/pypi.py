@@ -31,4 +31,5 @@ class PypiRegistry(Registry):
     @staticmethod
     def _parse_hugovk(dataset: Dataset, data: dict):
         # hugovk datasets provide names and download counts
-        dataset.projects = [Project(r['project']) for r in data['rows']]
+        dataset.projects = [Project(package_name=r['project'])
+                            for r in data['rows']]
