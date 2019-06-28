@@ -1,6 +1,6 @@
 from typing import List
 
-from structures import Version
+from .version import Version
 
 
 class Project:

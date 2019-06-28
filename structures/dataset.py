@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List
 
-from structures import Project
+from .project import Project
 from registries import registries, sources
 from file_types import file_types
 from util import get_user_name, get_user_email
