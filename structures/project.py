@@ -5,13 +5,7 @@ from .version import Version
 
 class Project:
     def __init__(self, **kwargs):
-        self.name = None
-        self.url = None
         self.versions: List[Version] = []
-
-        # caller must provide a name or url
-        if not ('name' in kwargs or 'url' in kwargs):
-            raise Exception('Project must have a name or url.')
 
         # load all attributes into the project
         for k, val in kwargs.items():

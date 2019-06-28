@@ -70,7 +70,7 @@ class Dataset:
         # load initial data from the weblist
         self.registry.load_weblist(self, name)
 
-    def save(self, name: str = None):
+    def save(self, path: str = None):
         from file_handlers import JsonFileHandler
 
         # check that all necessary meta values have been set
@@ -79,10 +79,10 @@ class Dataset:
             raise Exception('Dataset name and/or version are missing.')
 
         # file name is dataset name, if not provided by user
-        name = name or self.name + '.json'
+        path = path or (self.name + '.json')
 
         # save to disk
-        JsonFileHandler.save(self, name)
+        JsonFileHandler().save(self, path)
 
     def get_project(self, **kwargs):
         """Gets a project matching all parameters or returns None."""
@@ -108,6 +108,14 @@ class Dataset:
 
         return project
 
+    def __repr__(self):
+        return 'Dataset(%s)' % ', '.join([
+            '%s=%s' % (a, repr(getattr(self, a)))
+            for a in dir(self)
+            if getattr(self, a)
+               and not a.startswith('__')
+               and not callable(getattr(self, a))
+        ])
 
     """
     def head(self, n) -> None:
