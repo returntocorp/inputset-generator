@@ -10,12 +10,12 @@ file_formats = {
     'github': {},
     'npm': {},
     'pypi': {},
-    'noreg': {}
+    'noreg????': {}
 }
 file_formats['default'] = file_formats['npm']
 
 
-class CsvFileHandler(FileHandler, ):
+class CsvFileHandler(FileHandler):
     @staticmethod
     def load(dataset: Dataset, path: str, file_format: str = None) -> None:
         """Default csv parser."""

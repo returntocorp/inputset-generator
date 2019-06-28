@@ -4,6 +4,6 @@ from .json import JsonFileHandler
 
 
 file_handlers = {
-    '.csv': CsvFileHandler,
-    '.json': JsonFileHandler
+    '.csv': CsvFileHandler(),
+    '.json': JsonFileHandler()
 }

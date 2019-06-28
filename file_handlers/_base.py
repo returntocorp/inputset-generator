@@ -4,6 +4,9 @@ from structures import Dataset
 
 
 class FileHandler(ABC):
-    @staticmethod
+    def __init__(self):
+        # child classes must set parsers
+        self.parsers: dict
+
     @abstractmethod
-    def load(dataset: Dataset, path: str) -> None: pass
+    def load(self, ds: Dataset, path: str) -> None: pass

@@ -8,7 +8,7 @@ from structures import Dataset, Project
 
 class Registry(ABC):
     def __init__(self):
-        # child classes must define name and url_format
+        # child classes must set name and url_format
         self.name: str
         self.url_format: str
 
