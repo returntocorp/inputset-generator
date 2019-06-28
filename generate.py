@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-
 from click import Choice, argument, command, option
+
 from click_custom import SourceArgument, SortOption
+from structures import Dataset
 from registries import registries, sources
-from structures.dataset import Dataset
 
 
 
