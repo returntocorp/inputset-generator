@@ -9,10 +9,10 @@ class JsonFileHandler(FileHandler):
         super().__init__()
 
         self.parsers = {
-            'GitRepo': self._r2c_git_repo,
-            'GitRepoCommit': self._r2c_git_repo_commit,
-            'HttpUrl': self._r2c_http_url,
-            'PackageVersion': self._r2c_package_version
+            'GitRepo': self._parse_r2c_git_repo,
+            'GitRepoCommit': self._parse_r2c_git_repo_commit,
+            'HttpUrl': self._parse_r2c_http_url,
+            'PackageVersion': self._parse_r2c_package_version
         }
 
     def load(self, ds: Dataset, path: str) -> None:
@@ -42,7 +42,7 @@ class JsonFileHandler(FileHandler):
         pass
 
     @staticmethod
-    def _r2c_common(ds: Dataset, data: dict):
+    def _parse_r2c_meta(ds: Dataset, data: dict):
         # data must include a name and version
         ds.name = ds.name or data['name']
         ds.version = ds.version or data['version']
@@ -54,7 +54,7 @@ class JsonFileHandler(FileHandler):
         ds.email = ds.email or data.get('email', None)
 
     @staticmethod
-    def _r2c_git_repo(ds: Dataset, data: dict):
+    def _parse_r2c_git_repo(ds: Dataset, data: dict):
         """
         GIT_REPO = {
             "repo_url": "GIT_URL",
@@ -62,48 +62,33 @@ class JsonFileHandler(FileHandler):
         }
         """
 
-        # parse the vals held in common (primarily dataset meta info)
-        JsonFileHandler._r2c_common(ds, data)
+        # parse the dataset metadata
+        JsonFileHandler._parse_r2c_meta(ds, data)
 
-        # generate the projects and versions
+        # generate the repos
         for d in data['inputs']:
-            # get or create the project
-            url = d['repo_url']
-            project = ds.get_project({'url': url})
-            if not project:
-                # project not found; create a new one
-                project = Project(url=url)
-                ds.projects.append(project)
+            ds._get_or_add_project(url=d['repo_url'])
 
     @staticmethod
-    def _r2c_git_repo_commit(ds: Dataset, data: dict):
+    def _parse_r2c_git_repo_commit(ds: Dataset, data: dict):
         """
          GIT_REPO_COMMIT = {
              "repo_url": "GIT_URL",
-             "COMMIT_HASH": "COMMIT_HASH",
+             "commit_hash": "COMMIT_HASH",
              "input_type": "GitRepo"
          }
          """
 
-        # parse the vals held in common (primarily dataset meta info)
-        JsonFileHandler._r2c_common(ds, data)
+        # parse the dataset metadata
+        JsonFileHandler._parse_r2c_meta(ds, data)
 
-        # generate the projects and versions
+        # generate the repos and commits
         for d in data['inputs']:
-            # get or create the project
-            name = d['package_name']
-            project = ds.get_project({'name': name})
-            if not project:
-                # project not found; create a new one
-                project = Project(name=name)
-                ds.projects.append(project)
-
-            # add the current version to the project
-            version = Version(version_string=d['version'])
-            project.versions.append(version)
+            project = ds._get_or_add_project(url=d['repo_url'])
+            project._get_or_add_version(commit=d['commit_hash'])
 
     @staticmethod
-    def _r2c_http_url(ds: Dataset, data: dict):
+    def _parse_r2c_http_url(ds: Dataset, data: dict):
         """
         HTTP_URL = {
             "url": "HTTP_URL",
@@ -111,21 +96,15 @@ class JsonFileHandler(FileHandler):
         }
         """
 
-        # parse the vals held in common (primarily dataset meta info)
-        JsonFileHandler._r2c_common(ds, data)
+        # parse the dataset metadata
+        JsonFileHandler._parse_r2c_meta(ds, data)
 
-        # generate the projects and versions
+        # generate the projects
         for d in data['inputs']:
-            # get or create the project
-            url = d['url']
-            project = ds.get_project({'url': url})
-            if not project:
-                # project not found; create a new one
-                project = Project(url=url)
-                ds.projects.append(project)
+            ds._get_or_add_project(url=d['url'])
 
     @staticmethod
-    def _r2c_package_version(ds: Dataset, data: dict):
+    def _parse_r2c_package_version(ds: Dataset, data: dict):
         """
         PACKAGE_VERSION = {
             "package_name": "PACKAGE_NAME",
@@ -134,30 +113,10 @@ class JsonFileHandler(FileHandler):
         }
         """
 
-        # parse the vals held in common (primarily dataset meta info)
-        JsonFileHandler._r2c_common(ds, data)
+        # parse the dataset metadata
+        JsonFileHandler._parse_r2c_meta(ds, data)
 
         # generate the projects and versions
         for d in data['inputs']:
-            # get or create the project
-            name = d['package_name']
-            project = ds.get_project({'name': name})
-            if not project:
-                # project not found; create a new one
-                project = Project(name=name)
-                ds.projects.append(project)
-
-            # add the current version to the project
-            version = Version(version_string=d['version'])
-            project.versions.append(version)
-
-    @staticmethod
-    def _find_or_add_pkg(ds: Dataset, name: str = None, url: str = None):
-
-
-
-        return next(
-            (p for p in ds.projects if ds.name == name),
-            Project(name=name)
-        )
-
+            project = ds._get_or_add_project(name=d['package_name'])
+            project._get_or_add_version(version=d['version'])

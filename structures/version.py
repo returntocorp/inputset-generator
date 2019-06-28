@@ -1,9 +1,18 @@
 class Version:
-    def __init__(self, version_string: str = '', commit_hash: str = ''):
-        # must have a version string or commit hash
-        if not (version_string or commit_hash):
-            raise Exception('Version must have a version string '
-                            'or commit hash.')
+    def __init__(self, **kwargs):
+        self.version = None
+        self.commit = None
 
-        self.version_string = version_string
-        self.commit_hash = commit_hash
+        # caller must provide a version string or commit hash
+        if not ('version' in kwargs or 'commit' in kwargs):
+            raise Exception('Version must have a version or commit')
+
+        # load all attributes into the version
+        for k, val in kwargs.items():
+            setattr(self, k, val)
+
+    def __repr__(self):
+        return 'Version(%s)' % (self.version or self.commit)
+
+    def __str__(self):
+        return repr(self)

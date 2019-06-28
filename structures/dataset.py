@@ -84,23 +84,30 @@ class Dataset:
         # save to disk
         JsonFileHandler.save(self, name)
 
-    def get_project(self, params: dict):
+    def get_project(self, **kwargs):
         """Gets a project matching all parameters or returns None."""
+
+        # linear search function; potential for being slow...
         for p in self.projects:
             match = True
-            for param, val in params.items():
+            for param, val in kwargs.items():
                 if getattr(p, param, None) != val:
                     match = False
                     break
-
             if match:
                 return p
 
         return None
 
-    def get_or_create_project(self, params: dict):
-        if not self.get_project(params):
-            self.projects.append(Project())
+    def _get_or_add_project(self, **kwargs):
+        """Finds a matching project or adds a new one."""
+        project = self.get_project(**kwargs)
+        if not project:
+            project = Project(**kwargs)
+            self.projects.append(project)
+
+        return project
+
 
     """
     def head(self, n) -> None:
