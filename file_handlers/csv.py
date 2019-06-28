@@ -1,26 +1,28 @@
-import json
+import csv
 
-from file_types import FileType
+from file_handlers import FileHandler
 from structures import Dataset
 
 
+# for now, file formats match precisely to registry types
+# in the future, this could be changed fairly easily
 file_formats = {
-    'GitRepo': {},
-    'GitRepoCommit': {},
-    'HttpUrl': {},
-    'PackageVersion': {}
+    'github': {},
+    'npm': {},
+    'pypi': {},
+    'noreg': {}
 }
+file_formats['default'] = file_formats['npm']
 
 
-class JsonFileType(FileType):
+class CsvFileHandler(FileHandler, ):
     @staticmethod
     def load(dataset: Dataset, path: str, file_format: str = None) -> None:
-        """Default json parser."""
+        """Default csv parser."""
 
-        # load the file
-        raw = json.load(open(path))
+        # Todo: read in file, pick parsing format
 
-        # if not user defined, determine the json input type
+        # if not user defined, determine the csv input type
         file_format = file_format or \
                       raw.get('inputs', [{}])[0].get('input_type', None)
         if not file_format:
@@ -33,10 +35,3 @@ class JsonFileType(FileType):
 
         # load the appropriate input schema
         schema = file_formats[file_format]
-
-        stop = 'here'
-
-    @staticmethod
-    def save(dataset: Dataset, name: str = ''):
-        """Writes a dataset to json. Unique to json filetype."""
-        pass

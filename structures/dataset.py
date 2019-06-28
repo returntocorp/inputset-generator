@@ -26,7 +26,7 @@ class Dataset:
         self.projects: List[Project] = []
 
     def load_file(self, path: str):
-        from file_types import file_types
+        from file_handlers import file_handlers
 
         # check if the path is valid
         if not Path(path).is_file():
@@ -34,12 +34,12 @@ class Dataset:
 
         # check if the filetype is valid
         extension = Path(path).suffix
-        if extension not in file_types:
+        if extension not in file_handlers:
             raise Exception("Invalid input file type '%s'. Valid types"
-                            "are: %s." % (extension, list(file_types)))
+                            "are: %s." % (extension, list(file_handlers)))
 
         # load initial data from the file
-        file = file_types[extension]
+        file = file_handlers[extension]
         file.load(self, path)
 
     def load_weblist(self, name: str):
@@ -61,7 +61,7 @@ class Dataset:
         self.registry.load_weblist(self, name)
 
     def save(self, name: str = None):
-        from file_types import JsonFileType
+        from file_handlers import JsonFileHandler
 
         # check that all necessary meta values have been set
         if not (self.name and self.version):
@@ -72,4 +72,4 @@ class Dataset:
         name = name or self.name + '.json'
 
         # save to disk
-        JsonFileType.save(self, name)
+        JsonFileHandler.save(self, name)
