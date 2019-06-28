@@ -3,7 +3,7 @@ from typing import Any, List, Dict
 import requests
 import json
 
-from structures import Project
+from structures import Dataset, Project
 
 
 class Registry(ABC):
@@ -16,7 +16,7 @@ class Registry(ABC):
         # json parser for all known input types
         self.weblists: Dict[str, Dict[str, Any]] = {}
 
-    def load_weblist(self, name: str) -> List[Project]:
+    def load_weblist(self, name: str) -> Dataset:
         """Loads and parses a weblist."""
         weblist = self.weblists[name]
 
