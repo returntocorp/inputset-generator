@@ -31,8 +31,9 @@ class SourceArgument(Argument):
         parsed = super().handle_parse_result(ctx, opts, args)
 
         # add source type to params to be passed to generate_inputset
+        value_key = 'path' if source_type == 'file' else 'name'
         ctx.params['source'] = {'type': source_type,
-                                'value': ctx.params['source']}
+                                value_key: ctx.params['source']}
 
         return parsed
 
