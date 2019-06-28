@@ -1,5 +1,5 @@
 from registries import Registry
-from structures import Project
+from structures import Dataset, Project
 
 
 class PypiRegistry(Registry):
@@ -28,6 +28,7 @@ class PypiRegistry(Registry):
     def get_versions(self, project: Project):
         pass
 
-    def _parse_hugovk(self, data: dict):
+    @staticmethod
+    def _parse_hugovk(dataset: Dataset, data: dict):
         # hugovk datasets provide names and download counts
-        self.projects = [Project(r['project']) for r in data['rows']]
+        dataset.projects = [Project(r['project']) for r in data['rows']]

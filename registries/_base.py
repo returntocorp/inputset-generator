@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, List, Dict
+from typing import Any, Dict
 import requests
 import json
 
@@ -16,8 +16,9 @@ class Registry(ABC):
         # json parser for all known input types
         self.weblists: Dict[str, Dict[str, Any]] = {}
 
-    def load_weblist(self, name: str) -> Dataset:
-        """Loads and parses a weblist."""
+    def load_weblist(self, dataset: Dataset, name: str) -> None:
+        """Loads and parses a weblist, adding all projects/versions
+        found into the given dataset."""
         weblist = self.weblists[name]
 
         # try to load json from the url
@@ -28,7 +29,7 @@ class Registry(ABC):
             raise Exception('Weblist url did not return a json file.')
 
         # parse the data (calls the registered parser)
-        weblist['parser'](data)
+        weblist['parser'](dataset, data)
 
     @abstractmethod
     def get_meta(self, project: Project) -> None: pass
