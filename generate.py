@@ -73,5 +73,6 @@ def generate_inputset(registry: str, source: dict,
     # save the result to disk
     ds.save()
 
+
 if __name__ == '__main__':
     generate_inputset()

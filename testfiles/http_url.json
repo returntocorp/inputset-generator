@@ -4,19 +4,19 @@
     "inputs": [
         {
             "input_type": "HttpUrl",
-            "repo_url": "https://dsklja.com/agronholm/pythonfutures"
+            "url": "https://dsklja.com/agronholm/pythonfutures"
         },
         {
             "input_type": "HttpUrl",
-            "repo_url": "https://errg.com/pallets/werkzeug"
+            "url": "https://errg.com/pallets/werkzeug"
         },
         {
             "input_type": "HttpUrl",
-            "repo_url": "https://yrkfsdfs.com/docker/docker-py"
+            "url": "https://yrkfsdfs.com/docker/docker-py"
         },
         {
             "input_type": "HttpUrl",
-            "repo_url": "https://egklfsww.com/aio-libs/multidict"
+            "url": "https://egklfsww.com/aio-libs/multidict"
         }
     ],
     "author": "testperson"
