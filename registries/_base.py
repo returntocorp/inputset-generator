@@ -28,7 +28,4 @@ class Registry(ABC):
             raise Exception('Error parsing weblist data.')
 
     @abstractmethod
-    def get_meta(self, project: Project) -> None: pass
-
-    @abstractmethod
-    def get_versions(self, project: Project) -> None: pass
+    def load_project(self, project: Project) -> None: pass

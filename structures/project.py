@@ -5,6 +5,7 @@ from .version import Version
 
 class Project:
     def __init__(self, **kwargs):
+        # a project contains versions
         self.versions: List[Version] = []
 
         # load all attributes into the project

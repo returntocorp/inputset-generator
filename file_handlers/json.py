@@ -80,7 +80,7 @@ class JsonFileHandler(FileHandler):
             json.dump(data, file)
 
     def _jsonify(self, ds: Dataset) -> dict:
-        # add the dataset's metadata
+        # add the dataset's metadata (common to all Datasets)
         d = dict()
         d['name'] = ds.name
         d['version'] = ds.version
@@ -90,6 +90,7 @@ class JsonFileHandler(FileHandler):
         if ds.email: d['email'] = ds.email
 
         # convert the dataset's projects and versions to inputs
+        # using the appropriate registered jsonifier
         if hasattr(ds.projects[0], 'repo_url'):
             if len(ds.projects[0].versions) == 0:
                 d['inputs'] = self.jsonifiers['GitRepo'](ds)

@@ -8,18 +8,21 @@ class Dataset:
     def __init__(self, registry: str = None):
         from util import get_user_name, get_user_email
 
+        # a dataset contains projects
+        self.projects: List[Project] = []
+
+        # registry is used to access web resources
         self.registry = None
+        if registry:
+            self.set_registry(registry)
+
+        # dataset metadata
         self.name = None
         self.version = None
         self.description = None
         self.readme = None
         self.author = get_user_name()
         self.email = get_user_email()
-        self.projects: List[Project] = []
-
-        # set the registry, if the user provided it
-        if registry:
-            self.set_registry(registry)
 
     def set_registry(self, registry: str) -> None:
         """Loads up the specified registry."""
@@ -70,7 +73,18 @@ class Dataset:
         # load initial data from the weblist
         self.registry.load_weblist(self, name)
 
-    def save(self, path: str = None):
+    def load_projects(self):
+        """Downloads all projects' metadata."""
+        for project in self.projects:
+            self.registry.load_project(project)
+
+    def jsonify(self) -> dict:
+        """Jsonifies a dataset."""
+        from file_handlers import JsonFileHandler
+
+        return JsonFileHandler()._jsonify(self)
+
+    def save_json(self, path: str = None):
         from file_handlers import JsonFileHandler
 
         # check that all necessary meta values have been set

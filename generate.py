@@ -68,10 +68,13 @@ def generate_inputset(registry: str, source: dict,
         # download the weblist
         ds.load_weblist(source['name'])
 
-    # Todo: perform transformations
+    # download project metadata
+    ds.load_projects()
+
+    # Todo: perform transformations (NOTE: sampling should occur BEFORE loading project metadata...)
 
     # save the result to disk
-    ds.save()
+    ds.save_json()
 
 
 if __name__ == '__main__':

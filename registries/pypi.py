@@ -23,11 +23,11 @@ class PypiRegistry(Registry):
             }
         }
 
-    def get_meta(self, project: Project):
-        pass
+    def load_project(self, project: Project) -> None:
+        r = requests.get(self.url_format %
+                         getattr(project, 'package_name')).json()
 
-    def get_versions(self, project: Project):
-        pass
+        temp = 5
 
     @staticmethod
     def _load_top5kyear() -> dict:
