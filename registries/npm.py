@@ -11,12 +11,12 @@ class NpmRegistry(Registry):
         self.url_format = '???'
 
         # add pypi-specific weblists
-        self.weblists.update({
+        self.loaders = {
             '???': {
                 'url': '???',
                 'parser': 'self._???'
             }
-        })
+        }
 
     def get_meta(self, project: Project):
         pass

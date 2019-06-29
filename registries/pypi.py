@@ -1,3 +1,5 @@
+import requests
+
 from registries import Registry
 from structures import Dataset, Project
 
@@ -10,23 +12,31 @@ class PypiRegistry(Registry):
         self.name = 'pypi'
         self.url_format = 'https://pypi.python.org/pypi/%s/json'
 
-        # add pypi-specific weblists
-        self.weblists.update({
-            '5k30days': {
-                'url': 'https://hugovk.github.io/top-pypi-packages/top-pypi-packages-30-days.json',
-                'parser': self._parse_hugovk
-            },
-            '5kyear': {
-                'url': 'https://hugovk.github.io/top-pypi-packages/top-pypi-packages-365-days.json',
-                'parser': self._parse_hugovk
-            }
-        })
+        self.loaders = {
+            '5kmonth': self._load_top5kmonth,
+            '5kyear': self._load_top5kyear
+        }
+
+        self.parsers = {
+            '5kmonth': self._parse_hugovk,
+            '5kyear': self._parse_hugovk
+        }
 
     def get_meta(self, project: Project):
         pass
 
     def get_versions(self, project: Project):
         pass
+
+    @staticmethod
+    def _load_top5kyear() -> dict:
+        url = 'https://hugovk.github.io/top-pypi-packages/top-pypi-packages-365-days.json'
+        return requests.get(url).json()
+
+    @staticmethod
+    def _load_top5kmonth() -> dict:
+        url = 'https://hugovk.github.io/top-pypi-packages/top-pypi-packages-30-days.json'
+        return requests.get(url).json()
 
     @staticmethod
     def _parse_hugovk(dataset: Dataset, data: dict):

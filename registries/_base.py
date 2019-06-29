@@ -1,7 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict
-import requests
-import json
 
 from structures import Dataset, Project
 
@@ -12,24 +9,24 @@ class Registry(ABC):
         self.name: str
         self.url_format: str
 
-        # default Registry has no weblists, a simple csv parser, and a
-        # json parser for all known input types
-        self.weblists: Dict[str, Dict[str, Any]] = {}
+        self.loaders: dict = {}
+        self.parsers: dict = {}
 
     def load_weblist(self, dataset: Dataset, name: str) -> None:
-        """Loads and parses a weblist, adding all projects/versions
-        found into the given dataset."""
-        weblist = self.weblists[name]
+        """Loads and parses a weblist, adding all identified projects/
+        versions to the given dataset."""
 
-        # try to load json from the url
-        r = requests.get(weblist['url'])
+        # try to load the weblist data (calls the registered loader)
         try:
-            data = r.json()
-        except json.decoder.JSONDecodeError:
-            raise Exception('Weblist url did not return a json file.')
+            data = self.loaders[name]()
+        except Exception:
+            raise Exception('Error loading weblist.')
 
         # parse the data (calls the registered parser)
-        weblist['parser'](dataset, data)
+        try:
+            self.parsers[name](dataset, data)
+        except Exception:
+            raise Exception('Error parsing weblist data.')
 
     @abstractmethod
     def get_meta(self, project: Project) -> None: pass

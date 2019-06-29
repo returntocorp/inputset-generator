@@ -32,7 +32,7 @@ class JsonFileHandler(FileHandler):
         # run the appropriate parser
         try:
             self.parsers[parser](ds, data)
-        except:
+        except Exception:
             raise Exception('Json file does not match expected schema.')
 
     @staticmethod
@@ -70,11 +70,10 @@ class JsonFileHandler(FileHandler):
         """Writes a dataset to json. Unique to json filetype."""
 
         # jsonify the dataset
-        data = self._jsonify(ds)
-        '''try:
-            
-        except:
-            raise Exception('Error jsonifying the dataset.')'''
+        try:
+            data = self._jsonify(ds)
+        except Exception:
+            raise Exception('Error jsonifying the dataset.')
 
         # save the json to file
         with open(filepath, 'w') as file:

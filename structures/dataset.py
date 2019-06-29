@@ -61,7 +61,7 @@ class Dataset:
                             'are: %s' % list(registries))
 
         # check if the name is valid
-        list_names = list(self.registry.weblists)
+        list_names = list(self.registry.loaders)
         if name not in list_names:
             reg_name = self.registry.name
             raise Exception('Invalid weblist for registry %s. Valid '
