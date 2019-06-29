@@ -8,7 +8,7 @@ from registries import registries
 
 # generate a mapping of registry names to available weblist names
 # (used to generate intelligent weblist name suggestions to click)
-source_args = {k: [s for s in r.loaders] for k, r in registries.items()}
+source_args = {k: [s for s in r.weblists] for k, r in registries.items()}
 
 # add a 'noreg' registry argument so click doesn't complain when the
 # user doesn't want to specify a registry

@@ -12,14 +12,15 @@ class PypiRegistry(Registry):
         self.name = 'pypi'
         self.url_format = 'https://pypi.python.org/pypi/%s/json'
 
-        self.loaders = {
-            '5kmonth': self._load_top5kmonth,
-            '5kyear': self._load_top5kyear
-        }
-
-        self.parsers = {
-            '5kmonth': self._parse_hugovk,
-            '5kyear': self._parse_hugovk
+        self.weblists = {
+            '5kmonth': {
+                'loader': self._load_top5kmonth,
+                'parser': self._parse_hugovk
+            },
+            '5kyear': {
+                'loader': self._load_top5kyear,
+                'parser': self._parse_hugovk
+            }
         }
 
     def get_meta(self, project: Project):

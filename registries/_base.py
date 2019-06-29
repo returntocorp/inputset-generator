@@ -9,8 +9,7 @@ class Registry(ABC):
         self.name: str
         self.url_format: str
 
-        self.loaders: dict = {}
-        self.parsers: dict = {}
+        self.weblists: dict = {}
 
     def load_weblist(self, dataset: Dataset, name: str) -> None:
         """Loads and parses a weblist, adding all identified projects/
@@ -18,13 +17,13 @@ class Registry(ABC):
 
         # try to load the weblist data (calls the registered loader)
         try:
-            data = self.loaders[name]()
+            data = self.weblists[name]['loader']()
         except Exception:
             raise Exception('Error loading weblist.')
 
         # parse the data (calls the registered parser)
         try:
-            self.parsers[name](dataset, data)
+            self.weblists[name]['parser'](dataset, data)
         except Exception:
             raise Exception('Error parsing weblist data.')
 
