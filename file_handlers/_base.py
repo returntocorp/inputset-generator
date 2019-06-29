@@ -5,6 +5,7 @@ from structures import Dataset
 
 class FileHandler(ABC):
     def __init__(self):
+        # child classes must set parsers
         self.parsers: dict
 
     @abstractmethod
