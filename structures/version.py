@@ -1,7 +1,11 @@
 class Version:
     def __init__(self, **kwargs):
         # load all attributes into the version
-        for k, val in kwargs.items():
+        self.populate(kwargs)
+
+    def populate(self, data: dict) -> None:
+        """Populates the version with data from a dictionary."""
+        for k, val in data.items():
             setattr(self, k, val)
 
     def __repr__(self):

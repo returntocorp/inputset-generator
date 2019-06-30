@@ -9,7 +9,11 @@ class Project:
         self.versions: List[Version] = []
 
         # load all attributes into the project
-        for k, val in kwargs.items():
+        self.populate(kwargs)
+
+    def populate(self, data: dict) -> None:
+        """Populates the project with data from a dictionary."""
+        for k, val in data.items():
             setattr(self, k, val)
 
     def get_version(self, **kwargs):

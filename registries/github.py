@@ -13,7 +13,7 @@ class GithubRegistry(Registry):
         # add pypi-specific weblists
         # see: https://stackoverflow.com/questions/19855552/how-to-find-out-the-most-popular-repositories-on-github
         self.loaders = {
-            '1kstarred': {
+            'top1kstarred': {
                 'url': 'https://api.github.com/search/repositories?q=stars%3A%3E0&sort=stars&per_page=100',
                 'parser': 'self._???'
             }

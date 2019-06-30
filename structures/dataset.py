@@ -40,6 +40,8 @@ class Dataset:
         """Uses a file handler to load a dataset from file."""
         from file_handlers import file_handlers
 
+        print('Loading %s' % path)
+
         # check if the path is valid
         if not Path(path).is_file():
             raise Exception('Invalid path; file does not exist.')
@@ -55,8 +57,10 @@ class Dataset:
         file.load(self, path)
 
     def load_weblist(self, name: str):
-        """Uses the dataset's registry to """
+        """Loads a weblist from the registry."""
         from registries import registries
+
+        print('Loading %s %s' % (self.registry.name, name))
 
         # check if the registry has been set
         if not self.registry:
@@ -86,6 +90,8 @@ class Dataset:
 
     def save_json(self, path: str = None):
         from file_handlers import JsonFileHandler
+
+        print('Saving results to %s' % path)
 
         # check that all necessary meta values have been set
         if not (self.name and self.version):
@@ -130,16 +136,3 @@ class Dataset:
                and not a.startswith('__')
                and not callable(getattr(self, a))
         ])
-
-    """
-    def head(self, n) -> None:
-        # trim all but the first n projects
-        self.projects = self.projects[:n]
-        
-    def sample(self, n) -> None:
-        pass
-
-    def sort(self, args: List[str]) -> None:
-        #getattr(self, str, default)
-        pass
-    """

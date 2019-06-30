@@ -1,7 +1,7 @@
 import requests
 
 from registries import Registry
-from structures import Dataset, Project
+from structures import Dataset, Project, Version
 
 
 class PypiRegistry(Registry):
@@ -13,21 +13,39 @@ class PypiRegistry(Registry):
         self.url_format = 'https://pypi.python.org/pypi/%s/json'
 
         self.weblists = {
-            '5kmonth': {
+            'top5kmonth': {
                 'loader': self._load_top5kmonth,
                 'parser': self._parse_hugovk
             },
-            '5kyear': {
+            'top5kyear': {
                 'loader': self._load_top5kyear,
                 'parser': self._parse_hugovk
             }
         }
 
     def load_project(self, project: Project) -> None:
-        r = requests.get(self.url_format %
-                         getattr(project, 'package_name')).json()
+        """Retrieves all project/version data from the registry."""
 
-        temp = 5
+        name = getattr(project, 'package_name')
+        print("Retrieving info on '%s'" % name)
+        data = requests.get(self.url_format % name).json()
+
+        # pull version-level data out
+        version_data = data.pop('releases')
+
+        # populate the project with the remaining data
+        project.populate(data)
+
+        # add versions to the project (overwrite any existing versions)
+        # NOTE: Pypi occasionally has versions with multiple releases.
+        # This appears to be due to having a whl and tar.gz distribution
+        # of the same release. For now, just take the first release.
+        project.versions = []
+        for version, data in version_data.items():
+            kwargs = {'version': version}
+            if len(data) > 0:
+                kwargs.update(data[0])
+            project.versions.append(Version(**kwargs))
 
     @staticmethod
     def _load_top5kyear() -> dict:
