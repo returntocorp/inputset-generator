@@ -91,18 +91,18 @@ class JsonFileHandler(FileHandler):
 
         # convert the dataset's projects and versions to inputs
         # using the appropriate registered jsonifier
-        if hasattr(ds.projects[0], 'repo_url'):
+        if ds.registry and ds.registry.name in ['github']:
+            # git projects are outputted as GitRepo or GitRepoCommit
             if len(ds.projects[0].versions) == 0:
                 d['inputs'] = self.jsonifiers['GitRepo'](ds)
             else:
                 d['inputs'] = self.jsonifiers['GitRepoCommit'](ds)
-        elif hasattr(ds.projects[0], 'url'):
-            d['inputs'] = self.jsonifiers['HttpUrl'](ds)
-        elif hasattr(ds.projects[0], 'package_name'):
+        elif ds.registry and ds.registry.name in ['pypi', 'npm']:
+            # pypi/npm projects are outputted as PackageVersion
             d['inputs'] = self.jsonifiers['PackageVersion'](ds)
         else:
-            # unrecognized dataset type (caller will handle)
-            raise Exception
+            # other projects are outputted as HttpUrl
+            d['inputs'] = self.jsonifiers['HttpUrl'](ds)
 
         return d
 
