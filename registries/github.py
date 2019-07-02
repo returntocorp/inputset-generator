@@ -54,10 +54,9 @@ class GithubRegistry(Registry):
         # https://buildmedia.readthedocs.org/media/pdf/pydriller/latest/pydriller.pdf
         # RepositoryMining('https://github.com/pigigaldi/Pock').traverse_commits()
 
-        # Note: need to define commit_hash
         # add versions to the project (overwrite any existing versions)
         project.versions = []
-
+        # Note: need to define commit_hash
         temp = 5
 
         # filter the versions based on historical flag
@@ -69,6 +68,7 @@ class GithubRegistry(Registry):
 
         # Todo: Complete historical version filtering.
 
+    @staticmethod
     def _load_top1kstarred() -> dict:
         url = 'https://api.github.com/search/repositories?q=stars%3A%3E0&sort=stars&per_page=100'
         pass

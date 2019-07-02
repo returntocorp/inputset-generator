@@ -1,16 +1,10 @@
 #!/usr/bin/env python3
 
 import click
-from click import argument, option, Choice
+from click import argument, option
 
 from structures import Dataset
-from registries import registries
 from util import get_user_name, get_user_email
-
-
-# generate a mapping of registry names to available weblist names
-# (used to generate intelligent weblist name suggestions to click)
-source_args = {k: [s for s in r.weblists] for k, r in registries.items()}
 
 
 @click.group(chain=True)
@@ -50,10 +44,10 @@ def setreg(ctx, name):
 @cli.command('load')
 @argument('handle')
 @option('-m', '--metadata', 'load_metadata', is_flag=True)
-@option('-v', '--versions', 'historical')
-@option('-f', '--fileargs')
+@option('-v', '--versions', 'load_versions')
+@option('-h', '--header', 'fileargs')
 @click.pass_context
-def load(ctx, handle, load_metadata, historical, fileargs):
+def load(ctx, handle, load_metadata, load_versions, fileargs):
     ds = ctx.obj['dataset']
 
     if handle == 'details':
@@ -71,9 +65,9 @@ def load(ctx, handle, load_metadata, historical, fileargs):
         # load project details from the registry
         ds.load_project_metadata()
 
-    if historical:
+    if load_versions:
         # load project versions from the registry
-        ds.load_project_versions(historical)
+        ds.load_project_versions(load_versions)
 
 
 @cli.command('save')
