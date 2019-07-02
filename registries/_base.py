@@ -28,7 +28,7 @@ class Registry(ABC):
             raise Exception('Error parsing weblist data.')
 
     @abstractmethod
-    def load_details(self, project: Project) -> None: pass
+    def load_metadata(self, project: Project) -> None: pass
 
     @abstractmethod
     def load_versions(self, project: Project, historical: str = 'all') -> None: pass

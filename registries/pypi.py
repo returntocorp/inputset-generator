@@ -23,7 +23,7 @@ class PypiRegistry(Registry):
             }
         }
 
-    def load_details(self, project: Project) -> None:
+    def load_metadata(self, project: Project) -> None:
         """Retrieves all project data from the registry."""
 
         # get the project info

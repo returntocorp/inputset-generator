@@ -49,18 +49,15 @@ def setreg(ctx, name):
 
 @cli.command('load')
 @argument('handle')
-@option('-d', '--details', 'load_details', is_flag=True)
+@option('-m', '--metadata', 'load_metadata', is_flag=True)
 @option('-v', '--versions', 'historical',
-        type=Choice(['major', 'minor', 'all']))
+        type=Choice(['latest', 'major', 'minor', 'all']))
 @click.pass_context
-def load(ctx, handle, load_details, historical):
+def load(ctx, handle, load_metadata, historical):
     ds = ctx.obj['dataset']
 
     if handle == 'details':
-        load_details = True
-    elif handle == 'versions':
-        # load project versions
-        historical = historical or 'all'
+        pass
     elif '.' in handle:
         # read in a file
         ds.load_file(handle)
@@ -68,9 +65,9 @@ def load(ctx, handle, load_details, historical):
         # download a weblist
         ds.load_weblist(handle)
 
-    if load_details:
+    if load_metadata:
         # load project details from the registry
-        ds.load_details()
+        ds.load_metadata()
 
     if historical:
         # load project versions from the registry

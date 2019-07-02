@@ -95,7 +95,7 @@ class Dataset:
         print("Loading '%s' from %s..." % (name, self.registry.name))
         self.registry.load_weblist(self, name)
 
-    def load_details(self) -> None:
+    def load_metadata(self) -> None:
         """Downloads all projects' metadata."""
         from registries import registries
 
@@ -106,7 +106,7 @@ class Dataset:
 
         for project in self.projects:
             print("Retrieving details on %s..." % project)
-            self.registry.load_details(project)
+            self.registry.load_metadata(project)
 
     def load_versions(self, historical: str):
         """Downloads all projects' versions."""
