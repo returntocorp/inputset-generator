@@ -52,7 +52,7 @@ class GithubRegistry(Registry):
         # download the project info from github
         repo = RepositoryMining(url or self.url_format % (org, name))
         # https://buildmedia.readthedocs.org/media/pdf/pydriller/latest/pydriller.pdf
-        # RepositoryMining('https://github.com/pigigaldi/Pock').traverse_commits()
+        # RepositoryMining('https://github.com/pigigaldi/Pock', only_releases=True).traverse_commits()
 
         # add versions to the project (overwrite any existing versions)
         project.versions = []
