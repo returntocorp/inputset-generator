@@ -1,7 +1,7 @@
 import requests
 
 from registries import Registry
-from structures import Dataset, Project, Version
+from structures import Dataset, Project
 
 
 class PypiRegistry(Registry):
@@ -23,29 +23,41 @@ class PypiRegistry(Registry):
             }
         }
 
-    def load_project(self, project: Project) -> None:
-        """Retrieves all project/version data from the registry."""
+    def load_details(self, project: Project) -> None:
+        """Retrieves all project data from the registry."""
 
+        # get the project info
         name = getattr(project, 'package_name')
-        print("Retrieving info on '%s'" % name)
         data = requests.get(self.url_format % name).json()
 
-        # pull version-level data out
-        version_data = data.pop('releases')
+        # ignore version-level data
+        data.pop('releases')
 
         # populate the project with the remaining data
+        # break out info dict for easier sort
+        info = data.pop('info')
+        data.update(info)
         project.populate(data)
+
+    def load_versions(self, project: Project, historical: str = 'all') -> None:
+        """Retrieves all version data from the registry."""
+
+        # get the versions list
+        name = getattr(project, 'package_name')
+        data = requests.get(self.url_format % name).json()
+        version_data = data.get('releases')
 
         # add versions to the project (overwrite any existing versions)
         # NOTE: Pypi occasionally has versions with multiple releases.
         # This appears to be due to having a whl and tar.gz distribution
         # of the same release. For now, just take the first release.
         project.versions = []
-        for version, data in version_data.items():
-            kwargs = {'version': version}
+        for version_str, data in version_data.items():
+            kwargs = {'version': version_str}
             if len(data) > 0:
                 kwargs.update(data[0])
-            project.versions.append(Version(**kwargs))
+            version = project._get_or_add_version(**kwargs)
+            version.historical = version_str
 
     @staticmethod
     def _load_top5kyear() -> dict:
