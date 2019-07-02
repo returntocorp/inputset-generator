@@ -1,81 +1,113 @@
 #!/usr/bin/env python3
-from click import Choice, argument, command, option
 
-from click_custom import SourceArgument, SortOption
+import click
+from click import argument, option, Choice
+
 from structures import Dataset
 from registries import registries
+from util import get_user_name, get_user_email
 
 
 # generate a mapping of registry names to available weblist names
 # (used to generate intelligent weblist name suggestions to click)
 source_args = {k: [s for s in r.weblists] for k, r in registries.items()}
 
-# add a 'noreg' registry argument so click doesn't complain when the
-# user doesn't want to specify a registry
-registry_args = registries
-registry_args['noreg'] = None
+
+@click.group(chain=True)
+@click.pass_context
+def cli(ctx):
+    # create the ctx.obj dictionary
+    ctx.ensure_object(dict)
+
+    # initialize a dataset and add it to the context
+    ctx.obj['dataset'] = Dataset()
 
 
-
-'''
-@option('--name', prompt='Filename',
-        help='Input set name and file name.')
-@option('--version', prompt='Version',
-        help='Input set version (uses semantic versioning).')
-@option('--description', prompt='Description', default='',
-        help='OPTIONAL Input set description.')
-@option('--readme', prompt='Readme', default='',
-        help='OPTIONAL Input set markdown readme.')
-@option('--author', prompt='Author', default=get_user_name,
+@cli.command('meta')
+@option('-n', '--name', help='Dataset name.')
+@option('-v', '--version', help='Dataset version.')
+@option('-d', '--description', help='Description string.')
+@option('-r', '--readme', help='Readme string.')
+@option('-a', '--author', default=get_user_name,
         help='Author name. Defaults to git user.name.')
-@option('--email', prompt='Email', default=get_user_email,
+@option('-e', '--email', default=get_user_email,
         help='Author email. Defaults to git user.email.')
-'''
-'''
-name: str, version: str,
-description: str, readme: str,
-author: str, email: str):
-'''
+@click.pass_context
+def meta(ctx, name, version, description, readme, author, email):
+    # set dataset metadata
+    ctx.obj['dataset'].set_meta(name, version, description,
+                                readme, author, email)
 
 
-@command()
-@argument('registry', type=Choice(registry_args))
-@argument('source', cls=SourceArgument, sources=source_args)
-@option('--get', type=Choice(['latest', 'major', 'monthly', 'all']),
-        default='all', help='Which versions/commits to obtain. '
-                            'Defaults to all.')
-@option('--sort', cls=SortOption, multiple=True,
-        type=Choice(['asc', 'desc', 'popularity', 'date', 'name']),
-        help='OPTIONAL Sort the list of versions/commits, performed '
-             'immediately after --get.')
-@option('--head', type=int,
-        help='OPTIONAL Trim to the first n projects.')
-@option('--sample', type=int,
-        help='OPTIONAL Randomly sample n projects.')
-def generate_inputset(registry: str, source: dict,
-                      get: str, sort: tuple,
-                      head: int, sample: int):
-    """Generate an input set from one of the named source types."""
+@cli.command('setreg')
+@argument('name')
+@click.pass_context
+def setreg(ctx, name):
+    # set the registry
+    ctx.obj['dataset'].set_registry(name)
 
-    # get the appropriate registry
-    ds = Dataset(registry)
 
-    # load the initial data
-    if source['type'] == 'file':
+@cli.command('load')
+@argument('handle')
+@option('-d', '--details', 'load_details', is_flag=True)
+@option('-v', '--versions', 'historical',
+        type=Choice(['major', 'minor', 'all']))
+@click.pass_context
+def load(ctx, handle, load_details, historical):
+    ds = ctx.obj['dataset']
+
+    if handle == 'details':
+        load_details = True
+    elif handle == 'versions':
+        # load project versions
+        historical = historical or 'all'
+    elif '.' in handle:
         # read in a file
-        ds.load_file(source['path'])
+        ds.load_file(handle)
     else:
-        # download the weblist
-        ds.load_weblist(source['name'])
+        # download a weblist
+        ds.load_weblist(handle)
 
-    # download project metadata
-    ds.load_projects()
+    if load_details:
+        # load project details from the registry
+        ds.load_details()
 
-    # Todo: perform transformations (NOTE: sampling should occur BEFORE loading project metadata...)
+    if historical:
+        # load project versions from the registry
+        ds.load_versions(historical)
 
-    # save the result to disk
-    ds.save_json()
+
+@cli.command('save')
+@argument('filepath')
+@click.pass_context
+def save(ctx, filepath):
+    # save to json file
+    ctx.obj['dataset'].save_json(filepath)
+
+
+@cli.command('head')
+@argument('n', type=int)
+@click.pass_context
+def head(ctx, n):
+    # trim all but the first n projects
+    ctx.obj['dataset'].head(n)
+
+
+@cli.command('sort')
+@argument('params', type=str)
+@click.pass_context
+def sort(ctx, params):
+    ctx.obj['dataset'].sort(params.split())
+
+
+@cli.command('sample')
+@argument('n', type=int)
+@option('-p/-v', '--projects/--versions', default=True)
+@click.pass_context
+def sample(ctx, n, projects):
+    # sample n projects
+    ctx.obj['dataset'].sample(n, projects)
 
 
 if __name__ == '__main__':
-    generate_inputset()
+    cli()
