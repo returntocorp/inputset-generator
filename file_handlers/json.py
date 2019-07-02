@@ -64,7 +64,9 @@ class JsonFileHandler(FileHandler):
             v_keys = ['commit_hash', 'version']
             v_dict = {k: v for k, v in input.items() if k in v_keys}
             if v_dict:
-                project._get_or_add_version(**v_dict)
+                version = project._get_or_add_version(**v_dict)
+                # set standardized version attr--for historical function
+                version.historical = v_dict.get('version', None)
 
     def save(self, ds: Dataset, filepath: str) -> None:
         """Writes a dataset to json. Unique to json filetype."""
