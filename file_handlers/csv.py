@@ -40,5 +40,9 @@ class CsvFileHandler(FileHandler):
                             # val is a project attribute
                             p_data[header] = val
 
-                project = ds.get_or_add_project(**p_data)
-                project.get_or_add_version(**v_data)
+                    # create/update the projects and versions
+                    project = ds.get_or_add_project(**p_data)
+                    if len(v_data) > 0:
+                        project.get_or_add_version(**v_data)
+
+        done = 5
