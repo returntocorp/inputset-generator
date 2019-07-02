@@ -2,12 +2,14 @@
 
 import click
 from click import argument, option
+from click_shell import shell
 
 from structures import Dataset
 from util import get_user_name, get_user_email
 
 
-@click.group(chain=True)
+@shell(chain=True, prompt='inputset-generator > ',
+       intro='Starting input set generator...')
 @click.pass_context
 def cli(ctx):
     # create the ctx.obj dictionary
