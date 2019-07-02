@@ -87,10 +87,11 @@ def save(ctx, filepath):
 
 @cli.command('head')
 @argument('n', type=int)
+@option('-p/-v', '--projects/--versions', 'on_projects', default=True)
 @click.pass_context
-def head(ctx, n):
+def head(ctx, n, on_projects):
     # trim all but the first n projects
-    ctx.obj['dataset'].head(n)
+    ctx.obj['dataset'].head(n, on_projects)
 
 
 @cli.command('sort')
@@ -102,11 +103,11 @@ def sort(ctx, params):
 
 @cli.command('sample')
 @argument('n', type=int)
-@option('-p/-v', '--projects/--versions', default=True)
+@option('-p/-v', '--projects/--versions', 'on_projects', default=True)
 @click.pass_context
-def sample(ctx, n, projects):
+def sample(ctx, n, on_projects):
     # sample n projects
-    ctx.obj['dataset'].sample(n, projects)
+    ctx.obj['dataset'].sample(n, on_projects)
 
 
 if __name__ == '__main__':
