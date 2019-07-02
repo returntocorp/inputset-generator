@@ -25,27 +25,32 @@ class PypiRegistry(Registry):
 
     def load_project_metadata(self, project: Project) -> None:
         """Retrieves all project data from the registry."""
+        if not getattr(self, 'notified', None):
+            print('Note: For PyPi registry, project metadata and '
+                  'project versions come from the same url. To avoid '
+                  'duplicate requests, please use only one of the '
+                  "'-m' and '-v' flags.")
+            self.notified = True
+
+        # default to loading all versions
+        self.load_project_versions(project, 'all')
+
+
+    def load_project_versions(self, project: Project,
+                              historical: str = 'all') -> None:
+        """Retrieves all version data from the registry."""
 
         # get the project info
         name = getattr(project, 'package_name')
         data = requests.get(self.url_format % name).json()
 
-        # ignore version-level data
-        data.pop('releases')
+        # pull out version-level data
+        version_data = data.pop('releases')
 
         # populate the project with the remaining data
-        # break out info dict for easier sort
-        info = data.pop('info')
+        info = data.pop('info')  # break out info dict for easier sort
         data.update(info)
         project.populate(data)
-
-    def load_project_versions(self, project: Project, historical: str = 'all') -> None:
-        """Retrieves all version data from the registry."""
-
-        # get the versions list
-        name = getattr(project, 'package_name')
-        data = requests.get(self.url_format % name).json()
-        version_data = data.get('releases')
 
         # add versions to the project (overwrite any existing versions)
         # NOTE: Pypi occasionally has versions with multiple releases.
@@ -58,6 +63,16 @@ class PypiRegistry(Registry):
                 kwargs.update(data[0])
             version = project._get_or_add_version(**kwargs)
             version.historical = version_str
+
+        # filter the versions for specific tags/releases
+        hist_types = ['latest', 'major', 'minor', 'all']
+
+        if historical not in hist_types:
+            raise Exception("Unrecognized historical selection '%s'. "
+                            "Valid selections are: %s" % (historical,
+                                                          str(hist_types)))
+
+        # Todo: Complete historical version filtering.
 
     @staticmethod
     def _load_top5kyear() -> dict:
