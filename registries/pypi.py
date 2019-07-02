@@ -61,7 +61,7 @@ class PypiRegistry(Registry):
             kwargs = {'version': version_str}
             if len(data) > 0:
                 kwargs.update(data[0])
-            version = project._get_or_add_version(**kwargs)
+            version = project.get_or_add_version(**kwargs)
             version.historical = version_str
 
         # filter the versions for specific tags/releases

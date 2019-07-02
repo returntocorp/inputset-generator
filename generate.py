@@ -52,15 +52,18 @@ def setreg(ctx, name):
 @option('-m', '--metadata', 'load_metadata', is_flag=True)
 @option('-v', '--versions', 'historical',
         type=Choice(['latest', 'major', 'minor', 'all']))
+@option('-f', '--fileargs')
 @click.pass_context
-def load(ctx, handle, load_metadata, historical):
+def load(ctx, handle, load_metadata, historical, fileargs):
     ds = ctx.obj['dataset']
 
     if handle == 'details':
+        # filler arg for loading project details/versions without
+        # also loading a weblist or file
         pass
     elif '.' in handle:
         # read in a file
-        ds.load_file(handle)
+        ds.load_file(handle, fileargs)
     else:
         # download a weblist
         ds.load_weblist(handle)

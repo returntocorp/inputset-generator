@@ -4,8 +4,5 @@ from structures import Dataset
 
 
 class FileHandler(ABC):
-    def __init__(self):
-        self.parsers: dict = {}
-
     @abstractmethod
-    def load(self, ds: Dataset, path: str) -> None: pass
+    def load(self, ds: Dataset, path: str, fileargs: str) -> None: pass

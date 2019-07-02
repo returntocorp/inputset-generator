@@ -31,4 +31,5 @@ class Registry(ABC):
     def load_project_metadata(self, project: Project) -> None: pass
 
     @abstractmethod
-    def load_project_versions(self, project: Project, historical: str = 'all') -> None: pass
+    def load_project_versions(self, project: Project,
+                              historical: str = 'all') -> None: pass

@@ -4,34 +4,41 @@ from file_handlers import FileHandler
 from structures import Dataset
 
 
-# for now, file formats match precisely to registry types
-# in the future, this could be changed fairly easily
-file_formats = {
-    'github': {},
-    'npm': {},
-    'pypi': {},
-    'noreg????': {}
-}
-file_formats['default'] = file_formats['npm']
-
-
 class CsvFileHandler(FileHandler):
-    @staticmethod
-    def load(dataset: Dataset, path: str, file_format: str = None) -> None:
-        """Default csv parser."""
+    def __init__(self):
+        # set default headers for csv files
+        self.headers = ['name', 'v.version']
+        self.user_defined = False
 
-        # Todo: read in file, pick parsing format
+    def load(self, ds: Dataset, filepath: str,
+             headers: str = None) -> None:
+        """Loads a csv file."""
 
-        # if not user defined, determine the csv input type
-        file_format = file_format or \
-                      raw.get('inputs', [{}])[0].get('input_type', None)
-        if not file_format:
-            ex = 'Json parsing schema could not be determined.'
-            raise Exception(ex)
+        # user-defined headers override default headers
+        if headers:
+            self.headers = headers.split()
+            self.user_defined = True
 
-        # we have a parsing schema for the input type
-        if file_format not in file_formats:
-            raise Exception('Invalid json parsing schema.')
+        # load the file
+        with open(filepath) as file:
+            csv_file = csv.reader(file, delimiter=',')
+            for row in csv_file:
+                # aggregate version and project data
+                p_data, v_data = {}, {}
 
-        # load the appropriate input schema
-        schema = file_formats[file_format]
+                if not self.user_defined and row[0].startswith('!'):
+                    # read in a header row
+                    self.headers = [h[1:] for h in row]
+                else:
+                    # read in a data row
+                    for i, val in enumerate(row):
+                        header = self.headers[i]
+                        if header.startswith('v.'):
+                            # val is a version attribute
+                            v_data[header] = val
+                        else:
+                            # val is a project attribute
+                            p_data[header] = val
+
+                project = ds.get_or_add_project(**p_data)
+                project.get_or_add_version(**v_data)

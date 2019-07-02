@@ -6,8 +6,6 @@ from structures import Dataset
 
 class JsonFileHandler(FileHandler):
     def __init__(self):
-        super().__init__()
-
         self.parsers = {
             'r2c': self._parse_r2c
         }
@@ -19,8 +17,9 @@ class JsonFileHandler(FileHandler):
             'PackageVersion': self._jsonify_packageversion
         }
 
-    def load(self, ds: Dataset, filepath: str, parser: str = 'r2c') -> None:
-        """Default json parser."""
+    def load(self, ds: Dataset, filepath: str,
+             parser: str = 'r2c') -> None:
+        """Loads a json file."""
 
         # load the file
         data = json.load(open(filepath))
@@ -58,13 +57,13 @@ class JsonFileHandler(FileHandler):
             # some parts of the input are at the project level...
             p_keys = ['repo_url', 'url', 'package_name']
             p_dict = {k: v for k, v in input.items() if k in p_keys}
-            project = ds._get_or_add_project(**p_dict)
+            project = ds.get_or_add_project(**p_dict)
 
             # ...while others are at the version level
             v_keys = ['commit_hash', 'version']
             v_dict = {k: v for k, v in input.items() if k in v_keys}
             if v_dict:
-                version = project._get_or_add_version(**v_dict)
+                version = project.get_or_add_version(**v_dict)
                 # set standardized version attr--for historical function
                 version.historical = v_dict.get('version', None)
 

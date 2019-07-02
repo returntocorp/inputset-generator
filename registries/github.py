@@ -19,6 +19,9 @@ class GithubRegistry(Registry):
             }
         }
 
+        # https://buildmedia.readthedocs.org/media/pdf/pydriller/latest/pydriller.pdf
+        # RepositoryMining('https://github.com/pigigaldi/Pock').traverse_commits()
+
     def get_meta(self, project: Project):
         pass
 

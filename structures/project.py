@@ -31,7 +31,7 @@ class Project:
 
         return None
 
-    def _get_or_add_version(self, **kwargs):
+    def get_or_add_version(self, **kwargs):
         """Finds a matching version or adds a new one."""
         version = self.get_version(**kwargs)
         if not version:

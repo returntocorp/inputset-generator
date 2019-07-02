@@ -57,7 +57,7 @@ class Dataset:
         # link to the appropriate registry
         self.registry = registries[registry]
 
-    def load_file(self, path: str) -> None:
+    def load_file(self, path: str, fileargs: str = None) -> None:
         """Uses a file handler to load a dataset from file."""
         from file_handlers import file_handlers
 
@@ -73,7 +73,10 @@ class Dataset:
 
         # load initial data from the file
         print('Loading %s...' % path)
-        file_handlers[extension].load(self, path)
+        if fileargs:
+            file_handlers[extension].load(self, path, fileargs)
+        else:
+            file_handlers[extension].load(self, path)
 
     def load_weblist(self, name: str) -> None:
         """Loads a weblist from the registry."""
@@ -105,10 +108,10 @@ class Dataset:
                             'registries are: %s' % list(registries))
 
         for project in self.projects:
-            print("Retrieving details on %s..." % project)
+            print("Retrieving details of %s..." % project)
             self.registry.load_project_metadata(project)
 
-    def load_project_versions(self, historical: str):
+    def load_project_versions(self, historical: str) -> None:
         """Downloads all projects' versions."""
         from registries import registries
 
@@ -157,7 +160,7 @@ class Dataset:
 
         return None
 
-    def _get_or_add_project(self, **kwargs) -> Project:
+    def get_or_add_project(self, **kwargs) -> Project:
         """Finds a matching project or adds a new one."""
         project = self.get_project(**kwargs)
         if not project:
