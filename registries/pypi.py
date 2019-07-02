@@ -23,7 +23,7 @@ class PypiRegistry(Registry):
             }
         }
 
-    def load_metadata(self, project: Project) -> None:
+    def load_project_metadata(self, project: Project) -> None:
         """Retrieves all project data from the registry."""
 
         # get the project info
@@ -39,7 +39,7 @@ class PypiRegistry(Registry):
         data.update(info)
         project.populate(data)
 
-    def load_versions(self, project: Project, historical: str = 'all') -> None:
+    def load_project_versions(self, project: Project, historical: str = 'all') -> None:
         """Retrieves all version data from the registry."""
 
         # get the versions list

@@ -67,11 +67,11 @@ def load(ctx, handle, load_metadata, historical):
 
     if load_metadata:
         # load project details from the registry
-        ds.load_metadata()
+        ds.load_project_metadata()
 
     if historical:
         # load project versions from the registry
-        ds.load_versions(historical)
+        ds.load_project_versions(historical)
 
 
 @cli.command('save')
