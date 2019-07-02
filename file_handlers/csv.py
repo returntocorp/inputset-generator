@@ -26,8 +26,9 @@ class CsvFileHandler(FileHandler):
                 # aggregate version and project data
                 p_data, v_data = {}, {}
 
-                if not self.user_defined and row[0].startswith('!'):
+                if row[0].startswith('!'):
                     # read in a header row
+                    # in-file headers override default/user-defined
                     self.headers = [h[1:] for h in row]
                 else:
                     # read in a data row
