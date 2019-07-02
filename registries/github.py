@@ -33,12 +33,6 @@ class GithubRegistry(Registry):
         # download the project info from github
         repo = RepositoryMining(url or self.url_format % (org, name))
 
-        temp = 5
-
-
-        # https://buildmedia.readthedocs.org/media/pdf/pydriller/latest/pydriller.pdf
-        # RepositoryMining('https://github.com/pigigaldi/Pock').traverse_commits()
-
         # Note: need to define repo_url
         temp = 5
 
@@ -46,10 +40,23 @@ class GithubRegistry(Registry):
                               historical: str = 'all') -> None:
         """Retrieves all version data from github."""
 
+        # get the project url or organization/name
+        url = getattr(project, 'repo_url', None)
+        org = getattr(project, 'organization', None)
+        name = getattr(project, 'name', None)
+        if not url and not (org and name):
+            raise Exception('Error loading project details. Project '
+                            "must have attribute 'repo_url' or "
+                            "attributes 'name' and 'organization'.")
+
+        # download the project info from github
+        repo = RepositoryMining(url or self.url_format % (org, name))
+        # https://buildmedia.readthedocs.org/media/pdf/pydriller/latest/pydriller.pdf
+        # RepositoryMining('https://github.com/pigigaldi/Pock').traverse_commits()
+
         # Note: need to define commit_hash
         # add versions to the project (overwrite any existing versions)
         project.versions = []
-
 
         temp = 5
 
