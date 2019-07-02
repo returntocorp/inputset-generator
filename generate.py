@@ -50,8 +50,7 @@ def setreg(ctx, name):
 @cli.command('load')
 @argument('handle')
 @option('-m', '--metadata', 'load_metadata', is_flag=True)
-@option('-v', '--versions', 'historical',
-        type=Choice(['latest', 'major', 'minor', 'all']))
+@option('-v', '--versions', 'historical')
 @option('-f', '--fileargs')
 @click.pass_context
 def load(ctx, handle, load_metadata, historical, fileargs):

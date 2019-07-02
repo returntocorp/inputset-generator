@@ -36,7 +36,7 @@ class CsvFileHandler(FileHandler):
                         header = self.headers[i]
                         if header.startswith('v.'):
                             # val is a version attribute
-                            v_data[header] = val
+                            v_data[header[2:]] = val
                         else:
                             # val is a project attribute
                             p_data[header] = val
@@ -45,5 +45,3 @@ class CsvFileHandler(FileHandler):
                     project = ds.get_or_add_project(**p_data)
                     if len(v_data) > 0:
                         project.get_or_add_version(**v_data)
-
-        done = 5

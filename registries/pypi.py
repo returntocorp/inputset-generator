@@ -8,10 +8,8 @@ class PypiRegistry(Registry):
     def __init__(self):
         super().__init__()
 
-        # set project registry name and url format
         self.name = 'pypi'
         self.url_format = 'https://pypi.python.org/pypi/%s/json'
-
         self.weblists = {
             'top5kmonth': {
                 'loader': self._load_top5kmonth,
@@ -24,7 +22,7 @@ class PypiRegistry(Registry):
         }
 
     def load_project_metadata(self, project: Project) -> None:
-        """Retrieves all project data from the registry."""
+        """Retrieves all project data from pypi."""
         if not getattr(self, 'notified', None):
             print('Note: For PyPi registry, project metadata and '
                   'project versions come from the same url. To avoid '
@@ -35,13 +33,17 @@ class PypiRegistry(Registry):
         # default to loading all versions
         self.load_project_versions(project, 'all')
 
-
     def load_project_versions(self, project: Project,
                               historical: str = 'all') -> None:
-        """Retrieves all version data from the registry."""
+        """Retrieves all version data from pypi."""
 
-        # get the project info
-        name = getattr(project, 'package_name')
+        # get the project name
+        name = getattr(project, 'package_name', None)
+        if not name:
+            raise Exception('Error loading project details; project '
+                            "has no attribute 'name'.")
+
+        # download the project json from pypi
         data = requests.get(self.url_format % name).json()
 
         # pull out version-level data
@@ -61,12 +63,10 @@ class PypiRegistry(Registry):
             kwargs = {'version': version_str}
             if len(data) > 0:
                 kwargs.update(data[0])
-            version = project.get_or_add_version(**kwargs)
-            version.historical = version_str
+            project.get_or_add_version(**kwargs)
 
-        # filter the versions for specific tags/releases
+        # filter the versions based on historical flag
         hist_types = ['latest', 'major', 'minor', 'all']
-
         if historical not in hist_types:
             raise Exception("Unrecognized historical selection '%s'. "
                             "Valid selections are: %s" % (historical,
@@ -85,7 +85,6 @@ class PypiRegistry(Registry):
         return requests.get(url).json()
 
     @staticmethod
-    def _parse_hugovk(dataset: Dataset, data: dict):
-        # hugovk datasets provide names and download counts
-        dataset.projects = [Project(package_name=r['project'])
-                            for r in data['rows']]
+    def _parse_hugovk(ds: Dataset, data: dict):
+        ds.projects = [Project(package_name=r['project'])
+                       for r in data['rows']]
