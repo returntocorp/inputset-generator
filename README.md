@@ -3,7 +3,7 @@
 ```
 cd inputset-generator
 source venv/bin/activate
-./inputset.py COMMANDS
+./generate.py COMMANDS ~OR~ ./generate.py
 ```
 
 ## COMMANDS
