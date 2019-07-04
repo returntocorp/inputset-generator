@@ -19,7 +19,7 @@ class Registry(ABC):
         try:
             data = self.weblists[name]['loader']()
         except Exception:
-            raise Exception('Error loading weblist.')
+            raise Exception('Error downloading weblist %s.' % name)
 
         # parse the data (calls the registered parser)
         try:

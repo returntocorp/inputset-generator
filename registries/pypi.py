@@ -9,7 +9,7 @@ class PypiRegistry(Registry):
         super().__init__()
 
         self.name = 'pypi'
-        self.url_format = 'https://pypi.python.org/pypi/%s/json'
+        self.url_format = 'https://pypi.org/pypi/%s/json'
         self.weblists = {
             'top5kmonth': {
                 'loader': self._load_top5kmonth,
@@ -80,16 +80,18 @@ class PypiRegistry(Registry):
 
     @staticmethod
     def _load_top5kyear() -> dict:
-        url = 'https://hugovk.github.io/top-pypi-packages/top-pypi-packages-365-days.json'
+        url = 'https://hugovk.github.io/top-pypi-packages/' \
+              'top-pypi-packages-365-days.json'
         return requests.get(url).json()
 
     @staticmethod
     def _load_top5kmonth() -> dict:
-        url = 'https://hugovk.github.io/top-pypi-packages/top-pypi-packages-30-days.json'
+        url = 'https://hugovk.github.io/top-pypi-packages/' \
+              'top-pypi-packages-30-days.json'
         return requests.get(url).json()
 
     @staticmethod
-    def _parse_hugovk(ds: Dataset, data: dict):
+    def _parse_hugovk(ds: Dataset, data: dict) -> None:
         ds.projects = [Project(package_name=r['project'],
                                downloads=r['download_count'])
                        for r in data['rows']]
