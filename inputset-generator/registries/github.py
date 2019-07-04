@@ -5,7 +5,7 @@ from registries import Registry
 from structures import Dataset, Project
 
 
-class GithubRegistry(Registry):
+class Github(Registry):
     def __init__(self):
         super().__init__()
 

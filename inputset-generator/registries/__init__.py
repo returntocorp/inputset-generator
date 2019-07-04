@@ -1,9 +1,9 @@
 from ._base import Registry
-from .pypi import PypiRegistry
-from .github import GithubRegistry
+from .pypi import Pypi
+from .github import Github
 
 
 registries = {
-    'pypi': PypiRegistry(),
-    'github': GithubRegistry()
+    'pypi': Pypi(),
+    'github': Github()
 }

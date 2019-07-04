@@ -4,7 +4,7 @@ from registries import Registry
 from structures import Dataset, Project
 
 
-class PypiRegistry(Registry):
+class Pypi(Registry):
     def __init__(self):
         super().__init__()
 

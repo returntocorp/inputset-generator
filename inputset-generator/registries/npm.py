@@ -2,7 +2,7 @@ from registries import Registry
 from structures import Project
 
 
-class NpmRegistry(Registry):
+class Npm(Registry):
     def __init__(self):
         super().__init__()
 
