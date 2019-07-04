@@ -44,7 +44,11 @@ class PypiRegistry(Registry):
                             "has no attribute 'name'.")
 
         # download the project json from pypi
-        data = requests.get(self.url_format % name).json()
+        try:
+            data = requests.get(self.url_format % name).json()
+        except:
+            raise Exception('Error downloading project %s.' %
+                            getattr(project, 'package_name'))
 
         # pull out version-level data
         version_data = data.pop('releases')
