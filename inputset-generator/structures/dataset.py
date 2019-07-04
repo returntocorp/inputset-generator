@@ -3,11 +3,12 @@ from typing import List, Optional
 from types import MethodType
 
 from structures.projects import Project
+from structures.versions import Version
 
 
 class Dataset:
     def __init__(self):
-        from functions import functions
+        from functions import mapping
         from util import get_user_name, get_user_email
 
         # a dataset contains projects
@@ -16,8 +17,12 @@ class Dataset:
         # registry is used to access web resources
         self.registry = None
 
+        # set default project/version types
+        self.types = {'project': Project,
+                      'version': Version}
+
         # register the various transformation functions
-        for name, function in functions.items():
+        for name, function in mapping.items():
             setattr(self, name, MethodType(function, self))
 
         # set default dataset metadata
@@ -47,19 +52,29 @@ class Dataset:
 
     def set_registry(self, registry: str) -> None:
         """Loads up the specified registry."""
-        from registries import registries
+        from registries import mapping as registries_map
+        from structures.projects import mapping as projects_map
+        from structures.versions import mapping as versions_map
+
+        # check if projects have already been loaded
+        #if len(self.projects) > 0 and type(self.projects[0]) != self.types['']
 
         # check if the registry name is valid
-        if registry not in registries:
+        if registry not in registries_map:
             raise Exception('Invalid registry. Valid types are: %s'
-                            % list(registries))
+                            % list(registries_map))
 
-        # link to the appropriate registry
-        self.registry = registries[registry]
+        # link to the appropriate registry and project/version types
+        Registry = registries_map[registry]
+        Project = projects_map[registry]
+        Version = versions_map[registry]
+        self.registry = Registry
+        self.types['project'] = Project
+        self.types['version'] = Version
 
     def load_file(self, path: str, fileargs: str = None) -> None:
         """Uses a file handler to load a dataset from file."""
-        from file_loaders import file_handlers
+        from file_loaders import mapping
 
         # check if the path is valid
         if not Path(path).is_file():
@@ -67,25 +82,25 @@ class Dataset:
 
         # check if the filetype is valid
         extension = Path(path).suffix
-        if extension not in file_handlers:
+        if extension not in mapping:
             raise Exception("Invalid input file type '%s'. Valid types"
-                            "are: %s." % (extension, list(file_handlers)))
+                            "are: %s." % (extension, list(mapping)))
 
         # load initial data from the file
-        print('Loading %s...' % path)
+        print('Loading %s' % path)
         if fileargs:
-            file_handlers[extension].load(self, path, fileargs)
+            mapping[extension].load(self, path, fileargs)
         else:
-            file_handlers[extension].load(self, path)
+            mapping[extension].load(self, path)
 
     def load_weblist(self, name: str) -> None:
         """Loads a weblist from the registry."""
-        from registries import registries
+        from registries import mapping
 
         # check if the registry has been set
         if not self.registry:
             raise Exception('Registry has not been set. Valid '
-                            'registries are: %s' % list(registries))
+                            'registries are: %s' % list(mapping))
 
         # check if the name is valid
         names = list(self.registry.weblists)
@@ -95,33 +110,33 @@ class Dataset:
                                                   names))
 
         # load initial data from the weblist
-        print("Loading '%s' from %s..." % (name, self.registry.name))
+        print("Loading '%s' from %s" % (name, self.registry.name))
         self.registry.load_weblist(self, name)
 
     def load_project_metadata(self) -> None:
         """Downloads all projects' metadata."""
-        from registries import registries
+        from registries import mapping
 
         # check if the registry has been set
         if not self.registry:
             raise Exception('Registry has not been set. Valid '
-                            'registries are: %s' % list(registries))
+                            'registries are: %s' % list(mapping))
 
         for project in self.projects:
-            print("Retrieving details of %s..." % project)
+            print("Retrieving details of %s" % project)
             self.registry.load_project_metadata(project)
 
     def load_project_versions(self, historical: str) -> None:
         """Downloads all projects' versions."""
-        from registries import registries
+        from registries import mapping
 
         # check if the registry has been set
         if not self.registry:
             raise Exception('Registry has not been set. Valid '
-                            'registries are: %s' % list(registries))
+                            'registries are: %s' % list(mapping))
 
         for project in self.projects:
-            print("Retrieving versions of %s..." % project)
+            print("Retrieving versions of %s" % project)
             self.registry.load_project_versions(project, historical)
 
     def jsonify(self) -> dict:
@@ -160,8 +175,8 @@ class Dataset:
 
         return None
 
-    def get_or_add_project(self, **kwargs) -> Project:
-        """Finds a matching project or adds a new one."""
+    def get_or_add_project(self, Project, **kwargs) -> Project:
+        """Finds a matching project or adds a new one of type Project."""
         project = self.get_project(**kwargs)
         if not project:
             project = Project(**kwargs)

@@ -41,26 +41,15 @@ class JsonLoader(FileLoader):
         ds.author = ds.author or data.get('author', None)
         ds.email = ds.email or data.get('email', None)
 
-        types = {
-            'GitRepo': {'project': GithubRepo,
-                        'version': GithubCommit},
-            'GitRepoCommit': {'project': GithubRepo,
-                              'version': GithubCommit},
-            'HttpUrl': {'project': }
-            'PackageVersion': self._jsonify_packageversion
-        }
-
         # generate the projects and versions
-        for input in data['inputs']:
+        for input_ in data['inputs']:
             # some parts of the input are at the project level...
             p_keys = ['repo_url', 'url', 'package_name']
-            p_dict = {k: v for k, v in input.items() if k in p_keys}
-            project = ds.get_or_add_project(**p_dict)
+            p_dict = {k: v for k, v in input_.items() if k in p_keys}
+            project = ds.get_or_add_project(Project=ds.types['project'], **p_dict)
 
             # ...while others are at the version level
             v_keys = ['commit_hash', 'version']
-            v_dict = {k: v for k, v in input.items() if k in v_keys}
+            v_dict = {k: v for k, v in input_.items() if k in v_keys}
             if v_dict:
-                version = project.get_or_add_version(**v_dict)
-                # set standardized version attr--for historical function
-                version.historical = v_dict.get('version', None)
+                project.get_or_add_version(Version=ds.types['version'], **v_dict)

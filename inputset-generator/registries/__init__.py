@@ -1,9 +1,13 @@
 from ._base import Registry
-from .pypi import Pypi
 from .github import Github
+from .npm import Npm
+from .pypi import Pypi
 
 
-registries = {
-    'pypi': Pypi(),
-    'github': Github()
+# Note: This must have the same keys as the projects/versions mappings
+mapping = {
+    'noreg': None,
+    'github': Github(),
+    'npm': Npm(),
+    'pypi': Pypi()
 }

@@ -1,10 +1,9 @@
-from abc import ABC
 from typing import List
 
 from structures.versions import Version
 
 
-class Project(ABC):
+class Project():
     def __init__(self, **kwargs):
         # a project contains versions
         self.versions: List[Version] = []
@@ -32,8 +31,8 @@ class Project(ABC):
 
         return None
 
-    def get_or_add_version(self, **kwargs):
-        """Finds a matching version or adds a new one."""
+    def get_or_add_version(self, Version, **kwargs):
+        """Finds a matching version or adds a new one of type Version."""
         version = self.get_version(**kwargs)
         if not version:
             version = Version(**kwargs)

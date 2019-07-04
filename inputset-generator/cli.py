@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 
 import click
-from click import argument, option
+from click import argument, option, Choice
 from click_shell import shell
 
 from structures import Dataset
+from registries import mapping
 from util import get_user_name, get_user_email
 
 
 @shell(chain=True, prompt='inputset-generator > ',
-       intro='Starting input set generator...')
+       intro='Starting input set generator')
 @click.pass_context
 def cli(ctx):
     # create the ctx.obj dictionary
@@ -36,7 +37,7 @@ def meta(ctx, name, version, description, readme, author, email):
 
 
 @cli.command('setreg')
-@argument('name')
+@argument('name', type=Choice(mapping))
 @click.pass_context
 def setreg(ctx, name):
     # set the registry
@@ -52,7 +53,7 @@ def setreg(ctx, name):
 @option('-s', '--structure', 'fileargs',
         help="Json file structure (eg, 'r2c').")
 @click.pass_context
-def load(ctx, handle, load_metadata, load_versions, fileargs):
+def load(ctx, handle, registry, load_metadata, load_versions, fileargs):
     ds = ctx.obj['dataset']
 
     if handle == 'details':

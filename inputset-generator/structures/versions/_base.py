@@ -1,7 +1,4 @@
-from abc import ABC
-
-
-class Version(ABC):
+class Version():
     def __init__(self, **kwargs):
         # load all attributes into the version
         self.populate(kwargs)

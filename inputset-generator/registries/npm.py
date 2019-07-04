@@ -22,8 +22,9 @@ class Npm(Registry):
             }
         }
 
-    def get_meta(self, project: Project):
+    def load_project_metadata(self, project: Project) -> None:
         pass
 
-    def get_versions(self, project: Project):
+    def load_project_versions(self, project: Project,
+                              historical: str = 'all') -> None:
         pass

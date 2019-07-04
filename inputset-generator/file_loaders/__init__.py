@@ -3,7 +3,7 @@ from .csv import CsvLoader
 from .json import JsonLoader
 
 
-file_handlers = {
+mapping = {
     '.csv': CsvLoader(),
     '.json': JsonLoader()
 }
