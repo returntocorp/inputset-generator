@@ -1,10 +1,10 @@
 import json
 
 from structures import Dataset
-from file_handlers import FileHandler
+from file_loaders import FileLoader
 
 
-class JsonFileHandler(FileHandler):
+class JsonLoader(FileLoader):
     def __init__(self):
         self.parsers = {
             'r2c': self._parse_r2c

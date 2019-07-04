@@ -59,7 +59,7 @@ class Dataset:
 
     def load_file(self, path: str, fileargs: str = None) -> None:
         """Uses a file handler to load a dataset from file."""
-        from file_handlers import file_handlers
+        from file_loaders import file_handlers
 
         # check if the path is valid
         if not Path(path).is_file():
@@ -126,12 +126,12 @@ class Dataset:
 
     def jsonify(self) -> dict:
         """Jsonifies a dataset."""
-        from file_handlers import JsonFileHandler
+        from file_loaders import JsonLoader
 
-        return JsonFileHandler()._jsonify(self)
+        return JsonLoader()._jsonify(self)
 
     def save_json(self, path: str = None) -> None:
-        from file_handlers import JsonFileHandler
+        from file_loaders import JsonLoader
 
         # check that all necessary meta values have been set
         if not (self.name and self.version):
@@ -143,7 +143,7 @@ class Dataset:
 
         # save to disk
         print('Saving results to %s' % path)
-        JsonFileHandler().save(self, path)
+        JsonLoader().save(self, path)
 
     def get_project(self, **kwargs) -> Optional[Project]:
         """Gets a project matching all parameters or returns None."""
