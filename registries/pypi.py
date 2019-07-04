@@ -1,7 +1,7 @@
 import requests
 
 from registries import Registry
-from structures import Dataset, Project
+from dataset import Dataset, Project
 
 
 class PypiRegistry(Registry):

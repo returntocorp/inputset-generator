@@ -1,6 +1,6 @@
 from typing import List
 
-from structures import Dataset
+from dataset import Dataset
 
 
 def sort(ds: Dataset, params: List[str]) -> None:

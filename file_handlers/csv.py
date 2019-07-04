@@ -1,7 +1,7 @@
 import csv
 
+from dataset import Dataset
 from file_handlers import FileHandler
-from structures import Dataset
 
 
 class CsvFileHandler(FileHandler):

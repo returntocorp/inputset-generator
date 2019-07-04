@@ -4,7 +4,7 @@ import click
 from click import argument, option
 from click_shell import shell
 
-from structures import Dataset
+from dataset import Dataset
 from util import get_user_name, get_user_email
 
 
