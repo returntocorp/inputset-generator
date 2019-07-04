@@ -1,1 +1,3 @@
-from structures.projects._base import Project, Version
+from .dataset import Dataset
+from .projects import Project
+from .versions import Version
