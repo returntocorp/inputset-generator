@@ -1,4 +1,4 @@
-from structures import Project
+from structures.projects import Project
 
 
 class GithubRepo(Project):

@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import List, Optional
 from types import MethodType
 
-from structures import Project
+from structures.projects import Project
 
 
 class Dataset:
@@ -28,7 +28,7 @@ class Dataset:
         self.author = get_user_name()
         self.email = get_user_email()
 
-'''
+
     def set_meta(self, name=None, version=None, description=None,
                  readme=None, author=None, email=None):
         """Sets dataset metadata."""
@@ -178,4 +178,3 @@ class Dataset:
                and not a.startswith('__')
                and not callable(getattr(self, a))
         ])
-'''

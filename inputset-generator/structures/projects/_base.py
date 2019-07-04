@@ -1,7 +1,7 @@
 from abc import ABC
 from typing import List
 
-from structures import Version
+from structures.versions import Version
 
 
 class Project(ABC):
