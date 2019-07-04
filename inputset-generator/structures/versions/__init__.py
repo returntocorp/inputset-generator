@@ -1,4 +1,4 @@
 from ._base import Version
-from .github import GithubCommit
-from .npm import NpmVersion
-from .pypi import PypiRelease
+from .github_commit import GithubCommit
+from .npm_version import NpmVersion
+from .pypi_release import PypiRelease

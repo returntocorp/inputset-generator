@@ -1,4 +1,4 @@
 from ._base import Project
-from .github import GithubRepo
-from .npm import NpmPackage
-from .pypi import PypiProject
+from .github_repo import GithubRepo
+from .npm_package import NpmPackage
+from .pypi_project import PypiProject
