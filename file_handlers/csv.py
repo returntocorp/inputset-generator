@@ -1,6 +1,6 @@
 import csv
 
-from dataset import Dataset
+from structures.dataset import Dataset
 from file_handlers import FileHandler
 
 

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from dataset import Dataset, Project
+from structures.dataset import Dataset, Project
 
 
 class Registry(ABC):

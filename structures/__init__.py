@@ -1,1 +1,1 @@
-from ._base import Project, Version
+from structures.projects._base import Project, Version

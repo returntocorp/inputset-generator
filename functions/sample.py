@@ -1,6 +1,6 @@
 import random
 
-from dataset import Dataset
+from structures.dataset import Dataset
 
 
 def sample(ds: Dataset, n: int, on_projects: bool) -> None:

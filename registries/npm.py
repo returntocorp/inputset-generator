@@ -1,5 +1,5 @@
 from registries import Registry
-from dataset import Dataset, Project
+from structures.dataset import Project
 
 
 class NpmRegistry(Registry):

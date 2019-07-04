@@ -1,4 +1,4 @@
-from dataset import Dataset
+from structures.dataset import Dataset
 
 
 def head(ds: Dataset, n: int, on_projects: bool) -> None:

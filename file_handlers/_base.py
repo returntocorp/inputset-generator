@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from dataset import Dataset
+from structures.dataset import Dataset
 
 
 class FileHandler(ABC):
