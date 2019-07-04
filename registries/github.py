@@ -1,3 +1,4 @@
+import requests
 from pydriller import RepositoryMining
 
 from registries import Registry
@@ -16,7 +17,6 @@ class GithubRegistry(Registry):
                 'parser': self._parse_github
             }
         }
-        # more: https://stackoverflow.com/questions/19855552/how-to-find-out-the-most-popular-repositories-on-github
 
     def load_project_metadata(self, project: Project) -> None:
         """Retrieves all project data from github."""
@@ -30,8 +30,13 @@ class GithubRegistry(Registry):
                             "must have attribute 'repo_url' or "
                             "attributes 'name' and 'organization'.")
 
-        # download the project info from github
-        repo = RepositoryMining(url or self.url_format % (org, name))
+        # download the project json from pypi
+        try:
+            data = requests.get(self.url_format % name).json()
+        except:
+            raise Exception('Error downloading project %s.' %
+                            getattr(project, 'package_name'))
+
 
         # Note: need to define repo_url
         temp = 5
@@ -70,8 +75,32 @@ class GithubRegistry(Registry):
 
     @staticmethod
     def _load_top1kstarred() -> dict:
-        url = 'https://api.github.com/search/repositories?q=stars%3A%3E0&sort=stars&per_page=100'
-        pass
+        # url courtesy of: https://stackoverflow.com/questions/19855552/
+        # how-to-find-out-the-most-popular-repositories-on-github
+        url = 'https://api.github.com/search/repositories?' \
+              'q=stars%%3A>0&sort=stars&per_page=100&page=%d'
 
+        # results are limited to 100 per page; load & merge 10 pages
+        projects = []
+        for u in [(url % d) for d in range(1, 11)]:
+            projects += requests.get(u).json()['items']
+
+        return {'projects': projects}
+
+    @staticmethod
+    def _load_top1kforked() -> dict:
+        # url courtesy of: https://stackoverflow.com/questions/19855552/
+        # how-to-find-out-the-most-popular-repositories-on-github
+        url = 'https://api.github.com/search/repositories?' \
+              'q=forks%%3A>0&sort=forks&per_page=100&page=%d'
+
+        # results are limited to 100 per page; load & merge 10 pages
+        projects = []
+        for u in [(url % d) for d in range(1, 11)]:
+            projects += requests.get(u).json()['items']
+
+        return {'projects': projects}
+
+    @staticmethod
     def _parse_github(ds: Dataset, data: dict):
-        pass
+        ds.projects = [Project(**p) for p in data['projects']]
