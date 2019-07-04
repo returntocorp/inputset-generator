@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import List, Optional
 from types import MethodType
 
-from .project import Project
+from structures._base import Project
 
 
 class Dataset:
