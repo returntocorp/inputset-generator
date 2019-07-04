@@ -1,6 +1,6 @@
 import json
 
-from structures.dataset import Dataset
+from structures import Dataset
 from file_handlers import FileHandler
 
 

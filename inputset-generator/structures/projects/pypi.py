@@ -1,4 +1,4 @@
-from structures.projects import Project
+from structures import Project
 
 
 class PypiProject(Project):

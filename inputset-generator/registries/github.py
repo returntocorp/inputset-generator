@@ -2,7 +2,7 @@ import requests
 from pydriller import RepositoryMining
 
 from registries import Registry
-from structures.dataset import Dataset, Project
+from structures import Dataset, Project
 
 
 class GithubRegistry(Registry):
