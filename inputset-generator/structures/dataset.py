@@ -146,7 +146,7 @@ class Dataset:
         JsonLoader().save(self, path)
 
     def get_project(self, **kwargs) -> Optional[Project]:
-        """Gets a project matching all parameters or returns None."""
+        """Gets the first project with attributes matching all kwargs."""
 
         # linear search function; potential for being slow...
         for p in self.projects:

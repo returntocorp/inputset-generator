@@ -1,6 +1,8 @@
 import json
 
 from structures import Dataset
+from structures.projects import *
+from structures.versions import *
 from file_loaders import FileLoader
 
 
@@ -39,13 +41,16 @@ class JsonLoader(FileLoader):
         ds.author = ds.author or data.get('author', None)
         ds.email = ds.email or data.get('email', None)
 
-        # check that there's at least one input line
-        # (caller will catch any exceptions)
-        _ = data['inputs'][0]
+        types = {
+            'GitRepo': {'project': GithubRepo,
+                        'version': GithubCommit},
+            'GitRepoCommit': {'project': GithubRepo,
+                              'version': GithubCommit},
+            'HttpUrl': {'project': }
+            'PackageVersion': self._jsonify_packageversion
+        }
 
         # generate the projects and versions
-        # note: to add more input types, simply expand the p_keys and
-        # v_keys lists to include the appropriate new values
         for input in data['inputs']:
             # some parts of the input are at the project level...
             p_keys = ['repo_url', 'url', 'package_name']
