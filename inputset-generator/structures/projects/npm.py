@@ -1,5 +1,5 @@
 from structures import Project
 
 
-class NpmProject(Project):
+class NpmPackage(Project):
     pass

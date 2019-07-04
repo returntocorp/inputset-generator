@@ -1,5 +1,5 @@
 from structures import Project
 
 
-class GithubProject(Project):
+class GithubRepo(Project):
     pass
