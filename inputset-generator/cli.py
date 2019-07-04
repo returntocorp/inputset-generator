@@ -47,7 +47,10 @@ def setreg(ctx, name):
 @argument('handle')
 @option('-m', '--metadata', 'load_metadata', is_flag=True)
 @option('-v', '--versions', 'load_versions')
-@option('-h', '--header', 'fileargs')
+@option('-h', '--header', 'fileargs',
+        help='Header string for csv file.')
+@option('-s', '--structure', 'fileargs',
+        help="Json file structure (eg, 'r2c').")
 @click.pass_context
 def load(ctx, handle, load_metadata, load_versions, fileargs):
     ds = ctx.obj['dataset']
@@ -70,6 +73,8 @@ def load(ctx, handle, load_metadata, load_versions, fileargs):
     if load_versions:
         # load project versions from the registry
         ds.load_project_versions(load_versions)
+
+    temp = 6
 
 
 @cli.command('save')

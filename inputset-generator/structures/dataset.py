@@ -28,7 +28,6 @@ class Dataset:
         self.author = get_user_name()
         self.email = get_user_email()
 
-
     def set_meta(self, name=None, version=None, description=None,
                  readme=None, author=None, email=None):
         """Sets dataset metadata."""
