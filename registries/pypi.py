@@ -86,5 +86,6 @@ class PypiRegistry(Registry):
 
     @staticmethod
     def _parse_hugovk(ds: Dataset, data: dict):
-        ds.projects = [Project(package_name=r['project'])
+        ds.projects = [Project(package_name=r['project'],
+                               downloads=r['download_count'])
                        for r in data['rows']]
