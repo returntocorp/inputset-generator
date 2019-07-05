@@ -9,6 +9,7 @@ class Github(Registry):
     def __init__(self):
         super().__init__()
 
+        self.name = 'github'
         self.url_format = 'https://github.com/%s/%s'
         self.weblists = {
             'top100starred': {

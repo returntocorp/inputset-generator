@@ -6,6 +6,7 @@ from structures import Dataset, Project
 
 class Registry(ABC):
     def __init__(self):
+        self.name: str = None
         self.weblists: dict = {}
 
     def load_weblist(self, dataset: Dataset, name: str) -> None:

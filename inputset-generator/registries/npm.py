@@ -7,6 +7,7 @@ class Npm(Registry):
         super().__init__()
 
         # set project registry name and url format
+        self.name = 'npm'
         self.url_format = '???'
 
         # add pypi-specific weblists

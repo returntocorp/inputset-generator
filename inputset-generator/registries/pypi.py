@@ -9,6 +9,7 @@ class Pypi(Registry):
     def __init__(self):
         super().__init__()
 
+        self.name = 'pypi'
         self.url_format = 'https://pypi.org/pypi/%s/json'
         self.weblists = {
             'top5kmonth': {
