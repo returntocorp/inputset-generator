@@ -9,15 +9,20 @@ class Github(Registry):
     def __init__(self):
         super().__init__()
 
-        self.name = 'github'
         self.url_format = 'https://github.com/%s/%s'
         self.weblists = {
-            'top1kstarred': {
+            'top100starred': {
                 'loader': self._load_top1kstarred,
                 'parser': self._parse_github
+            },
+            'top100forked': {
+                'loader': self._load_top1kforked,
+                'parser': self._parse_github
             }
+
         }
 
+    '''
     def load_project_metadata(self, project: Project) -> None:
         """Retrieves all project data from github."""
 
@@ -72,9 +77,10 @@ class Github(Registry):
                                                           str(hist_types)))
 
         # Todo: Complete historical version filtering.
+    '''
 
     @staticmethod
-    def _load_top1kstarred() -> dict:
+    def _load_top1kstarred() -> list:
         # url courtesy of: https://stackoverflow.com/questions/19855552/
         # how-to-find-out-the-most-popular-repositories-on-github
         url = 'https://api.github.com/search/repositories?' \
@@ -82,13 +88,13 @@ class Github(Registry):
 
         # results are limited to 100 per page; load & merge 10 pages
         projects = []
-        for u in [(url % d) for d in range(1, 11)]:
+        for u in [(url % d) for d in range(1, 2)]:
             projects += requests.get(u).json()['items']
 
-        return {'projects': projects}
+        return projects
 
     @staticmethod
-    def _load_top1kforked() -> dict:
+    def _load_top1kforked() -> list:
         # url courtesy of: https://stackoverflow.com/questions/19855552/
         # how-to-find-out-the-most-popular-repositories-on-github
         url = 'https://api.github.com/search/repositories?' \
@@ -96,11 +102,12 @@ class Github(Registry):
 
         # results are limited to 100 per page; load & merge 10 pages
         projects = []
-        for u in [(url % d) for d in range(1, 11)]:
+        for u in [(url % d) for d in range(1, 2)]:
             projects += requests.get(u).json()['items']
 
-        return {'projects': projects}
+        return projects
 
     @staticmethod
-    def _parse_github(ds: Dataset, data: dict):
-        ds.projects = [Project(**p) for p in data['projects']]
+    def _parse_github(ds: Dataset, data: list):
+        Project = ds.types['project']
+        ds.projects = [Project(**d) for d in data]

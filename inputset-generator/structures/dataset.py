@@ -3,74 +3,42 @@ from typing import List, Optional
 from types import MethodType
 
 from structures.projects import Project
-from structures.versions import Version
 
 
 class Dataset:
-    def __init__(self):
+    def __init__(self, registry: str = 'noreg'):
         from functions import mapping
         from util import get_user_name, get_user_email
-
-        # a dataset contains projects
-        self.projects: List[Project] = []
-
-        # registry is used to access web resources
-        self.registry = None
-
-        # set default project/version types
-        self.types = {'project': Project,
-                      'version': Version}
-
-        # register the various transformation functions
-        for name, function in mapping.items():
-            setattr(self, name, MethodType(function, self))
-
-        # set default dataset metadata
-        self.name = None
-        self.version = None
-        self.description = None
-        self.readme = None
-        self.author = get_user_name()
-        self.email = get_user_email()
-
-    def set_meta(self, name=None, version=None, description=None,
-                 readme=None, author=None, email=None):
-        """Sets dataset metadata."""
-        if not (name or version or description
-                or readme or author or email):
-            raise Exception('Error setting metadata. Must provide at '
-                            'least one of name, version, description, '
-                            'readme, author, or email.')
-
-        # override existing data only if the override is not None
-        self.name = name or self.name
-        self.version = version or self.version
-        self.description = description or self.description
-        self.readme = readme or self.readme
-        self.author = author or self.author
-        self.email = email or self.email
-
-    def set_registry(self, registry: str) -> None:
-        """Loads up the specified registry."""
         from registries import mapping as registries_map
         from structures.projects import mapping as projects_map
         from structures.versions import mapping as versions_map
-
-        # check if projects have already been loaded
-        #if len(self.projects) > 0 and type(self.projects[0]) != self.types['']
 
         # check if the registry name is valid
         if registry not in registries_map:
             raise Exception('Invalid registry. Valid types are: %s'
                             % list(registries_map))
 
-        # link to the appropriate registry and project/version types
-        Registry = registries_map[registry]
-        Project = projects_map[registry]
-        Version = versions_map[registry]
-        self.registry = Registry
-        self.types['project'] = Project
-        self.types['version'] = Version
+        # registry is used to access web resources
+        self.registry = registries_map[registry]
+
+        # set default project/version types
+        self.types = {'project': projects_map[registry],
+                      'version': versions_map[registry]}
+
+        # register the various transformation functions
+        for name, function in mapping.items():
+            setattr(self, name, MethodType(function, self))
+
+        # a dataset contains projects
+        self.projects: List[Project] = []
+
+        # set default dataset metadata
+        self.name = None
+        self.version = None
+        self.description = None
+        self.readme = None
+        self.author = get_user_name()  # default to git user.name
+        self.email = get_user_email()  # default to git user.email
 
     def load_file(self, path: str, fileargs: str = None) -> None:
         """Uses a file handler to load a dataset from file."""
@@ -112,6 +80,23 @@ class Dataset:
         # load initial data from the weblist
         print("Loading '%s' from %s" % (name, self.registry.name))
         self.registry.load_weblist(self, name)
+
+    def set_meta(self, name=None, version=None, description=None,
+                 readme=None, author=None, email=None):
+        """Sets dataset metadata."""
+        if not (name or version or description
+                or readme or author or email):
+            raise Exception('Error setting metadata. Must provide at '
+                            'least one of name, version, description, '
+                            'readme, author, or email.')
+
+        # override existing data only if the override is not None
+        self.name = name or self.name
+        self.version = version or self.version
+        self.description = description or self.description
+        self.readme = readme or self.readme
+        self.author = author or self.author
+        self.email = email or self.email
 
     def load_project_metadata(self) -> None:
         """Downloads all projects' metadata."""

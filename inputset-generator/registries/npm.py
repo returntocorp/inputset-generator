@@ -7,7 +7,6 @@ class Npm(Registry):
         super().__init__()
 
         # set project registry name and url format
-        self.name = 'npm'
         self.url_format = '???'
 
         # add pypi-specific weblists
@@ -15,16 +14,4 @@ class Npm(Registry):
         # https://stackoverflow.com/questions/34071621/query-npmjs-registry-via-api
         # https://github.com/npm/download-counts
         # https://registry.npmjs.org/lodash
-        self.loaders = {
-            '???': {
-                'url': '???',
-                'parser': 'self._???'
-            }
-        }
-
-    def load_project_metadata(self, project: Project) -> None:
-        pass
-
-    def load_project_versions(self, project: Project,
-                              historical: str = 'all') -> None:
-        pass
+        self.weblists = {}

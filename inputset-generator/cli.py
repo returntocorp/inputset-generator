@@ -5,8 +5,18 @@ from click import argument, option, Choice
 from click_shell import shell
 
 from structures import Dataset
-from registries import mapping
+from registries import mapping as registries_map
 from util import get_user_name, get_user_email
+
+
+def get_dataset(ctx) -> Dataset:
+    """Checks that the dataset has been loaded."""
+    ds = ctx.obj.get('dataset', None)
+
+    if not ds:
+        raise Exception('Error: Dataset has not been loaded.')
+
+    return ds
 
 
 @shell(chain=True, prompt='inputset-generator > ',
@@ -16,8 +26,46 @@ def cli(ctx):
     # create the ctx.obj dictionary
     ctx.ensure_object(dict)
 
+
+@cli.command('load')
+@argument('registry', type=Choice(registries_map))
+@argument('handle')
+@option('-h', '--header', 'fileargs',
+        help='Header string for csv file.')
+@option('-s', '--structure', 'fileargs',
+        help="Json file structure (eg, 'r2c').")
+@click.pass_context
+def load(ctx, registry, handle, fileargs):
     # initialize a dataset and add it to the context
-    ctx.obj['dataset'] = Dataset()
+    ds = Dataset(registry)
+    ctx.obj['dataset'] = ds
+
+    if '.' in handle:
+        # read in a file (fileargs is either a header string for csv
+        # or a file structure handle--eg, 'r2c'--for json)
+        ds.load_file(handle, fileargs)
+    else:
+        # download a weblist
+        ds.load_weblist(handle)
+
+
+@cli.command('get')
+@option('-m', '--metadata', is_flag=True,
+        help='Download project metadata.')
+@option('-v', '--versions',
+        type=Choice(['all', 'current', 'releases', 'etc.']),
+        help='Download version info.')
+@click.pass_context
+def get(ctx, metadata, versions):
+    ds = get_dataset(ctx)
+
+    if metadata:
+        # load project metadata
+        temp = 5
+
+    if versions:
+        # load project versions
+        temp = 5
 
 
 @cli.command('meta')
@@ -31,59 +79,16 @@ def cli(ctx):
         help='Author email. Defaults to git user.email.')
 @click.pass_context
 def meta(ctx, name, version, description, readme, author, email):
-    # set dataset metadata
-    ctx.obj['dataset'].set_meta(name, version, description,
-                                readme, author, email)
-
-
-@cli.command('setreg')
-@argument('name', type=Choice(mapping))
-@click.pass_context
-def setreg(ctx, name):
-    # set the registry
-    ctx.obj['dataset'].set_registry(name)
-
-
-@cli.command('load')
-@argument('handle')
-@option('-m', '--metadata', 'load_metadata', is_flag=True)
-@option('-v', '--versions', 'load_versions')
-@option('-h', '--header', 'fileargs',
-        help='Header string for csv file.')
-@option('-s', '--structure', 'fileargs',
-        help="Json file structure (eg, 'r2c').")
-@click.pass_context
-def load(ctx, handle, registry, load_metadata, load_versions, fileargs):
-    ds = ctx.obj['dataset']
-
-    if handle == 'details':
-        # filler arg for loading project details/versions without
-        # also loading a weblist or file
-        pass
-    elif '.' in handle:
-        # read in a file
-        ds.load_file(handle, fileargs)
-    else:
-        # download a weblist
-        ds.load_weblist(handle)
-
-    if load_metadata:
-        # load project details from the registry
-        ds.load_project_metadata()
-
-    if load_versions:
-        # load project versions from the registry
-        ds.load_project_versions(load_versions)
-
-    temp = 6
+    ds = get_dataset(ctx)
+    ds.set_meta(name, version, description, readme, author, email)
 
 
 @cli.command('save')
 @argument('filepath')
 @click.pass_context
 def save(ctx, filepath):
-    # save to json file
-    ctx.obj['dataset'].save_json(filepath)
+    ds = get_dataset(ctx)
+    ds.save_json(filepath)
 
 
 @cli.command('head')
@@ -91,15 +96,16 @@ def save(ctx, filepath):
 @option('-p/-v', '--projects/--versions', 'on_projects', default=True)
 @click.pass_context
 def head(ctx, n, on_projects):
-    # trim all but the first n projects
-    ctx.obj['dataset'].head(n, on_projects)
+    ds = get_dataset(ctx)
+    ds.head(n, on_projects)
 
 
 @cli.command('sort')
 @argument('params', type=str)
 @click.pass_context
 def sort(ctx, params):
-    ctx.obj['dataset'].sort(params.split())
+    ds = get_dataset(ctx)
+    ds.sort(params.split())
 
 
 @cli.command('sample')
@@ -107,8 +113,8 @@ def sort(ctx, params):
 @option('-p/-v', '--projects/--versions', 'on_projects', default=True)
 @click.pass_context
 def sample(ctx, n, on_projects):
-    # sample n projects
-    ctx.obj['dataset'].sample(n, on_projects)
+    ds = get_dataset(ctx)
+    ds.sample(n, on_projects)
 
 
 if __name__ == '__main__':

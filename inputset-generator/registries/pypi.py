@@ -2,13 +2,13 @@ import requests
 
 from registries import Registry
 from structures import Dataset, Project
+from structures.projects import PypiProject
 
 
 class Pypi(Registry):
     def __init__(self):
         super().__init__()
 
-        self.name = 'pypi'
         self.url_format = 'https://pypi.org/pypi/%s/json'
         self.weblists = {
             'top5kmonth': {
@@ -21,6 +21,7 @@ class Pypi(Registry):
             }
         }
 
+    '''
     def load_project_metadata(self, project: Project) -> None:
         """Retrieves all project data from pypi."""
         if not getattr(self, 'notified', None):
@@ -77,21 +78,23 @@ class Pypi(Registry):
                                                           str(hist_types)))
 
         # Todo: Complete historical version filtering.
+    '''
 
     @staticmethod
-    def _load_top5kyear() -> dict:
+    def _load_top5kyear() -> list:
         url = 'https://hugovk.github.io/top-pypi-packages/' \
               'top-pypi-packages-365-days.json'
-        return requests.get(url).json()
+        return requests.get(url).json()['rows']
 
     @staticmethod
-    def _load_top5kmonth() -> dict:
+    def _load_top5kmonth() -> list:
         url = 'https://hugovk.github.io/top-pypi-packages/' \
               'top-pypi-packages-30-days.json'
-        return requests.get(url).json()
+        return requests.get(url).json()['rows']
 
     @staticmethod
-    def _parse_hugovk(ds: Dataset, data: dict) -> None:
-        ds.projects = [Project(package_name=r['project'],
-                               downloads=r['download_count'])
-                       for r in data['rows']]
+    def _parse_hugovk(ds: Dataset, data: list) -> None:
+        Project = ds.types['project']
+        ds.projects = [Project(package_name=d['project'],
+                               downloads=d['download_count'])
+                       for d in data]

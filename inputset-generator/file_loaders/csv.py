@@ -20,7 +20,7 @@ class CsvLoader(FileLoader):
             self.user_defined = True
 
         # load the file
-        with open(filepath) as file:
+        with open(filepath, mode='r', encoding='utf-8-sig') as file:
             csv_file = csv.reader(file, delimiter=',')
             for row in csv_file:
                 # aggregate version and project data
@@ -42,6 +42,10 @@ class CsvLoader(FileLoader):
                             p_data[header] = val
 
                     # create/update the projects and versions
-                    project = ds.get_or_add_project(**p_data)
+                    Project = ds.types['project']
+                    project = ds.get_or_add_project(Project=Project,
+                                                    **p_data)
                     if len(v_data) > 0:
-                        project.get_or_add_version(**v_data)
+                        Version = ds.types['version']
+                        project.get_or_add_version(Version=Version,
+                                                   **v_data)

@@ -1,3 +1,4 @@
+from typing import List
 from abc import ABC, abstractmethod
 
 from structures import Dataset, Project
@@ -5,10 +6,6 @@ from structures import Dataset, Project
 
 class Registry(ABC):
     def __init__(self):
-        # child classes must set name and url_format
-        self.name: str
-        self.url_format: str
-
         self.weblists: dict = {}
 
     def load_weblist(self, dataset: Dataset, name: str) -> None:
@@ -27,9 +24,17 @@ class Registry(ABC):
         except Exception:
             raise Exception('Error parsing weblist data.')
 
+    '''
     @abstractmethod
     def load_project_metadata(self, project: Project) -> None: pass
 
     @abstractmethod
     def load_project_versions(self, project: Project,
                               historical: str = 'all') -> None: pass
+    '''
+
+    '''
+    @abstractmethod
+    def request(self, urls: list, num_threads: int = 1) -> List[dict]:
+        pass
+    '''
