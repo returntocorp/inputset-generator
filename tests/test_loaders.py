@@ -15,7 +15,7 @@ def test_json():
     ds = Dataset('pypi')
     ds.load_file('../tests/files/name_version.json')
 
-    # test noreg
+    # test vanilla
     ds = Dataset()
     ds.load_file('../tests/files/http_url.json')
 
@@ -33,7 +33,7 @@ def test_csv():
     ds = Dataset('pypi')
     ds.load_file('../tests/files/names_versions.csv')
 
-    # test noreg
+    # test vanilla
     ds = Dataset()
     ds.load_file('../tests/files/names_versions.csv')
 

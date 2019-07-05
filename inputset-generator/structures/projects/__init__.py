@@ -5,7 +5,6 @@ from .pypi_project import PypiProject
 
 
 projects = {
-    'noreg': Project,
     'github': GithubRepo,
     'npm': NpmPackage,
     'pypi': PypiProject,

@@ -5,7 +5,6 @@ from .pypi_release import PypiRelease
 
 
 versions = {
-    'noreg': Version,
     'github': GithubCommit,
     'npm': NpmVersion,
     'pypi': PypiRelease

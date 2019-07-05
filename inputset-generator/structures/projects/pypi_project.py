@@ -9,6 +9,6 @@ class PypiProject(Project):
 
 
     def to_inputset(self) -> list:
-        """Converts pypi projects/releases to a list of input set dicts."""
+        """Converts pypi projects/releases to PackageVersion dict."""
         temp = 5
 
