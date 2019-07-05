@@ -56,10 +56,11 @@ class Dataset:
 
         # load initial data from the file
         print('Loading %s' % path)
+        loader = fileloaders_map[extension]
         if fileargs:
-            fileloaders_map[extension].load(self, path, fileargs)
+            loader.load(self, path, fileargs)
         else:
-            fileloaders_map[extension].load(self, path)
+            loader.load(self, path)
 
     def load_weblist(self, name: str) -> None:
         """Loads a weblist from the registry."""

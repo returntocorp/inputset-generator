@@ -11,10 +11,10 @@ class Project:
         # a project contains versions
         self.versions: List[Version] = []
 
-        # project data guarantees
-        self.meta_name = None
-        self.meta_url = None
-        self.meta_apiurl = None
+        # load any project metadata
+        self.meta_name = kwargs.get('name', None)
+        self.meta_url = kwargs.get('repo_url', None)
+        self.meta_apiurl = kwargs.get('api_url', None)
 
     def update(self, data: dict) -> None:
         """Populates the project with data from a dictionary."""
