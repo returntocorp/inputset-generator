@@ -6,27 +6,25 @@ from structures.projects import Project
 
 
 class Dataset:
-    def __init__(self, registry: str = 'noreg'):
-        from functions import functions_map
+    def __init__(self, registry: str = None):
+        from apis import apis
+        from structures.projects import Project, projects
+        from structures.versions import Version, versions
+        from functions import functions
         from util import get_user_name, get_user_email
-        from registries import registries_map
-        from structures.projects import projects_map
-        from structures.versions import versions_map
 
-        # check if the registry name is valid
-        if registry not in registries_map:
+        # validate registry name (if provided) and set
+        if registry and registry not in apis:
             raise Exception('Invalid registry. Valid types are: %s'
-                            % list(registries_map))
+                            % list(apis))
+        self.registry = registry
 
-        # registry is used to access web resources
-        self.registry = registries_map[registry]
-
-        # set default project/version types
-        self.types = {'project': projects_map[registry],
-                      'version': versions_map[registry]}
+        # set project/version types (defaults to the vanilla classes)
+        self.types = {'project': projects.get(registry, Project),
+                      'version': versions.get(registry, Version)}
 
         # register the various transformation functions
-        for name, function in functions_map.items():
+        for name, function in functions.items():
             setattr(self, name, MethodType(function, self))
 
         # a dataset contains projects
@@ -42,7 +40,7 @@ class Dataset:
 
     def load_file(self, path: str, fileargs: str = None) -> None:
         """Uses a file handler to load a dataset from file."""
-        from loaders import fileloaders_map
+        from loaders.file import file_loaders
 
         # check if the path is valid
         if not Path(path).is_file():
@@ -50,37 +48,36 @@ class Dataset:
 
         # check if the filetype is valid
         extension = Path(path).suffix
-        if extension not in fileloaders_map:
+        loader = file_loaders.get(extension, None)
+        if not loader:
             raise Exception("Invalid input file type '%s'. Valid types"
-                            "are: %s." % (extension, list(fileloaders_map)))
+                            "are: %s." % (extension, list(file_loaders)))
 
         # load initial data from the file
         print('Loading %s' % path)
-        loader = fileloaders_map[extension]
         if fileargs:
-            loader.load(self, path, fileargs)
+            loader().load(self, path, fileargs)
         else:
-            loader.load(self, path)
+            loader().load(self, path)
 
     def load_weblist(self, name: str) -> None:
         """Loads a weblist from the registry."""
-        from registries import registries_map
+        from loaders.weblist import weblist_loaders
 
         # check if the registry has been set
         if not self.registry:
             raise Exception('Registry has not been set. Valid '
-                            'registries are: %s' % list(registries_map))
+                            'registries are: %s' % str(weblist_loaders))
 
         # check if the name is valid
-        names = list(self.registry.weblists)
-        if name not in names:
-            raise Exception('Invalid weblist for registry %s. Valid '
-                            'weblists are: %s' % (self.registry.name,
-                                                  names))
+        loader = weblist_loaders.get(self.registry, None)
+        if not loader:
+            raise Exception('Invalid weblist for %s. Valid weblists'
+                            'are: %s' % (self.registry, str(weblist_loaders)))
 
         # load initial data from the weblist
-        print("Loading '%s' from %s" % (name, self.registry.name))
-        self.registry.load_weblist(self, name)
+        print("Loading '%s' from %s" % (name, self.registry))
+        loader().load(self, name)
 
     def set_meta(self, name=None, version=None, description=None,
                  readme=None, author=None, email=None):
@@ -127,6 +124,7 @@ class Dataset:
             self.registry.load_project_versions(project, historical)
     '''
 
+    '''
     def save(self, path: str = None) -> None:
         # file name is dataset name, if not provided by user
         path = path or (self.name + '.json')
@@ -161,6 +159,7 @@ class Dataset:
             d['inputs'] += p.to_inputset()
 
         return d
+    '''
 
     def find_project(self, **kwargs) -> Optional[Project]:
         """Gets the first project with attributes matching all kwargs."""

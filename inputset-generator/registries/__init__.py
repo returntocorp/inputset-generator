@@ -4,8 +4,7 @@ from .npm import Npm
 from .pypi import Pypi
 
 
-# Note: This must have the same keys as the projects/versions mappings
-registries_map = {
+registries = {
     'noreg': None,
     'github': Github(),
     'npm': Npm(),

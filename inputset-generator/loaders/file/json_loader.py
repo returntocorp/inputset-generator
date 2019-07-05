@@ -10,8 +10,7 @@ class JsonLoader(Loader):
             'r2c': self._parse_r2c
         }
 
-    def load(self, ds: Dataset, filepath: str,
-             parser: str = 'r2c') -> None:
+    def load(self, ds: Dataset, filepath: str, parser: str = 'r2c') -> None:
         """Loads a json file."""
 
         # load the file

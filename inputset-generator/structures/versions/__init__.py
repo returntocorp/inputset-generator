@@ -4,8 +4,7 @@ from .npm_version import NpmVersion
 from .pypi_release import PypiRelease
 
 
-# Note: This must have the same keys as the registries/projects mappings
-versions_map = {
+versions = {
     'noreg': Version,
     'github': GithubCommit,
     'npm': NpmVersion,

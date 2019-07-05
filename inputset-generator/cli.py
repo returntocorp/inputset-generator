@@ -36,7 +36,10 @@ def cli(ctx):
 @click.pass_context
 def load(ctx, registry, handle, fileargs):
     # initialize a dataset and add it to the context
-    ds = Dataset(registry)
+    if registry == 'noreg':
+        ds = Dataset()
+    else:
+        ds = Dataset(registry)
     ctx.obj['dataset'] = ds
 
     if '.' in handle:
@@ -46,6 +49,8 @@ def load(ctx, registry, handle, fileargs):
     else:
         # download a weblist
         ds.load_weblist(handle)
+
+    temp = 5
 
 
 @cli.command('get')

@@ -1,3 +1,3 @@
 from .dataset import Dataset
-from .projects import Project
-from .versions import Version
+from .projects import Project, projects
+from .versions import Version, versions

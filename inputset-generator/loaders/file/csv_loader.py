@@ -10,8 +10,7 @@ class CsvLoader(Loader):
         self.headers = ['name', 'v.version']
         self.user_defined = False
 
-    def load(self, ds: Dataset, filepath: str,
-             headers: str = None) -> None:
+    def load(self, ds: Dataset, filepath: str, headers: str = None) -> None:
         """Loads a csv file."""
 
         # Note: The Project/Version classes recognize the following

@@ -10,3 +10,10 @@ class NpmLoader(Loader):
         # https://github.com/npm/download-counts
         # https://registry.npmjs.org/lodash
         self.weblists = {}
+
+    def load(self, ds: Dataset, name: str, **_) -> None:
+        # load the data
+        data = self.weblists[name]['getter']()
+
+        # parse the data
+        self.weblists[name]['parser'](ds, data)
