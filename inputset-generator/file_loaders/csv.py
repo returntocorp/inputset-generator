@@ -42,10 +42,8 @@ class CsvLoader(FileLoader):
                             p_data[header] = val
 
                     # create/update the projects and versions
-                    Project = ds.types['project']
-                    project = ds.get_or_add_project(Project=Project,
-                                                    **p_data)
+                    project_cls = ds.types['project']
+                    project = ds.get_or_add_project(project_cls, **p_data)
                     if len(v_data) > 0:
-                        Version = ds.types['version']
-                        project.get_or_add_version(Version=Version,
-                                                   **v_data)
+                        version_cls = ds.types['version']
+                        project.get_or_add_version(version_cls, **v_data)

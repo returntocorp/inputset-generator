@@ -88,7 +88,7 @@ def meta(ctx, name, version, description, readme, author, email):
 @click.pass_context
 def save(ctx, filepath):
     ds = get_dataset(ctx)
-    ds.save_json(filepath)
+    ds.save(filepath)
 
 
 @cli.command('head')

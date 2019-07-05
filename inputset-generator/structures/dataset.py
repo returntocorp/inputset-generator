@@ -98,6 +98,7 @@ class Dataset:
         self.author = author or self.author
         self.email = email or self.email
 
+    '''
     def load_project_metadata(self) -> None:
         """Downloads all projects' metadata."""
         from registries import mapping
@@ -123,14 +124,9 @@ class Dataset:
         for project in self.projects:
             print("Retrieving versions of %s" % project)
             self.registry.load_project_versions(project, historical)
+    '''
 
-    def jsonify(self) -> dict:
-        """Jsonifies a dataset."""
-        from file_loaders import JsonLoader
-
-        return JsonLoader()._jsonify(self)
-
-    def save_json(self, path: str = None) -> None:
+    def save(self, path: str = None) -> None:
         from file_loaders import JsonLoader
 
         # check that all necessary meta values have been set
@@ -144,6 +140,12 @@ class Dataset:
         # save to disk
         print('Saving results to %s' % path)
         JsonLoader().save(self, path)
+
+    def json(self) -> dict:
+        """Jsonifies a dataset."""
+        from file_loaders import JsonLoader
+
+        return JsonLoader()._jsonify(self)
 
     def get_project(self, **kwargs) -> Optional[Project]:
         """Gets the first project with attributes matching all kwargs."""
@@ -160,11 +162,11 @@ class Dataset:
 
         return None
 
-    def get_or_add_project(self, Project, **kwargs) -> Project:
+    def get_or_add_project(self, project_cls, **kwargs) -> Project:
         """Finds a matching project or adds a new one of type Project."""
         project = self.get_project(**kwargs)
         if not project:
-            project = Project(**kwargs)
+            project = project_cls(**kwargs)
             self.projects.append(project)
 
         return project

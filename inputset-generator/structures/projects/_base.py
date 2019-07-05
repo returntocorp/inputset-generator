@@ -31,11 +31,11 @@ class Project():
 
         return None
 
-    def get_or_add_version(self, Version, **kwargs):
+    def get_or_add_version(self, version_cls, **kwargs):
         """Finds a matching version or adds a new one of type Version."""
         version = self.get_version(**kwargs)
         if not version:
-            version = Version(**kwargs)
+            version = version_cls(**kwargs)
             self.versions.append(version)
 
         return version
