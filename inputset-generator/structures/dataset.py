@@ -42,7 +42,7 @@ class Dataset:
 
     def load_file(self, path: str, fileargs: str = None) -> None:
         """Uses a file handler to load a dataset from file."""
-        from file_loaders import fileloaders_map
+        from loaders import fileloaders_map
 
         # check if the path is valid
         if not Path(path).is_file():

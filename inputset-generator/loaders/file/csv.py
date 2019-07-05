@@ -1,10 +1,10 @@
 import csv
 
 from structures import Dataset
-from file_loaders import FileLoader
+from loaders import Loader
 
 
-class CsvLoader(FileLoader):
+class CsvLoader(Loader):
     def __init__(self):
         # set default headers for csv files
         self.headers = ['name', 'v.version']

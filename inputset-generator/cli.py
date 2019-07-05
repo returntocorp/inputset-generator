@@ -5,7 +5,6 @@ from click import argument, option, Choice
 from click_shell import shell
 
 from structures import Dataset
-from registries import registries_map
 from util import get_user_name, get_user_email
 
 
@@ -28,7 +27,7 @@ def cli(ctx):
 
 
 @cli.command('load')
-@argument('registry', type=Choice(registries_map))
+@argument('registry')
 @argument('handle')
 @option('-h', '--header', 'fileargs',
         help='Header string for csv file.')
