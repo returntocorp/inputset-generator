@@ -38,7 +38,7 @@ class PypiLoader(Loader):
 
     @staticmethod
     def _parse_hugovk(ds: Dataset, data: list) -> None:
-        Project = ds.types['project']
-        ds.projects = [Project(package_name=d['project'],
-                               downloads=d['download_count'])
+        project_cls = ds.types['project']
+        ds.projects = [project_cls(package_name=d['project'],
+                                   downloads=d['download_count'])
                        for d in data]
