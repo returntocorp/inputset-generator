@@ -2,6 +2,7 @@ from typing import List
 
 from structures.versions import Version
 
+
 class Project:
     def __init__(self, **kwargs):
         # load all attributes into the project
@@ -10,12 +11,26 @@ class Project:
         # a project contains versions
         self.versions: List[Version] = []
 
+        # project data guarantees
+        self.meta_name = None
+        self.meta_url = None
+        self.meta_apiurl = None
+
     def populate(self, data: dict) -> None:
         """Populates the project with data from a dictionary."""
         for k, val in data.items():
             setattr(self, k, val)
 
-    def get_version(self, **kwargs):
+    def get_name(self):
+        pass
+
+    def get_url(self):
+        pass
+
+    def get_apiurl(self):
+        pass
+
+    def find_version(self, **kwargs):
         """Gets a version matching all parameters or returns None."""
 
         # linear search function; potential for being slow...
@@ -30,9 +45,9 @@ class Project:
 
         return None
 
-    def get_or_add_version(self, version_cls, **kwargs):
+    def find_or_add_version(self, version_cls, **kwargs):
         """Finds a matching version or adds a new one of type Version."""
-        version = self.get_version(**kwargs)
+        version = self.find_version(**kwargs)
         if not version:
             version = version_cls(**kwargs)
             self.versions.append(version)

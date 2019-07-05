@@ -127,27 +127,41 @@ class Dataset:
     '''
 
     def save(self, path: str = None) -> None:
-        from file_loaders import JsonLoader
+        # file name is dataset name, if not provided by user
+        path = path or (self.name + '.json')
+
+        # convert the dataset to an input set json
+        inputset = self.to_inputset()
+
+        # save to disk
+        print('Saving results to %s' % path)
+        #JsonLoader().save(self, path)
+
+    def to_inputset(self) -> dict:
+        """Converts a dataset to an input set json."""
 
         # check that all necessary meta values have been set
         if not (self.name and self.version):
             # name and version are mandatory
             raise Exception('Dataset name and/or version are missing.')
 
-        # file name is dataset name, if not provided by user
-        path = path or (self.name + '.json')
+        # jsonify the dataset's metadata
+        d = dict()
+        if self.name: d['name'] = self.name
+        if self.version: d['version'] = self.version
+        if self.description: d['description'] = self.description
+        if self.readme: d['readme'] = self.readme
+        if self.author: d['author'] = self.author
+        if self.email: d['email'] = self.email
 
-        # save to disk
-        print('Saving results to %s' % path)
-        JsonLoader().save(self, path)
+        # jsonify the projects & versions
+        d['inputs'] = []
+        for p in self.projects:
+            d['inputs'] += p.to_inputset()
 
-    def json(self) -> dict:
-        """Jsonifies a dataset."""
-        from file_loaders import JsonLoader
+        return d
 
-        return JsonLoader()._jsonify(self)
-
-    def get_project(self, **kwargs) -> Optional[Project]:
+    def find_project(self, **kwargs) -> Optional[Project]:
         """Gets the first project with attributes matching all kwargs."""
 
         # linear search function; potential for being slow...
@@ -162,9 +176,9 @@ class Dataset:
 
         return None
 
-    def get_or_add_project(self, project_cls, **kwargs) -> Project:
+    def find_or_add_project(self, project_cls, **kwargs) -> Project:
         """Finds a matching project or adds a new one of type Project."""
-        project = self.get_project(**kwargs)
+        project = self.find_project(**kwargs)
         if not project:
             project = project_cls(**kwargs)
             self.projects.append(project)

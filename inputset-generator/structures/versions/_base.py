@@ -3,6 +3,10 @@ class Version:
         # load all attributes into the version
         self.populate(kwargs)
 
+        # version data guarantees
+        self.meta_version = None
+        self.meta_commit = None
+
     def populate(self, data: dict) -> None:
         """Populates the version with data from a dictionary."""
         for k, val in data.items():

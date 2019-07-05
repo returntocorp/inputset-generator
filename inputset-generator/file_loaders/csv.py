@@ -14,6 +14,13 @@ class CsvLoader(FileLoader):
              headers: str = None) -> None:
         """Loads a csv file."""
 
+        # Note: The Project/Version classes recognize the following
+        # keywords during initialization: 'name', 'project_url',
+        # 'api_url', 'v.version_string', and 'v.commit_hash'. Some other
+        # keyword will be recognized by specific Project/Version types
+        # (eg, GithubRepo recognizes the 'organization' key). All other
+        # columns are read in as project/version metadata.
+
         # user-defined headers override default headers
         if headers:
             self.headers = headers.split()
@@ -43,7 +50,7 @@ class CsvLoader(FileLoader):
 
                     # create/update the projects and versions
                     project_cls = ds.types['project']
-                    project = ds.get_or_add_project(project_cls, **p_data)
+                    project = ds.find_or_add_project(project_cls, **p_data)
                     if len(v_data) > 0:
                         version_cls = ds.types['version']
-                        project.get_or_add_version(version_cls, **v_data)
+                        project.find_or_add_version(version_cls, **v_data)
