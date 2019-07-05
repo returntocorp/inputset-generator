@@ -5,7 +5,7 @@ from .pypi_release import PypiRelease
 
 
 # Note: This must have the same keys as the registries/projects mappings
-mapping = {
+versions_map = {
     'noreg': Version,
     'github': GithubCommit,
     'npm': NpmVersion,

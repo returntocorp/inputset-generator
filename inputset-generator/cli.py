@@ -5,7 +5,7 @@ from click import argument, option, Choice
 from click_shell import shell
 
 from structures import Dataset
-from registries import mapping as registries_map
+from registries import registries_map
 from util import get_user_name, get_user_email
 
 

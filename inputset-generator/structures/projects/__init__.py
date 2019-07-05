@@ -5,7 +5,7 @@ from .pypi_project import PypiProject
 
 
 # Note: This must have the same keys as the registries/versions mappings
-mapping = {
+projects_map = {
     'noreg': Project,
     'github': GithubRepo,
     'npm': NpmPackage,

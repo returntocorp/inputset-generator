@@ -5,7 +5,7 @@ from .pypi import Pypi
 
 
 # Note: This must have the same keys as the projects/versions mappings
-mapping = {
+registries_map = {
     'noreg': None,
     'github': Github(),
     'npm': Npm(),

@@ -7,11 +7,11 @@ from structures.projects import Project
 
 class Dataset:
     def __init__(self, registry: str = 'noreg'):
-        from functions import mapping
+        from functions import functions_map
         from util import get_user_name, get_user_email
-        from registries import mapping as registries_map
-        from structures.projects import mapping as projects_map
-        from structures.versions import mapping as versions_map
+        from registries import registries_map
+        from structures.projects import projects_map
+        from structures.versions import versions_map
 
         # check if the registry name is valid
         if registry not in registries_map:
@@ -26,7 +26,7 @@ class Dataset:
                       'version': versions_map[registry]}
 
         # register the various transformation functions
-        for name, function in mapping.items():
+        for name, function in functions_map.items():
             setattr(self, name, MethodType(function, self))
 
         # a dataset contains projects
@@ -42,7 +42,7 @@ class Dataset:
 
     def load_file(self, path: str, fileargs: str = None) -> None:
         """Uses a file handler to load a dataset from file."""
-        from file_loaders import mapping
+        from file_loaders import fileloaders_map
 
         # check if the path is valid
         if not Path(path).is_file():
@@ -50,25 +50,25 @@ class Dataset:
 
         # check if the filetype is valid
         extension = Path(path).suffix
-        if extension not in mapping:
+        if extension not in fileloaders_map:
             raise Exception("Invalid input file type '%s'. Valid types"
-                            "are: %s." % (extension, list(mapping)))
+                            "are: %s." % (extension, list(fileloaders_map)))
 
         # load initial data from the file
         print('Loading %s' % path)
         if fileargs:
-            mapping[extension].load(self, path, fileargs)
+            fileloaders_map[extension].load(self, path, fileargs)
         else:
-            mapping[extension].load(self, path)
+            fileloaders_map[extension].load(self, path)
 
     def load_weblist(self, name: str) -> None:
         """Loads a weblist from the registry."""
-        from registries import mapping
+        from registries import registries_map
 
         # check if the registry has been set
         if not self.registry:
             raise Exception('Registry has not been set. Valid '
-                            'registries are: %s' % list(mapping))
+                            'registries are: %s' % list(registries_map))
 
         # check if the name is valid
         names = list(self.registry.weblists)

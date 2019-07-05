@@ -2,14 +2,13 @@ from typing import List
 
 from structures.versions import Version
 
-
-class Project():
+class Project:
     def __init__(self, **kwargs):
-        # a project contains versions
-        self.versions: List[Version] = []
-
         # load all attributes into the project
         self.populate(kwargs)
+
+        # a project contains versions
+        self.versions: List[Version] = []
 
     def populate(self, data: dict) -> None:
         """Populates the project with data from a dictionary."""
@@ -39,6 +38,10 @@ class Project():
             self.versions.append(version)
 
         return version
+
+    def to_inputset(self) -> list:
+        """Converts noreg projects/versions to a list of input set dicts."""
+        temp = 5
 
     def __repr__(self):
         return 'Project(%s)' % ', '.join([
