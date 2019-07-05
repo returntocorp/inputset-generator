@@ -58,7 +58,7 @@ class Pypi(Registry):
         # populate the project with the remaining data
         info = data.pop('info')  # break out info dict for easier sort
         data.update(info)
-        project.populate(data)
+        project.update(data)
 
         # add versions to the project (overwrite any existing versions)
         # NOTE: Pypi occasionally has versions with multiple releases.

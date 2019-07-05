@@ -6,7 +6,7 @@ from structures.versions import Version
 class Project:
     def __init__(self, **kwargs):
         # load all attributes into the project
-        self.populate(kwargs)
+        self.update(kwargs)
 
         # a project contains versions
         self.versions: List[Version] = []
@@ -16,7 +16,7 @@ class Project:
         self.meta_url = None
         self.meta_apiurl = None
 
-    def populate(self, data: dict) -> None:
+    def update(self, data: dict) -> None:
         """Populates the project with data from a dictionary."""
         for k, val in data.items():
             setattr(self, k, val)
