@@ -1,4 +1,4 @@
-from ._base import Registry
+from ._registry import Registry
 from .github import Github
 from .npm import Npm
 from .pypi import Pypi

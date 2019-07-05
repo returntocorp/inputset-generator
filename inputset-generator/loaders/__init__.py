@@ -1,4 +1,4 @@
-from ._base import Loader
+from ._loader import Loader
 from loaders.file.csv import CsvLoader
 from loaders.file.json import JsonLoader
 
