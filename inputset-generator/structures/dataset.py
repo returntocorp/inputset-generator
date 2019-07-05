@@ -161,6 +161,7 @@ class Dataset:
         return d
     '''
 
+    '''
     def find_project(self, **kwargs) -> Optional[Project]:
         """Gets the first project with attributes matching all kwargs."""
 
@@ -184,6 +185,7 @@ class Dataset:
             self.projects.append(project)
 
         return project
+    '''
 
     def __repr__(self):
         return 'Dataset(%s)' % ', '.join([

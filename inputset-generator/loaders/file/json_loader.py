@@ -43,10 +43,15 @@ class JsonLoader(Loader):
             # some parts of the input are at the project level...
             p_keys = ['repo_url', 'url', 'package_name']
             p_dict = {k: v for k, v in input_.items() if k in p_keys}
-            project = ds.find_or_add_project(ds.types['project'], **p_dict)
+            project_cls = ds.types['project']
+            project = project_cls(**p_dict)
 
             # ...while others are at the version level
             v_keys = ['commit_hash', 'version']
             v_dict = {k: v for k, v in input_.items() if k in v_keys}
             if v_dict:
-                project.find_or_add_version(ds.types['version'], **v_dict)
+                version_cls = ds.types['version']
+                project.versions.append(version_cls(**v_dict))
+
+            # add the project/versions to the dataset
+            ds.projects.append(project)

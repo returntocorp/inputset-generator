@@ -49,7 +49,10 @@ class CsvLoader(Loader):
 
                     # create/update the projects and versions
                     project_cls = ds.types['project']
-                    project = ds.find_or_add_project(project_cls, **p_data)
+                    project = project_cls(**p_data)
                     if len(v_data) > 0:
                         version_cls = ds.types['version']
-                        project.find_or_add_version(version_cls, **v_data)
+                        project.versions.append(version_cls(**v_data))
+
+                    # add the project/versions to the dataset
+                    ds.projects.append(project)
