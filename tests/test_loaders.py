@@ -19,6 +19,8 @@ def test_json():
     ds = Dataset()
     ds.load_file('../tests/files/http_url.json')
 
+    temp = 5
+
 
 def test_csv():
     # test github
@@ -37,6 +39,8 @@ def test_csv():
     ds = Dataset()
     ds.load_file('../tests/files/names_versions.csv')
 
+    temp = 5
+
 
 def test_weblist():
     # test github
@@ -46,3 +50,5 @@ def test_weblist():
     # test pypi
     ds = Dataset('pypi')
     ds.load_weblist('top5kyear')
+
+    temp = 5
