@@ -29,11 +29,11 @@ class Project:
         )
 
         # load all attributes into the project
-        self.update(kwargs)
+        self.update(**kwargs)
 
-    def update(self, data: dict) -> None:
+    def update(self, **kwargs) -> None:
         """Populates the project with data from a dictionary."""
-        for k, val in data.items():
+        for k, val in kwargs.items():
             setattr(self, k, val)
 
         # make sure all guarantees are met

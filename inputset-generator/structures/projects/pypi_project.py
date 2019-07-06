@@ -6,15 +6,15 @@ class PypiProject(Project):
     _url_format = 'https://pypi.org/project/%s'
     _apiurl_format = 'https://pypi.org/pypi/%s/json'
 
-    def update(self, data: dict) -> None:
+    def update(self, **kwargs) -> None:
         # The pypi api provides package/version data in a combined json;
         # filter out the version info and initialize them separately
         version_data = (
-            data.pop('_versions', None) or  # keyword for json/csv
-            data.pop('releases', [])        # keyword for pypi api
+            kwargs.pop('_versions', None) or  # keyword for json/csv
+            kwargs.pop('releases', [])        # keyword for pypi api
         )
 
-        super().update(data)
+        super().update(**kwargs)
 
         # add any versions to the package
         self.versions = []#PypiRelease(**d) for d in version_data]
