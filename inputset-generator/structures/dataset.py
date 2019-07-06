@@ -7,15 +7,15 @@ from structures.projects import Project
 
 class Dataset:
     def __init__(self, registry: str = None):
-        from apis import apis
+        from apis import class_map as registries_list
         from structures import Project
         from functions import function_map
         from util import get_user_name, get_user_email
 
         # validate registry name (if provided) and set
-        if registry and registry not in apis:
+        if registry and registry not in registries_list:
             raise Exception('Invalid registry. Valid types are: %s'
-                            % list(apis))
+                            % list(registries_list))
         self.registry = registry
 
         # register the various transformation functions
