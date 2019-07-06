@@ -5,31 +5,56 @@ from structures.versions import Version
 
 class Project:
     def __init__(self, **kwargs):
-        # load all attributes into the project
-        self.update(kwargs)
-
         # a project contains versions
         self.versions: List[Version] = []
 
-        # load any project metadata
-        self.meta_name = kwargs.get('name', None)
-        self.meta_url = kwargs.get('repo_url', None)
-        self.meta_apiurl = kwargs.get('api_url', None)
+        """ The init function first checks if any child class has set a
+        '_[name]' variable. Failing that, it looks for json/csv keywords
+        for name ('name', 'package_name'), url ('url', 'repo_url'), and
+        api url ('api_url')."""
+
+        self._name = (
+            kwargs.get('_name', None) or      # if set by caller
+            kwargs.get('name', None) or       # keyword for csv
+            kwargs.get('package_name', None)  # keyword for json
+        )
+        self._url = (
+            kwargs.get('_url', None) or   # if set by caller
+            kwargs.get('url', None) or    # keyword for csv & some json
+            kwargs.get('repo_url', None)  # keyword for other json
+        )
+        self._apiurl = (
+            kwargs.get('_apiurl', None) or  # if set by caller
+            kwargs.get('api_url', None)     # keyword for csv
+        )
+
+        # load all attributes into the project
+        self.update(kwargs)
 
     def update(self, data: dict) -> None:
         """Populates the project with data from a dictionary."""
         for k, val in data.items():
             setattr(self, k, val)
 
+        # make sure all guarantees are met
+        self.check_guarantees()
+
+    def check_guarantees(self):
+        """A vanilla Project is guaranteed to contain *at least* a name
+        or a url. """
+        if not (self._name or self._url):
+            raise Exception('Project name or url must be provided.')
+
     def get_name(self):
-        pass
+        return self._name
 
     def get_url(self):
-        pass
+        return self._url
 
     def get_apiurl(self):
-        pass
+        return self._apiurl
 
+    '''
     def find_version(self, **kwargs):
         """Gets a version matching all parameters or returns None."""
 
@@ -53,9 +78,10 @@ class Project:
             self.versions.append(version)
 
         return version
+    '''
 
     def to_inputset(self) -> list:
-        """Converts noreg projects/versions to a list of input set dicts."""
+        """Converts vanilla projects/versions to HttpUrl dict."""
         temp = 5
 
     def __repr__(self):

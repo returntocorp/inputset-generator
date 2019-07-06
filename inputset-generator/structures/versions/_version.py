@@ -4,8 +4,8 @@ class Version:
         self.update(kwargs)
 
         # version data guarantees
-        self.meta_version = None
-        self.meta_commit = None
+        self._version = None
+        self._commit = None
 
     def update(self, data: dict) -> None:
         """Populates the version with data from a dictionary."""

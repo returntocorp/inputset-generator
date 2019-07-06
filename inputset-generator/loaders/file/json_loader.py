@@ -1,6 +1,7 @@
 import json
 
-from structures import Dataset
+from structures import Dataset, Project
+from structures.projects import class_map
 from loaders import Loader
 
 
@@ -40,18 +41,23 @@ class JsonLoader(Loader):
 
         # generate the projects and versions
         for input_ in data['inputs']:
-            # some parts of the input are at the project level...
+            data = {'_versions': {}}
+
+            # sort out project- vs. version-level information
             p_keys = ['repo_url', 'url', 'package_name']
-            p_dict = {k: v for k, v in input_.items() if k in p_keys}
-            project_cls = ds.types['project']
-            project = project_cls(**p_dict)
-
-            # ...while others are at the version level
             v_keys = ['commit_hash', 'version']
-            v_dict = {k: v for k, v in input_.items() if k in v_keys}
-            if v_dict:
-                version_cls = ds.types['version']
-                project.versions.append(version_cls(**v_dict))
+            for k, val in input_.items():
+                if k in p_keys:
+                    data[k] = val
+                if k in v_keys:
+                    data['_versions'][k] = val
 
-            # add the project/versions to the dataset
+            # figure out which type of project to create
+            # (default is the vanilla Project)
+            project_cls = class_map.get(ds.registry, Project)
+
+            # create the new project & add versions to it
+            project = project_cls(**data)
+
+            # add the project (& versions) to the dataset
             ds.projects.append(project)

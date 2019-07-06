@@ -4,7 +4,7 @@ from .npm_package import NpmPackage
 from .pypi_project import PypiProject
 
 
-projects = {
+class_map = {
     'github': GithubRepo,
     'npm': NpmPackage,
     'pypi': PypiProject,

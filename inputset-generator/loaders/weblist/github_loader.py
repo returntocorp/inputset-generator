@@ -55,5 +55,6 @@ class GithubLoader(Loader):
 
     @staticmethod
     def _parse_github(ds: Dataset, data: list):
-        project_cls = ds.types['project']
-        ds.projects = [project_cls(**d) for d in data]
+        from structures.projects import GithubRepo
+
+        ds.projects = [GithubRepo(**d) for d in data]

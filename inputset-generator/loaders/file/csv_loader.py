@@ -1,6 +1,7 @@
 import csv
 
-from structures import Dataset
+from structures import Dataset, Project
+from structures.projects import class_map
 from loaders import Loader
 
 
@@ -13,12 +14,22 @@ class CsvLoader(Loader):
     def load(self, ds: Dataset, filepath: str, headers: str = None) -> None:
         """Loads a csv file."""
 
-        # Note: The Project/Version classes recognize the following
-        # keywords during initialization: 'name', 'project_url',
-        # 'api_url', 'v.version_string', and 'v.commit_hash'. Some other
-        # keyword will be recognized by specific Project/Version types
-        # (eg, GithubRepo recognizes the 'organization' key). All other
-        # columns are read in as project/version metadata.
+        """
+        Note: During initialization, all Project classes recognize the
+        following csv header keywords:
+            '!name'
+            '!project_url'
+            '!api_url'
+
+        The GithubRepo class recognizes:
+            '!organization'
+            
+        The NpmVersion and PypiRelease version classes recognize:
+            '!v.version_string'
+
+        The GithubCommit version class recognizes:
+            '!v.commit_hash'
+        """
 
         # user-defined headers override default headers
         if headers:
@@ -29,30 +40,28 @@ class CsvLoader(Loader):
         with open(filepath, mode='r', encoding='utf-8-sig') as file:
             csv_file = csv.reader(file, delimiter=',')
             for row in csv_file:
-                # aggregate version and project data
-                p_data, v_data = {}, {}
-
                 if row[0].startswith('!'):
                     # read in a header row
                     # in-file headers override default/user-defined
                     self.headers = [h[1:] for h in row]
                 else:
                     # read in a data row
+                    data = {'_versions': {}}
                     for i, val in enumerate(row):
                         header = self.headers[i]
                         if header.startswith('v.'):
                             # val is a version attribute
-                            v_data[header[2:]] = val
+                            data['_versions'][header[2:]] = val
                         else:
                             # val is a project attribute
-                            p_data[header] = val
+                            data[header] = val
 
-                    # create/update the projects and versions
-                    project_cls = ds.types['project']
-                    project = project_cls(**p_data)
-                    if len(v_data) > 0:
-                        version_cls = ds.types['version']
-                        project.versions.append(version_cls(**v_data))
+                    # figure out which type of project to create
+                    # (default is the vanilla Project)
+                    project_cls = class_map.get(ds.registry, Project)
 
-                    # add the project/versions to the dataset
+                    # create the new project & add versions to it
+                    project = project_cls(**data)
+
+                    # add the project (& versions) to the dataset
                     ds.projects.append(project)

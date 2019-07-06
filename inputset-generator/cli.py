@@ -50,8 +50,6 @@ def load(ctx, registry, handle, fileargs):
         # download a weblist
         ds.load_weblist(handle)
 
-    temp = 5
-
 
 @cli.command('get')
 @option('-m', '--metadata', is_flag=True,

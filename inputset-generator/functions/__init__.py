@@ -3,7 +3,7 @@ from .sample import sample
 from .sort import sort
 
 
-functions = {
+function_map = {
     'head': head,
     'sample': sample,
     'sort': sort
