@@ -34,7 +34,7 @@ class Dataset:
         self.email = get_user_email()  # default to git user.email
 
     def load_file(self, path: str, fileargs: str = None) -> None:
-        """Uses a file handler to load a dataset from file."""
+        """Uses a file loader to load an initial dataset from file."""
         from loaders.file import class_map
 
         # check if the path is valid
@@ -56,7 +56,7 @@ class Dataset:
             loader().load(self, path)
 
     def load_weblist(self, name: str) -> None:
-        """Loads a weblist from the registry."""
+        """Uses a weblist loader to load an initial dataset fromn a weblist."""
         from loaders.weblist import class_map
 
         # check if the registry has been set
@@ -90,34 +90,6 @@ class Dataset:
         self.readme = readme or self.readme
         self.author = author or self.author
         self.email = email or self.email
-
-    '''
-    def load_project_metadata(self) -> None:
-        """Downloads all projects' metadata."""
-        from registries import mapping
-
-        # check if the registry has been set
-        if not self.registry:
-            raise Exception('Registry has not been set. Valid '
-                            'registries are: %s' % list(mapping))
-
-        for project in self.projects:
-            print("Retrieving details of %s" % project)
-            self.registry.load_project_metadata(project)
-
-    def load_project_versions(self, historical: str) -> None:
-        """Downloads all projects' versions."""
-        from registries import mapping
-
-        # check if the registry has been set
-        if not self.registry:
-            raise Exception('Registry has not been set. Valid '
-                            'registries are: %s' % list(mapping))
-
-        for project in self.projects:
-            print("Retrieving versions of %s" % project)
-            self.registry.load_project_versions(project, historical)
-    '''
 
     def save(self, path: str = None) -> None:
         # file name is dataset name, if not provided by user
