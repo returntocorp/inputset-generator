@@ -41,7 +41,7 @@ class JsonLoader(Loader):
 
         # generate the projects and versions
         for input_ in data['inputs']:
-            data = {'_versions': {}}
+            data = {'_versions': [{}]}
 
             # sort out project- vs. version-level information
             p_keys = ['repo_url', 'url', 'package_name']
@@ -50,7 +50,7 @@ class JsonLoader(Loader):
                 if k in p_keys:
                     data[k] = val
                 if k in v_keys:
-                    data['_versions'][k] = val
+                    data['_versions'][0][k] = val
 
             # figure out which type of project to create
             # (default is the vanilla Project)

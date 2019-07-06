@@ -46,12 +46,12 @@ class CsvLoader(Loader):
                     self.headers = [h[1:] for h in row]
                 else:
                     # read in a data row
-                    data = {'_versions': {}}
+                    data = {'_versions': [{}]}
                     for i, val in enumerate(row):
                         header = self.headers[i]
                         if header.startswith('v.'):
                             # val is a version attribute
-                            data['_versions'][header[2:]] = val
+                            data['_versions'][0][header[2:]] = val
                         else:
                             # val is a project attribute
                             data[header] = val
