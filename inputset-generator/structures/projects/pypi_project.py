@@ -17,7 +17,7 @@ class PypiProject(Project):
         super().update(**kwargs)
 
         # add any versions to the package
-        self.versions = []#PypiRelease(**d) for d in version_data]
+        self.versions = [PypiRelease(**d) for d in version_data]
 
     def check_guarantees(self):
         """A PypiProject is guaranteed to contain *at least* a name, a

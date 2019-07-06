@@ -17,7 +17,7 @@ class NpmPackage(Project):
         super().update(**kwargs)
 
         # add any versions to the package
-        self.versions = []#NpmVersion(**d) for d in version_data]
+        self.versions = [NpmVersion(**d) for d in version_data]
 
     def check_guarantees(self):
         """A NpmPackage is guaranteed to contain *at least* a name, a
