@@ -3,9 +3,6 @@ from structures.versions import PypiRelease
 
 
 class PypiProject(Project):
-    _url_format = 'https://pypi.org/project/%s'
-    _apiurl_format = 'https://pypi.org/pypi/%s/json'
-
     def update(self, **kwargs) -> None:
         # The pypi api provides package/version data in a combined json;
         # filter out the version info and initialize them separately
@@ -40,13 +37,15 @@ class PypiProject(Project):
     def get_url(self) -> str:
         if not self._url:
             # calculate url from name
-            self._url = PypiProject._url_format % self.get_name()
+            url_format = 'https://pypi.org/project/%s'
+            self._url = url_format % self.get_name()
         return self._url
 
     def get_apiurl(self) -> str:
         if not self._apiurl:
             # calculate api url from org & name
-            self._apiurl = PypiProject._apiurl_format % self.get_name()
+            apiurl_format = 'https://pypi.org/pypi/%s/json'
+            self._apiurl = apiurl_format % self.get_name()
         return self._apiurl
 
     def to_inputset(self) -> list:

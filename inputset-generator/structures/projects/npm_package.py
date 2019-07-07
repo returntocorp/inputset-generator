@@ -3,9 +3,6 @@ from structures.versions import NpmVersion
 
 
 class NpmPackage(Project):
-    _url_format = 'https://www.npmjs.com/package/%s'
-    _apiurl_format = 'https://registry.npmjs.com/%s'
-
     def update(self, **kwargs) -> None:
         # The npm api provides package/version data in a combined json;
         # filter out the version info and initialize them separately
@@ -36,13 +33,15 @@ class NpmPackage(Project):
     def get_url(self) -> str:
         if not self._url:
             # calculate url from name
-            self._url = NpmPackage._url_format % self.get_name()
+            url_format = 'https://www.npmjs.com/package/%s'
+            self._url = url_format % self.get_name()
         return self._url
 
     def get_apiurl(self) -> str:
         if not self._apiurl:
             # calculate api url from org & name
-            self._apiurl = NpmPackage._apiurl_format % self.get_name()
+            apiurl_format = 'https://registry.npmjs.com/%s'
+            self._apiurl = apiurl_format % self.get_name()
         return self._apiurl
 
     def to_inputset(self) -> list:

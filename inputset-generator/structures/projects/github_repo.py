@@ -2,9 +2,6 @@ from structures.projects import Project
 
 
 class GithubRepo(Project):
-    _url_format = 'https://github.com/%s/%s'
-    _apiurl_format = 'https://api.github.com/repos/%s/%s'
-
     def __init__(self, **kwargs):
         # GithubRepo also recognizes the '_org'/'organization' keywords
         self._org = (
@@ -47,15 +44,15 @@ class GithubRepo(Project):
     def get_url(self) -> str:
         if not self._url:
             # calculate url from org & name
-            self._url = GithubRepo._url_format % (self.get_org(),
-                                                  self.get_name())
+            url_format = 'https://github.com/%s/%s'
+            self._url = url_format % (self.get_org(), self.get_name())
         return self._url
 
     def get_apiurl(self) -> str:
         if not self._apiurl:
             # calculate api url from org & name
-            self._apiurl = GithubRepo._apiurl_format % (self.get_org(),
-                                                        self.get_name())
+            apiurl_format = 'https://api.github.com/repos/%s/%s'
+            self._apiurl = apiurl_format % (self.get_org(), self.get_name())
         return self._apiurl
 
     def to_inputset(self) -> list:
