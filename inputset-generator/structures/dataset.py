@@ -20,8 +20,8 @@ class Dataset:
         self.registry = registry
 
         # set up the api
-        api_class = apis_list[self.registry]
-        self.api = api_class()
+        api_class = apis_list.get(self.registry, None)
+        self.api = None if not api_class else api_class()
 
         # register the various transformation functions
         for name, function in function_map.items():

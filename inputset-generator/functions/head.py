@@ -1,7 +1,7 @@
 from structures import Dataset
 
 
-def head(ds: Dataset, n: int, on_projects: bool) -> None:
+def head(ds: Dataset, n: int, on_projects: bool = True) -> None:
     """Keep only the first n projects inplace."""
 
     # select a sample of projects
@@ -9,6 +9,6 @@ def head(ds: Dataset, n: int, on_projects: bool) -> None:
         ds.projects = ds.projects[:n]
 
     # select a sample of versions in each project
-    elif not on_projects:
+    else:
         for project in ds.projects:
             project.versions = project.versions[:n]

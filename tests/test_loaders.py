@@ -1,4 +1,5 @@
 from structures import Dataset
+from dotenv import load_dotenv
 
 
 def test_json():
@@ -60,16 +61,22 @@ def test_csv():
 
 
 def test_weblist():
+    load_dotenv()
+
     # test github
     ds = Dataset('github')
     ds.set_meta('test', '1.0')
-    ds.load_weblist('top100starred')
+    ds.load_weblist('top1kstarred')
+    ds.head(10)
+    ds.get_project_versions('latest')
     test = ds.to_inputset()
 
     # test pypi
     ds = Dataset('pypi')
     ds.set_meta('test', '1.0')
     ds.load_weblist('top5kyear')
+    ds.head(10)
+    ds.get_project_versions('latest')
     test = ds.to_inputset()
 
     temp = 5
