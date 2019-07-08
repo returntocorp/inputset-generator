@@ -9,4 +9,21 @@ class NpmPackage(Project):
 
     def to_inputset(self) -> list:
         """Converts npm packages/versions to PackageVersion dict."""
-        temp = 5
+        if not self.versions:
+            raise Exception('Npm package must have at least one version.')
+
+        if 'name' in self.meta_:
+            name = self.meta_['name']()
+        else:
+            # pull the name from the url
+            name = self.meta_['url']().strip('/').split('/')[-1]
+
+        ret = []
+        for v in self.versions:
+            ret.append({
+                'input_type': 'PackageVersion',
+                'package_name': name,
+                'version': v.meta_['version']()
+            })
+
+        return ret

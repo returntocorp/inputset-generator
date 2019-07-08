@@ -11,14 +11,28 @@ class GithubRepo(Project):
 
     def to_inputset(self) -> list:
         """Converts github repos/commits to GitRepo/GitRepoCommit dict."""
-        lst = []
 
-        if len(self.versions) > 0:
-            # return input set type GitRepoCommit
-            pass
-
+        if 'url' in self.meta_:
+            url = self.meta_['url']()
         else:
-            # return input set type GitRepo
-            pass
+            # generate the url using the name/org
+            url = 'https://github.com/%s/%s' % (self.meta_['org'](),
+                                                self.meta_['name']())
 
-        return lst
+        if len(self.versions) == 0:
+            # return input set type GitRepo
+            return [{
+                'input_type': 'GitRepo',
+                'repo_url': url
+            }]
+
+        # return input set type GitRepoCommit
+        ret = []
+        for v in self.versions:
+            ret.append({
+                'input_type': 'GitRepoCommit',
+                'repo_url': url,
+                'commit_hash': v.meta_['commit']()
+            })
+
+        return ret

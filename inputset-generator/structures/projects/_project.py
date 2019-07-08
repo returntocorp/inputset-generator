@@ -46,8 +46,11 @@ class Project:
         return None
 
     def to_inputset(self) -> list:
-        """Converts vanilla projects/versions to HttpUrl dict."""
-        temp = 5
+        """Converts vanilla project to HttpUrl dict."""
+        return [{
+            'input_type': 'HttpUrl',
+            'url': self.meta_['url']()
+        }]
 
     def __repr__(self):
         return 'Project(%s)' % ', '.join([

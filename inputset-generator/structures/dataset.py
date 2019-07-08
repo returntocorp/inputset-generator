@@ -122,7 +122,7 @@ class Dataset:
         # jsonify the projects & versions
         d['inputs'] = []
         for p in self.projects:
-            d['inputs'] += p.to_inputset()
+            d['inputs'].extend(p.to_inputset())
 
         return d
 
