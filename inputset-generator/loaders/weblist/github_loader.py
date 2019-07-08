@@ -57,4 +57,12 @@ class GithubLoader(Loader):
     def _parse_github(ds: Dataset, data: list):
         from structures.projects import GithubRepo
 
-        ds.projects = [GithubRepo(**d) for d in data]
+        # map data keys to project keywords
+        attrs = {
+            'name': lambda p: p.name,
+            'org': lambda p: p.url.split('/')[-2],
+            'url': lambda p: p.url
+        }
+
+        # create the projects
+        ds.projects = [GithubRepo(attrs=attrs, **d) for d in data]

@@ -26,10 +26,7 @@ class JsonLoader(Loader):
         ds.projects = []
 
         # run the appropriate parser
-        try:
-            self.parsers[parser](ds, data)
-        except Exception:
-            raise Exception('Json file does not match expected schema.')
+        self.parsers[parser](ds, data)
 
     @staticmethod
     def _parse_r2c(ds: Dataset, data: dict):
@@ -59,11 +56,24 @@ class JsonLoader(Loader):
             # get or create the new project
             project = ds.find_project(**p_data)
             if not project:
+                # map csv headers to project keywords, as applicable
+                attrs = {}
+                if 'package_name' in p_data: attrs['name'] = lambda p: p.package_name
+                if 'repo_url' in p_data: attrs['url'] = lambda p: p.repo_url
+                if 'url' in p_data: attrs['url'] = lambda p: p.url
+
+                # create the new project & add it to the dataset
                 p_class = p_class_map.get(ds.registry, Project)
-                project = p_class(**p_data)
+                project = p_class(attrs=attrs, **p_data)
                 ds.projects.append(project)
 
-            # add any versions to the project
-            if v_data:
+            # create the new version, if it doesn't already exist
+            if v_data and not project.find_version(**v_data):
+                # map csv headers to version keywords, as applicable
+                attrs = {}
+                if 'version' in v_data: attrs['version'] = lambda v: v.version
+                if 'commit_hash' in v_data: attrs['commit'] = lambda v: v.commit_hash
+
+                # create the new version & add it to the project
                 v_class = v_class_map.get(ds.registry, Version)
-                project.versions.append(v_class(**v_data))
+                project.versions.append(v_class(attrs=attrs, **v_data))

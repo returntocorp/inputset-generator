@@ -40,8 +40,10 @@ class PypiLoader(Loader):
     def _parse_hugovk(ds: Dataset, data: list) -> None:
         from structures.projects import PypiProject
 
-        # translate 'project' to 'name', since PypiProject doesn't
-        # recognize 'project' as a keyword for the project name
-        ds.projects = [PypiProject(name=d['project'],
-                                   download_count=d['download_count'])
-                       for d in data]
+        # map data keys to project keywords
+        attrs = {
+            'name': lambda p: p.project
+        }
+
+        # create the projects
+        ds.projects = [PypiProject(attrs=attrs, **d) for d in data]

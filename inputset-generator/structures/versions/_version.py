@@ -1,19 +1,12 @@
-class Version:
-    def __init__(self, **kwargs):
-        """ The init function first checks if any child class has set a
-        '_[name]' variable. Failing that, it looks for json/csv keywords
-        for version string ('version_string', 'version') and commit hash
-        ('commit_hash')."""
+from types import MethodType
 
-        self._version_string = (
-            kwargs.get('_version_str', None) or    # if set by caller
-            kwargs.get('version_string', None) or  # keyword for csv
-            kwargs.get('version', None)            # keyword for json
-        )
-        self._commit_hash = (
-            kwargs.get('_commit_hash', None) or  # if set by caller
-            kwargs.get('commit_hash', None)      # keyword for csv/json
-        )
+
+class Version:
+    def __init__(self, attrs: dict = None, **kwargs):
+        # set the attr functions as method types (to autopass self)
+        self.attrs = {}
+        for attr, func in attrs.items():
+            self.attrs[attr] = MethodType(func, self)
 
         # load all attributes into the version
         self.update(**kwargs)
@@ -27,10 +20,9 @@ class Version:
         self.check_guarantees()
 
     def check_guarantees(self):
-        """A vanilla Version is guaranteed to contain *at least* a
-        version string or a commit hash."""
-        if not (self._version_string or self._commit_hash):
-            raise Exception('Version string or commit hash'
+        """Guarantees a version string or commit hash."""
+        if 'version' not in self.attrs and 'commit' not in self.attrs:
+            raise Exception('Version string or commit hash '
                             'must be provided.')
 
     def __repr__(self):

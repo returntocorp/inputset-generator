@@ -15,23 +15,6 @@ class CsvLoader(Loader):
     def load(self, ds: Dataset, filepath: str, headers: str = None) -> None:
         """Loads a csv file."""
 
-        """
-        Note: During initialization, all Project classes recognize the
-        following csv header keywords:
-            '!name'
-            '!project_url'
-            '!api_url'
-
-        The GithubRepo class recognizes:
-            '!organization'
-            
-        The NpmVersion and PypiRelease version classes recognize:
-            '!v.version_string'
-
-        The GithubCommit version class recognizes:
-            '!v.commit_hash'
-        """
-
         # remove any existing projects
         ds.projects = []
 
@@ -65,11 +48,24 @@ class CsvLoader(Loader):
                     # get or create the new project
                     project = ds.find_project(**p_data)
                     if not project:
+                        # map csv headers to project keywords, as applicable
+                        attrs = {}
+                        if 'name' in p_data: attrs['name'] = lambda p: p.name
+                        if 'org' in p_data: attrs['org'] = lambda p: p.org
+                        if 'url' in p_data: attrs['url'] = lambda p: p.url
+
+                        # create the new project & add it to the dataset
                         p_class = p_class_map.get(ds.registry, Project)
-                        project = p_class(**p_data)
+                        project = p_class(attrs=attrs, **p_data)
                         ds.projects.append(project)
 
-                    # add any versions to the project
-                    if v_data:
+                    # create the new version, if it doesn't already exist
+                    if v_data and not project.find_version(**v_data):
+                        # map csv headers to version keywords, as applicable
+                        attrs = {}
+                        if 'version' in v_data: attrs['version'] = lambda v: v.version
+                        if 'commit' in v_data: attrs['commit'] = lambda v: v.commit
+
+                        # create the new version & add it to the project
                         v_class = v_class_map.get(ds.registry, Version)
-                        project.versions.append(v_class(**v_data))
+                        project.versions.append(v_class(attrs=attrs, **v_data))

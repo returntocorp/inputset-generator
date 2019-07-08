@@ -1,32 +1,18 @@
 from typing import List
+from types import MethodType
 
 from structures.versions import Version
 
 
 class Project:
-    def __init__(self, **kwargs):
+    def __init__(self, attrs: dict = None, **kwargs):
         # a project contains versions
         self.versions: List[Version] = []
 
-        """ The init function first checks if any child class has set a
-        '_[name]' variable. Failing that, it looks for json/csv keywords
-        for name ('name', 'package_name'), url ('url', 'repo_url'), and
-        api url ('api_url')."""
-
-        self._name = (
-            kwargs.get('_name', None) or      # if set by caller
-            kwargs.get('name', None) or       # keyword for csv
-            kwargs.get('package_name', None)  # keyword for json
-        )
-        self._url = (
-            kwargs.get('_url', None) or   # if set by caller
-            kwargs.get('url', None) or    # keyword for csv & some json
-            kwargs.get('repo_url', None)  # keyword for other json
-        )
-        self._apiurl = (
-            kwargs.get('_apiurl', None) or  # if set by caller
-            kwargs.get('api_url', None)     # keyword for csv
-        )
+        # set the attr functions as method types (to autopass self)
+        self.attrs = {}
+        for attr, func in attrs.items():
+            self.attrs[attr] = MethodType(func, self)
 
         # load all attributes into the project
         self.update(**kwargs)
@@ -40,22 +26,12 @@ class Project:
         self.check_guarantees()
 
     def check_guarantees(self):
-        """A vanilla Project is guaranteed to contain *at least* a name
-        or a url. """
-        if not (self._name or self._url):
+        """Guarantees a name or a url."""
+        if 'name' not in self.attrs and 'url' not in self.attrs:
             raise Exception('Project name or url must be provided.')
 
-    def get_name(self):
-        return self._name
-
-    def get_url(self):
-        return self._url
-
-    def get_apiurl(self):
-        return self._apiurl
-
     def find_version(self, **kwargs):
-        """Gets a version matching all parameters or returns None."""
+        """Gets a version matching all kwargs or returns None."""
 
         # linear search function for now; potentially quite slow...
         for v in self.versions:
