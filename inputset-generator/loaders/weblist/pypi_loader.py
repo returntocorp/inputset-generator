@@ -19,19 +19,19 @@ class PypiLoader(Loader):
 
     def load(self, ds: Dataset, name: str, **_) -> None:
         # load the data
-        data = self.weblists[name]['getter']()
+        data = self.weblists[name]['getter'](api=ds.api)
 
         # parse the data
         self.weblists[name]['parser'](ds, data)
 
     @staticmethod
-    def _get_top5kyear() -> list:
+    def _get_top5kyear(**_) -> list:
         url = 'https://hugovk.github.io/top-pypi-packages/' \
               'top-pypi-packages-365-days.json'
         return requests.get(url).json()['rows']
 
     @staticmethod
-    def _get_top5kmonth() -> list:
+    def _get_top5kmonth(**_) -> list:
         url = 'https://hugovk.github.io/top-pypi-packages/' \
               'top-pypi-packages-30-days.json'
         return requests.get(url).json()['rows']

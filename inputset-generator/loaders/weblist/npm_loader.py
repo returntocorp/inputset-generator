@@ -13,7 +13,7 @@ class NpmLoader(Loader):
 
     def load(self, ds: Dataset, name: str, **_) -> None:
         # load the data
-        data = self.weblists[name]['getter']()
+        data = self.weblists[name]['getter'](api=ds.api)
 
         # parse the data
         self.weblists[name]['parser'](ds, data)

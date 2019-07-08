@@ -1,5 +1,3 @@
-import requests
-
 from structures import Dataset
 from loaders import Loader
 
@@ -7,11 +5,11 @@ from loaders import Loader
 class GithubLoader(Loader):
     def __init__(self):
         self.weblists = {
-            'top100starred': {
+            'top1kstarred': {
                 'getter': self._get_top1kstarred,
                 'parser': self._parse_github
             },
-            'top100forked': {
+            'top1kforked': {
                 'getter': self._get_top1kforked,
                 'parser': self._parse_github
             }
@@ -20,13 +18,13 @@ class GithubLoader(Loader):
 
     def load(self, ds: Dataset, name: str, **_) -> None:
         # load the data
-        data = self.weblists[name]['getter']()
+        data = self.weblists[name]['getter'](api=ds.api)
 
         # parse the data
         self.weblists[name]['parser'](ds, data)
 
     @staticmethod
-    def _get_top1kstarred() -> list:
+    def _get_top1kstarred(api, **_) -> list:
         # url courtesy of: https://stackoverflow.com/questions/19855552/
         # how-to-find-out-the-most-popular-repositories-on-github
         url = 'https://api.github.com/search/repositories?' \
@@ -34,13 +32,14 @@ class GithubLoader(Loader):
 
         # results are limited to 100 per page; load & merge 10 pages
         projects = []
-        for u in [(url % d) for d in range(1, 2)]:
-            projects += requests.get(u).json()['items']
+        for u in [(url % d) for d in range(1, 11)]:
+            # request the data via the github api
+            projects.extend(api.request(u)['items'])
 
         return projects
 
     @staticmethod
-    def _get_top1kforked() -> list:
+    def _get_top1kforked(api, **_) -> list:
         # url courtesy of: https://stackoverflow.com/questions/19855552/
         # how-to-find-out-the-most-popular-repositories-on-github
         url = 'https://api.github.com/search/repositories?' \
@@ -48,8 +47,9 @@ class GithubLoader(Loader):
 
         # results are limited to 100 per page; load & merge 10 pages
         projects = []
-        for u in [(url % d) for d in range(1, 2)]:
-            projects += requests.get(u).json()['items']
+        for u in [(url % d) for d in range(1, 11)]:
+            # request the data via the github api
+            projects.extend(api.request(u)['items'])
 
         return projects
 
