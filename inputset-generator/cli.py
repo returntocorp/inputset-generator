@@ -3,6 +3,7 @@
 import click
 from click import argument, option, Choice
 from click_shell import shell
+from dotenv import load_dotenv
 
 from structures import Dataset
 from util import get_user_name, get_user_email
@@ -22,6 +23,9 @@ def get_dataset(ctx) -> Dataset:
        intro='Starting input set generator')
 @click.pass_context
 def cli(ctx):
+    # pull in any environment vars
+    load_dotenv()
+
     # create the ctx.obj dictionary
     ctx.ensure_object(dict)
 
@@ -63,11 +67,11 @@ def get(ctx, metadata, versions):
 
     if metadata:
         # load project metadata
-        temp = 5
+        ds.get_projects_meta()
 
     if versions:
         # load project versions
-        temp = 5
+        ds.get_project_versions()
 
 
 @cli.command('meta')

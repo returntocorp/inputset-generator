@@ -8,16 +8,20 @@ from structures.projects import Project
 
 class Dataset:
     def __init__(self, registry: str = None):
-        from apis import class_map as registries_list
+        from apis import class_map as apis_list
         from structures import Project
         from functions import function_map
         from util import get_user_name, get_user_email
 
         # validate registry name (if provided) and set
-        if registry and registry not in registries_list:
+        if registry and registry not in apis_list:
             raise Exception('Invalid registry. Valid types are: %s'
-                            % list(registries_list))
+                            % list(apis_list))
         self.registry = registry
+
+        # set up the api
+        api_class = apis_list[self.registry]
+        self.api = api_class()
 
         # register the various transformation functions
         for name, function in function_map.items():
@@ -57,7 +61,7 @@ class Dataset:
             loader().load(self, path)
 
     def load_weblist(self, name: str) -> None:
-        """Uses a weblist loader to load an initial dataset fromn a weblist."""
+        """Uses a weblist loader to load an initial dataset from a weblist."""
         from loaders.weblist import class_map
 
         # check if the registry has been set
@@ -74,6 +78,16 @@ class Dataset:
         # load initial data from the weblist
         print("Loading '%s' from %s" % (name, self.registry))
         loader().load(self, name)
+
+    def get_projects_meta(self) -> None:
+        """Gets the metadata for all projects."""
+        for p in self.projects:
+            self.api.get_project(p)
+
+    def get_project_versions(self, historical: str = 'all') -> None:
+        """Gets the historical versions for all projects."""
+        for p in self.projects:
+            self.api.get_versions(p)
 
     def set_meta(self, name=None, version=None, description=None,
                  readme=None, author=None, email=None):
@@ -102,7 +116,7 @@ class Dataset:
         # save to disk
         print('Saving results to %s' % filepath)
         with open(filepath, 'w') as file:
-            json.dump(inputset, file)
+            json.dump(inputset, file, indent=4)
 
     def to_inputset(self) -> dict:
         """Converts a dataset to an input set json."""

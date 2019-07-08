@@ -1,7 +1,10 @@
-
+from ._api import Api
+from .github import Github
+from .npm import Npm
+from .pypi import Pypi
 
 class_map = {
-    'github': None,
-    'npm': None,
-    'pypi': None
+    'github': Github,
+    'npm': Npm,
+    'pypi': Pypi
 }

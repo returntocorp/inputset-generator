@@ -1,3 +1,4 @@
 click
 click_shell
+python-dotenv
 requests
