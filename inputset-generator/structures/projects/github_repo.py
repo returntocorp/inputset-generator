@@ -4,8 +4,8 @@ from structures.projects import Project
 class GithubRepo(Project):
     def check_guarantees(self):
         """Guarantees a name/org or a url."""
-        if 'url' not in self.attrs and ('name' not in self.attrs or
-                                         'org' not in self.attrs):
+        if 'url' not in self.meta_ and ('name' not in self.meta_ or
+                                        'org' not in self.meta_):
             raise Exception('Repo name/org, url, or api url '
                             'must be provided.')
 

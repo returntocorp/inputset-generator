@@ -2,11 +2,11 @@ from types import MethodType
 
 
 class Version:
-    def __init__(self, attrs: dict = None, **kwargs):
+    def __init__(self, meta_: dict = None, **kwargs):
         # set the attr functions as method types (to autopass self)
-        self.attrs = {}
-        for attr, func in attrs.items():
-            self.attrs[attr] = MethodType(func, self)
+        self.meta_ = {}
+        for attr, func in meta_.items():
+            self.meta_[attr] = MethodType(func, self)
 
         # load all attributes into the version
         self.update(**kwargs)
@@ -21,7 +21,7 @@ class Version:
 
     def check_guarantees(self):
         """Guarantees a version string or commit hash."""
-        if 'version' not in self.attrs and 'commit' not in self.attrs:
+        if 'version' not in self.meta_ and 'commit' not in self.meta_:
             raise Exception('Version string or commit hash '
                             'must be provided.')
 

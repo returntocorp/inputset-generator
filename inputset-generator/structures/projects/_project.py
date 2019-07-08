@@ -5,14 +5,14 @@ from structures.versions import Version
 
 
 class Project:
-    def __init__(self, attrs: dict = None, **kwargs):
+    def __init__(self, meta_: dict = None, **kwargs):
         # a project contains versions
         self.versions: List[Version] = []
 
         # set the attr functions as method types (to autopass self)
-        self.attrs = {}
-        for attr, func in attrs.items():
-            self.attrs[attr] = MethodType(func, self)
+        self.meta_ = {}
+        for attr, func in meta_.items():
+            self.meta_[attr] = MethodType(func, self)
 
         # load all attributes into the project
         self.update(**kwargs)
@@ -27,7 +27,7 @@ class Project:
 
     def check_guarantees(self):
         """Guarantees a name or a url."""
-        if 'name' not in self.attrs and 'url' not in self.attrs:
+        if 'name' not in self.meta_ and 'url' not in self.meta_:
             raise Exception('Project name or url must be provided.')
 
     def find_version(self, **kwargs):

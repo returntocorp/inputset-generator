@@ -49,23 +49,23 @@ class CsvLoader(Loader):
                     project = ds.find_project(**p_data)
                     if not project:
                         # map csv headers to project keywords, as applicable
-                        attrs = {}
-                        if 'name' in p_data: attrs['name'] = lambda p: p.name
-                        if 'org' in p_data: attrs['org'] = lambda p: p.org
-                        if 'url' in p_data: attrs['url'] = lambda p: p.url
+                        meta = {}
+                        if 'name' in p_data: meta['name'] = lambda p: p.name
+                        if 'org' in p_data: meta['org'] = lambda p: p.org
+                        if 'url' in p_data: meta['url'] = lambda p: p.url
 
                         # create the new project & add it to the dataset
                         p_class = p_class_map.get(ds.registry, Project)
-                        project = p_class(attrs=attrs, **p_data)
+                        project = p_class(meta_=meta, **p_data)
                         ds.projects.append(project)
 
                     # create the new version, if it doesn't already exist
                     if v_data and not project.find_version(**v_data):
                         # map csv headers to version keywords, as applicable
-                        attrs = {}
-                        if 'version' in v_data: attrs['version'] = lambda v: v.version
-                        if 'commit' in v_data: attrs['commit'] = lambda v: v.commit
+                        meta = {}
+                        if 'version' in v_data: meta['version'] = lambda v: v.version
+                        if 'commit' in v_data: meta['commit'] = lambda v: v.commit
 
                         # create the new version & add it to the project
                         v_class = v_class_map.get(ds.registry, Version)
-                        project.versions.append(v_class(attrs=attrs, **v_data))
+                        project.versions.append(v_class(meta_=meta, **v_data))
