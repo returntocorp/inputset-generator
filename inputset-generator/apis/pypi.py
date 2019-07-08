@@ -42,13 +42,23 @@ class Pypi(Api):
         # update the project
         project.update(**data)
 
-    def get_versions(self, project: PypiProject, hist: str = 'all') -> None:
+    def get_versions(self, project: PypiProject,
+                     historical: str = 'all') -> None:
         """Gets a project's historical releases."""
 
         # load the url from cache or from the web
         data = self.request(self._make_api_url(project))
+        releases = data['releases']
 
-        for v_str, v_data in data['releases'].items():
+        if historical == 'latest':
+            # trim the new versions data to the latest release only
+            latest_key: str = data['info']['version']
+            releases = {latest_key: releases[latest_key]}
+
+            # trim existing releases to the latest release only
+            temp = 5
+
+        for v_str, v_data in releases.items():
             # Note: The pypi api returns versions as a dict mapping of
             # version strings to lists of dicts of versions (ie, a single
             # release could have more than one release in a version; eg,

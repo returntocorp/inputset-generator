@@ -44,17 +44,23 @@ class Github(Api):
         # update the project
         project.update(**data)
 
-    def get_versions(self, project: GithubRepo, hist: str = 'all') -> None:
+    def get_versions(self, project: GithubRepo,
+                     historical: str = 'all') -> None:
         """Gets a commit's historical releases."""
 
         # github commit json is paginated--30 commits per page
         api_url = self._make_api_url(project)
-        for i in range(1, 99999999):
+        end_page = 1 if historical == 'latest' else 999999
+        for i in range(1, end_page + 1):
             # load the url from cache or from the web
             data = self.request('%s/commits?page=%d' % (api_url, i))
             if not data:
                 # no more pages; break
                 break
+
+            if historical == 'latest':
+                # trim the new versions data to the latest commit only
+                data = data[:1]
 
             for v_data in data:
                 commit = project.find_version(**v_data)
@@ -69,3 +75,6 @@ class Github(Api):
                 else:
                     # update the existing commit
                     commit.update(**v_data)
+
+        # trim existing commits to the latest commit only
+        temp = 5

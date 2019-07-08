@@ -87,7 +87,7 @@ class Dataset:
     def get_project_versions(self, historical: str = 'all') -> None:
         """Gets the historical versions for all projects."""
         for p in self.projects:
-            self.api.get_versions(p)
+            self.api.get_versions(p, historical)
 
     def set_meta(self, name=None, version=None, description=None,
                  readme=None, author=None, email=None):

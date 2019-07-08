@@ -43,13 +43,23 @@ class Npm(Api):
         # update the project
         project.update(**data)
 
-    def get_versions(self, project: NpmPackage, hist: str = 'all') -> None:
+    def get_versions(self, project: NpmPackage,
+                     historical: str = 'all') -> None:
         """Gets a version's historical releases."""
 
         # load the url from cache or from the web
         data = self.request(self._make_api_url(project))
+        versions = data['versions']
 
-        for _, v_data in data['versions'].items():
+        if historical == 'latest':
+            # trim the new versions data to the latest version only
+            latest_key = data['dist-tags']['latest']
+            versions = {latest_key: versions[latest_key]}
+
+            # trim existing versions to the latest version only
+            temp = 5
+
+        for _, v_data in versions.items():
             version = project.find_version(**v_data)
             if not version:
                 # create a new version

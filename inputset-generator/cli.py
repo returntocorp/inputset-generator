@@ -58,9 +58,8 @@ def load(ctx, registry, handle, fileargs):
 @cli.command('get')
 @option('-m', '--metadata', is_flag=True,
         help='Download project metadata.')
-@option('-v', '--versions',
-        type=Choice(['all', 'current', 'releases', 'etc.']),
-        help='Download version info.')
+@option('-v', '--versions', type=Choice(['all', 'latest']),
+        help='Filter versions by historical order.')
 @click.pass_context
 def get(ctx, metadata, versions):
     ds = get_dataset(ctx)
@@ -71,7 +70,7 @@ def get(ctx, metadata, versions):
 
     if versions:
         # load project versions
-        ds.get_project_versions()
+        ds.get_project_versions(versions)
 
 
 @cli.command('meta')
