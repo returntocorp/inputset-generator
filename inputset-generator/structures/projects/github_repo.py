@@ -2,7 +2,7 @@ from structures.projects import Project
 
 
 class GithubRepo(Project):
-    def check_guarantees(self):
+    def check_guarantees(self) -> None:
         """Guarantees a name/org or a url."""
         if 'url' not in self.meta_ and ('name' not in self.meta_ or
                                         'org' not in self.meta_):

@@ -2,4 +2,7 @@ from structures.versions import Version
 
 
 class NpmVersion(Version):
-    pass
+    def check_guarantees(self) -> None:
+        """Guarantees a version string."""
+        if 'version' not in self.meta_:
+            raise Exception('Version string must be provided.')

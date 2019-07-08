@@ -19,11 +19,10 @@ class Version:
         # make sure all guarantees are met
         self.check_guarantees()
 
-    def check_guarantees(self):
-        """Guarantees a version string or commit hash."""
-        if 'version' not in self.meta_ and 'commit' not in self.meta_:
-            raise Exception('Version string or commit hash '
-                            'must be provided.')
+    def check_guarantees(self) -> None:
+        """Guarantees nothing (vanilla Version knows nothing about its
+        contents)."""
+        pass
 
     def __repr__(self):
         return 'Version(%s)' % ', '.join([

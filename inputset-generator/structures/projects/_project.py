@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from types import MethodType
 
 from structures.versions import Version
@@ -25,12 +25,12 @@ class Project:
         # make sure all guarantees are met
         self.check_guarantees()
 
-    def check_guarantees(self):
-        """Guarantees a name or a url."""
-        if 'name' not in self.meta_ and 'url' not in self.meta_:
-            raise Exception('Project name or url must be provided.')
+    def check_guarantees(self) -> None:
+        """Guarantees a url."""
+        if 'url' not in self.meta_:
+            raise Exception('Project url must be provided.')
 
-    def find_version(self, **kwargs):
+    def find_version(self, **kwargs) -> Optional[Version]:
         """Gets a version matching all kwargs or returns None."""
 
         # linear search function for now; potentially quite slow...
