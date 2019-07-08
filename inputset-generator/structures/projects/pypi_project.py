@@ -3,19 +3,6 @@ from structures.versions import PypiRelease
 
 
 class PypiProject(Project):
-    def update(self, **kwargs) -> None:
-        # The pypi api provides package/version data in a combined json;
-        # filter out the version info and initialize them separately
-        version_data = (
-            kwargs.pop('_versions', None) or  # keyword for json/csv
-            kwargs.pop('releases', [])        # keyword for pypi api
-        )
-
-        super().update(**kwargs)
-
-        # add any versions to the package
-        self.versions = [PypiRelease(**d) for d in version_data]
-
     def check_guarantees(self):
         """A PypiProject is guaranteed to contain *at least* a name, a
         project url, or an api url. Any one of these items can be used

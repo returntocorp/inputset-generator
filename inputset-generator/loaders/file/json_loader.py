@@ -1,7 +1,8 @@
 import json
 
-from structures import Dataset, Project
-from structures.projects import class_map
+from structures import Dataset, Project, Version
+from structures.projects import class_map as p_class_map
+from structures.versions import class_map as v_class_map
 from loaders import Loader
 
 
@@ -20,6 +21,9 @@ class JsonLoader(Loader):
         # check if the parsing schema exists
         if parser not in self.parsers:
             raise Exception('Unrecognized json parsing schema.')
+
+        # remove any existing projects
+        ds.projects = []
 
         # run the appropriate parser
         try:
@@ -41,24 +45,25 @@ class JsonLoader(Loader):
 
         # generate the projects and versions
         for input_ in data['inputs']:
-            data = {}
-
-            # sort out project- vs. version-level information
+            # split out project- vs. version-level information
+            p_data, v_data = {}, {}
             p_keys = ['repo_url', 'url', 'package_name']
             v_keys = ['commit_hash', 'version']
             for k, val in input_.items():
-                if k in p_keys:
-                    data[k] = val
+                # add the attribute to the project or version
                 if k in v_keys:
-                    data.setdefault('_versions', [{}])
-                    data['_versions'][0][k] = val
+                    v_data[k] = val
+                elif k in p_keys:
+                    p_data[k] = val
 
-            # figure out which type of project to create
-            # (default is the vanilla Project)
-            project_cls = class_map.get(ds.registry, Project)
+            # get or create the new project
+            project = ds.find_project(**p_data)
+            if not project:
+                p_class = p_class_map.get(ds.registry, Project)
+                project = p_class(**p_data)
+                ds.projects.append(project)
 
-            # create the new project & add versions to it
-            project = project_cls(**data)
-
-            # add the project (& versions) to the dataset
-            ds.projects.append(project)
+            # add any versions to the project
+            if v_data:
+                v_class = v_class_map.get(ds.registry, Version)
+                project.versions.append(v_class(**v_data))

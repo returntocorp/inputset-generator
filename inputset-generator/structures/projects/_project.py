@@ -54,11 +54,10 @@ class Project:
     def get_apiurl(self):
         return self._apiurl
 
-    '''
     def find_version(self, **kwargs):
         """Gets a version matching all parameters or returns None."""
 
-        # linear search function; potential for being slow...
+        # linear search function for now; potentially quite slow...
         for v in self.versions:
             match = True
             for param, val in kwargs.items():
@@ -69,16 +68,6 @@ class Project:
                 return v
 
         return None
-
-    def find_or_add_version(self, version_cls, **kwargs):
-        """Finds a matching version or adds a new one of type Version."""
-        version = self.find_version(**kwargs)
-        if not version:
-            version = version_cls(**kwargs)
-            self.versions.append(version)
-
-        return version
-    '''
 
     def to_inputset(self) -> list:
         """Converts vanilla projects/versions to HttpUrl dict."""

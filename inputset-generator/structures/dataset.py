@@ -126,11 +126,10 @@ class Dataset:
 
         return d
 
-    '''
     def find_project(self, **kwargs) -> Optional[Project]:
         """Gets the first project with attributes matching all kwargs."""
 
-        # linear search function; potential for being slow...
+        # linear search function for now; potentially quite slow...
         for p in self.projects:
             match = True
             for param, val in kwargs.items():
@@ -141,16 +140,6 @@ class Dataset:
                 return p
 
         return None
-
-    def find_or_add_project(self, project_cls, **kwargs) -> Project:
-        """Finds a matching project or adds a new one of type Project."""
-        project = self.find_project(**kwargs)
-        if not project:
-            project = project_cls(**kwargs)
-            self.projects.append(project)
-
-        return project
-    '''
 
     def __repr__(self):
         return 'Dataset(%s)' % ', '.join([

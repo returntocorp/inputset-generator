@@ -1,21 +1,7 @@
 from structures.projects import Project
-from structures.versions import NpmVersion
 
 
 class NpmPackage(Project):
-    def update(self, **kwargs) -> None:
-        # The npm api provides package/version data in a combined json;
-        # filter out the version info and initialize them separately
-        version_data = (
-            kwargs.pop('_versions', None) or  # keyword for json/csv
-            kwargs.pop('versions', [])        # keyword for npm api
-        )
-
-        super().update(**kwargs)
-
-        # add any versions to the package
-        self.versions = [NpmVersion(**d) for d in version_data]
-
     def check_guarantees(self):
         """A NpmPackage is guaranteed to contain *at least* a name, a
         package url, or an api url. Any one of these items can be used

@@ -1,5 +1,4 @@
 from structures.projects import Project
-from structures.versions import GithubCommit
 
 
 class GithubRepo(Project):
@@ -20,17 +19,6 @@ class GithubRepo(Project):
             kwargs['_url'] = kwargs.get('html_url', None)
 
         super().__init__(**kwargs)
-
-    def update(self, **kwargs) -> None:
-        # filter out version info and initialize commits
-        version_data = (
-            kwargs.pop('_versions', [])  # keyword for json/csv
-        )
-
-        super().update(**kwargs)
-
-        # add any commits to the repo
-        self.versions = [GithubCommit(**d) for d in version_data]
 
     def check_guarantees(self):
         """A GithubRepo is guaranteed to contain *at least* a name and

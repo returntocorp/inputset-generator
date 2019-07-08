@@ -1,7 +1,8 @@
 import csv
 
-from structures import Dataset, Project
-from structures.projects import class_map
+from structures import Dataset, Project, Version
+from structures.projects import class_map as p_class_map
+from structures.versions import class_map as v_class_map
 from loaders import Loader
 
 
@@ -31,6 +32,9 @@ class CsvLoader(Loader):
             '!v.commit_hash'
         """
 
+        # remove any existing projects
+        ds.projects = []
+
         # user-defined headers override default headers
         if headers:
             self.headers = headers.split()
@@ -42,27 +46,30 @@ class CsvLoader(Loader):
             for row in csv_file:
                 if row[0].startswith('!'):
                     # read in a header row
-                    # in-file headers override default/user-defined
-                    self.headers = [h[1:] for h in row]
+                    if not self.user_defined:
+                        # in-file headers override defaults
+                        # (but not user-defined headers from the cli)
+                        self.headers = [h[1:] for h in row]
                 else:
                     # read in a data row
-                    data = {}
+                    p_data, v_data = {}, {}
                     for i, val in enumerate(row):
-                        header = self.headers[i]
-                        if header.startswith('v.'):
-                            # val is a version attribute
-                            data.setdefault('_versions', [{}])
-                            data['_versions'][0][header[2:]] = val
+                        attr = self.headers[i]
+
+                        # add the data to the project or version
+                        if attr.startswith('v.'):
+                            v_data[attr[2:]] = val
                         else:
-                            # val is a project attribute
-                            data[header] = val
+                            p_data[attr] = val
 
-                    # figure out which type of project to create
-                    # (default is the vanilla Project)
-                    project_cls = class_map.get(ds.registry, Project)
+                    # get or create the new project
+                    project = ds.find_project(**p_data)
+                    if not project:
+                        p_class = p_class_map.get(ds.registry, Project)
+                        project = p_class(**p_data)
+                        ds.projects.append(project)
 
-                    # create the new project & add versions to it
-                    project = project_cls(**data)
-
-                    # add the project (& versions) to the dataset
-                    ds.projects.append(project)
+                    # add any versions to the project
+                    if v_data:
+                        v_class = v_class_map.get(ds.registry, Version)
+                        project.versions.append(v_class(**v_data))
