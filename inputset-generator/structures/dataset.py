@@ -1,6 +1,7 @@
-from pathlib import Path
+import json
 from typing import List, Optional
 from types import MethodType
+from pathlib import Path
 
 from structures.projects import Project
 
@@ -91,16 +92,17 @@ class Dataset:
         self.author = author or self.author
         self.email = email or self.email
 
-    def save(self, path: str = None) -> None:
+    def save(self, filepath: str = None) -> None:
         # file name is dataset name, if not provided by user
-        path = path or (self.name + '.json')
+        filepath = filepath or (self.name + '.json')
 
         # convert the dataset to an input set json
         inputset = self.to_inputset()
 
         # save to disk
-        print('Saving results to %s' % path)
-        #JsonLoader().save(self, path)
+        print('Saving results to %s' % filepath)
+        with open(filepath, 'w') as file:
+            json.dump(inputset, file)
 
     def to_inputset(self) -> dict:
         """Converts a dataset to an input set json."""
