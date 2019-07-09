@@ -7,7 +7,7 @@ from structures.projects import Project
 
 
 class Dataset(object):
-    def __init__(self, registry: str = None):
+    def __init__(self, registry: str = None, **kwargs):
         from apis import class_map as apis_list
         from structures import Project
         from functions import function_map
@@ -21,7 +21,8 @@ class Dataset(object):
 
         # set up the api
         api_class = apis_list.get(self.registry, None)
-        self.api = None if not api_class else api_class()
+        cache_dir = kwargs.get('cache_dir', None)
+        self.api = None if not api_class else api_class(cache_dir)
 
         # register the various transformation functions
         for name, function in function_map.items():

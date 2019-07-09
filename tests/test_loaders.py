@@ -4,21 +4,20 @@ from dotenv import load_dotenv
 
 def test_json():
     # test github
-    ds = Dataset('github')
+    ds = Dataset('github', cache_dir='../cache')
     ds.set_meta('test', '1.0')
     ds.load_file('files/git_repo.json')
-    test = ds.to_inputset()
     ds.load_file('files/git_repo_commit.json')
     ds.save('../test.json')
 
     # test npm
-    ds = Dataset('npm')
+    ds = Dataset('npm', cache_dir='../cache')
     ds.set_meta('test', '1.0')
     ds.load_file('files/name_version.json')
     ds.save('../test.json')
 
     # test pypi
-    ds = Dataset('pypi')
+    ds = Dataset('pypi', cache_dir='../cache')
     ds.set_meta('test', '1.0')
     ds.load_file('files/name_version.json')
     ds.save('../test.json')
@@ -34,19 +33,19 @@ def test_json():
 
 def test_csv():
     # test github
-    ds = Dataset('github')
+    ds = Dataset('github', cache_dir='../cache')
     ds.set_meta('test', '1.0')
     ds.load_file('files/git_urls_commits.csv')
     ds.save('../test.json')
 
     # test npm
-    ds = Dataset('npm')
+    ds = Dataset('npm', cache_dir='../cache')
     ds.set_meta('test', '1.0')
     ds.load_file('files/names_versions.csv')
     ds.save('../test.json')
 
     # test pypi
-    ds = Dataset('pypi')
+    ds = Dataset('pypi', cache_dir='../cache')
     ds.set_meta('test', '1.0')
     ds.load_file('files/names_versions.csv')
     ds.save('../test.json')
@@ -64,7 +63,7 @@ def test_weblist():
     load_dotenv()
 
     # test github
-    ds = Dataset('github')
+    ds = Dataset('github', cache_dir='../cache')
     ds.set_meta('test', '1.0')
     ds.load_weblist('top1kstarred')
     ds.head(10)
@@ -72,7 +71,7 @@ def test_weblist():
     ds.save('../test.json')
 
     # test pypi
-    ds = Dataset('pypi')
+    ds = Dataset('pypi', cache_dir='../cache')
     ds.set_meta('test', '1.0')
     ds.load_weblist('top5kyear')
     ds.head(10)

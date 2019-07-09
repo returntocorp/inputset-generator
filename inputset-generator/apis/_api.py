@@ -10,9 +10,9 @@ from structures import Project
 
 
 class Api(ABC):
-    def __init__(self):
+    def __init__(self, cache_dir: str = 'cache'):
         # set/create the cache dir
-        self.cache_dir = 'cache'
+        self.cache_dir = cache_dir or 'cache'
         if not os.path.exists(self.cache_dir):
             os.makedirs(self.cache_dir)
 
