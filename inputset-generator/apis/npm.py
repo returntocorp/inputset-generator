@@ -22,12 +22,12 @@ class Npm(Api):
     @staticmethod
     def _make_api_url(project: NpmPackage) -> str:
         # get the package name and convert to api url
-        if 'name' in project.meta_:
-            name = project.meta_['name']()
+        if 'name' in project.uuids_:
+            name = project.uuids_['name']()
 
         else:
             # extract the name from the url
-            name = project.meta_['url']().strip('/').split('/')[-1]
+            name = project.uuids_['url']().strip('/').split('/')[-1]
 
         return 'https://registry.npmjs.com/%s' % name
 
@@ -63,10 +63,10 @@ class Npm(Api):
             version = project.find_version(**v_data)
             if not version:
                 # create a new version
-                meta = {
+                uuids = {
                     'version': lambda v: v.version
                 }
-                version = NpmVersion(meta_=meta, **v_data)
+                version = NpmVersion(uuids_=uuids, **v_data)
                 project.versions.append(version)
 
             else:

@@ -5,14 +5,14 @@ from structures.versions import Version
 
 
 class Project:
-    def __init__(self, meta_: dict = {}, **kwargs):
+    def __init__(self, uuids_: dict = {}, **kwargs):
         # a project contains versions
         self.versions: List[Version] = []
 
         # set the attr functions as method types (to autopass self)
-        self.meta_ = {}
-        for attr, func in meta_.items():
-            self.meta_[attr] = MethodType(func, self)
+        self.uuids_ = {}
+        for attr, func in uuids_.items():
+            self.uuids_[attr] = MethodType(func, self)
 
         # load all attributes into the project
         self.update(**kwargs)
@@ -38,11 +38,11 @@ class Project:
 
         # linear search function for now; potentially quite slow...
         for other_v in self.versions:
-            # copy over the other project's meta lambda funcs so the two
+            # copy over the other project's uuid lambda funcs so the two
             # projects can be compared (need to rebind the lambda func
             # to this_p instead of other_p--hence the __func__ ref)
-            for k, func in other_v.meta_.items():
-                this_v.meta_[k] = MethodType(func.__func__, this_v)
+            for k, func in other_v.uuids_.items():
+                this_v.uuids_[k] = MethodType(func.__func__, this_v)
 
             if this_v == other_v:
                 return other_v
@@ -55,13 +55,13 @@ class Project:
 
     def __eq__(self, other):
         # the two projects are equal if one of the uuids matches
-        for k, val in self.meta_.items():
-            if val() == other.meta_[k]():
+        for k, val in self.uuids_.items():
+            if val() == other.uuids_[k]():
                 return True
         return False
 
     def __repr__(self):
         # only return project identifiers
         return 'Project(%s' % ', '.join([
-            '%s=%s' % (k, func()) for k, func in self.meta_.items()
+            '%s=%s' % (k, func()) for k, func in self.uuids_.items()
         ]) + ', versions=[%s], ...)' % ('...' if self.versions else '')

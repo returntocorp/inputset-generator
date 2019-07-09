@@ -58,11 +58,11 @@ class GithubLoader(Loader):
         from structures.projects import GithubRepo
 
         # map data keys to project keywords
-        meta = {
+        uuids = {
             'name': lambda p: p.name,
             'org': lambda p: p.url.split('/')[-2],
             'url': lambda p: p.url
         }
 
         # create the projects
-        ds.projects = [GithubRepo(meta_=meta, **d) for d in data]
+        ds.projects = [GithubRepo(uuids_=uuids, **d) for d in data]

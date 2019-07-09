@@ -150,11 +150,11 @@ class Dataset:
 
         # linear search function for now; potentially quite slow...
         for other_p in self.projects:
-            # copy over the other project's meta lambda funcs so the two
+            # copy over the other project's uuid lambda funcs so the two
             # projects can be compared (need to rebind the lambda func
             # to this_p instead of other_p--hence the __func__ ref)
-            for k, func in other_p.meta_.items():
-                this_p.meta_[k] = MethodType(func.__func__, this_p)
+            for k, func in other_p.uuids_.items():
+                this_p.uuids_[k] = MethodType(func.__func__, this_p)
 
             if this_p == other_p:
                 return other_p

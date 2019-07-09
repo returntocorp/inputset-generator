@@ -20,13 +20,13 @@ class Github(Api):
 
     @staticmethod
     def _make_api_url(project: GithubRepo) -> str:
-        if 'name' in project.meta_ and 'org' in project.meta_:
-            name = project.meta_['name']()
-            org = project.meta_['org']()
+        if 'name' in project.uuids_ and 'org' in project.uuids_:
+            name = project.uuids_['name']()
+            org = project.uuids_['org']()
 
         else:
             # extract the name/org from the url
-            url = project.meta_['url']()
+            url = project.uuids_['url']()
             name = url.strip('/').split('/')[-1]
             org = url.strip('/').split('/')[-2]
 
@@ -66,10 +66,10 @@ class Github(Api):
                 commit = project.find_version(**v_data)
                 if not commit:
                     # create a new commit
-                    meta = {
+                    uuids = {
                         'commit': lambda v: v.sha
                     }
-                    commit = GithubCommit(meta_=meta, **v_data)
+                    commit = GithubCommit(uuids_=uuids, **v_data)
                     project.versions.append(commit)
 
                 else:

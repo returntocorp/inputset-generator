@@ -18,12 +18,12 @@ class Pypi(Api):
     @staticmethod
     def _make_api_url(project: PypiProject) -> str:
         # get the package name and convert to api url
-        if 'name' in project.meta_:
-            name = project.meta_['name']()
+        if 'name' in project.uuids_:
+            name = project.uuids_['name']()
 
         else:
             # extract the name from the url
-            name = project.meta_['url']().strip('/').split('/')[-2]
+            name = project.uuids_['url']().strip('/').split('/')[-2]
 
         return 'https://pypi.org/pypi/%s/json' % name
 
@@ -78,10 +78,10 @@ class Pypi(Api):
             release = project.find_version(**v_data)
             if not release:
                 # create a new release
-                meta = {
+                uuids = {
                     'version': lambda v: v.version
                 }
-                release = PypiRelease(meta_=meta, **v_data)
+                release = PypiRelease(uuids_=uuids, **v_data)
                 project.versions.append(release)
 
             else:

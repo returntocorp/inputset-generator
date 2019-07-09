@@ -2,11 +2,11 @@ from types import MethodType
 
 
 class Version:
-    def __init__(self, meta_: dict = {}, **kwargs):
+    def __init__(self, uuids_: dict = {}, **kwargs):
         # set the attr functions as method types (to autopass self)
-        self.meta_ = {}
-        for attr, func in meta_.items():
-            self.meta_[attr] = MethodType(func, self)
+        self.uuids_ = {}
+        for attr, func in uuids_.items():
+            self.uuids_[attr] = MethodType(func, self)
 
         # load all attributes into the version
         self.update(**kwargs)
@@ -26,13 +26,13 @@ class Version:
 
     def __eq__(self, other):
         # the two versions are equal if one of the uuids matches
-        for k, val in self.meta_.items():
-            if val() == other.meta_[k]():
+        for k, val in self.uuids_.items():
+            if val() == other.uuids_[k]():
                 return True
         return False
 
     def __repr__(self):
         # only return version identifiers
         return 'Version(%s' % ', '.join([
-            '%s=%s' % (k, func()) for k, func in self.meta_.items()
+            '%s=%s' % (k, func()) for k, func in self.uuids_.items()
         ]) + ', [...])'

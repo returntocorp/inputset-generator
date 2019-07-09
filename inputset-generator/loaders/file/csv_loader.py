@@ -53,17 +53,17 @@ class CsvLoader(Loader):
 
                     else:
                         # map csv headers to project keywords, as applicable
-                        meta = {}
+                        uuids = {}
                         if 'name' in p_data:
-                            meta['name'] = lambda p: p.name
+                            uuids['name'] = lambda p: p.name
                         if 'org' in p_data:
-                            meta['org'] = lambda p: p.org
+                            uuids['org'] = lambda p: p.org
                         if 'url' in p_data:
-                            meta['url'] = lambda p: p.url
+                            uuids['url'] = lambda p: p.url
 
                         # create the new project & add it to the dataset
                         p_class = p_class_map.get(ds.registry, DefaultProject)
-                        project = p_class(meta_=meta, **p_data)
+                        project = p_class(uuids_=uuids, **p_data)
                         ds.projects.append(project)
 
                     # create the new version, if it doesn't already exist
@@ -75,12 +75,12 @@ class CsvLoader(Loader):
 
                         else:
                             # map csv headers to version keywords, as applicable
-                            meta = {}
+                            uuids = {}
                             if 'version' in v_data:
-                                meta['version'] = lambda v: v.version
+                                uuids['version'] = lambda v: v.version
                             if 'commit' in v_data:
-                                meta['commit'] = lambda v: v.commit
+                                uuids['commit'] = lambda v: v.commit
 
                             # create the new version & add it to the project
                             v_class = v_class_map.get(ds.registry, DefaultVersion)
-                            project.versions.append(v_class(meta_=meta, **v_data))
+                            project.versions.append(v_class(uuids_=uuids, **v_data))

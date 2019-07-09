@@ -41,9 +41,9 @@ class PypiLoader(Loader):
         from structures.projects import PypiProject
 
         # map data keys to project keywords
-        meta = {
+        uuids = {
             'name': lambda p: p.project
         }
 
         # create the projects
-        ds.projects = [PypiProject(meta_=meta, **d) for d in data]
+        ds.projects = [PypiProject(uuids_=uuids, **d) for d in data]
