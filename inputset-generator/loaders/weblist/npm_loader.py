@@ -20,18 +20,6 @@ class NpmLoader(Loader):
 
     @staticmethod
     def _get_allbydownloads(api, **_) -> list:
-        # https://www.npmjs.com/browse/depended
-        # https://github.com/npm/download-counts
-        # https://stackoverflow.com/questions/34071621/query-npmjs-registry-via-api
-        # https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md#get-v1search
-        # https://stackoverflow.com/questions/48251633/list-all-public-packages-in-the-npm-registry
-
-        # idea: hit the /all endpoint to download all packages, then hit
-        # the /downloads/point with a comma-separated list of packages
-        # to get the downloads count
-        # https://replicate.npmjs.com/_all_docs
-        # https://api.npmjs.org/downloads/point/last-year/npm,express,lodash,requests,bob
-
         # load a list of projects
         url = 'https://replicate.npmjs.com/_all_docs'
         package_list = api.request(url)['rows']
@@ -52,6 +40,12 @@ class NpmLoader(Loader):
             packages.extend(list(data_dict.values()))
 
         return packages
+
+    # https://www.npmjs.com/browse/depended
+    # https://github.com/npm/download-counts
+    # https://stackoverflow.com/questions/34071621/query-npmjs-registry-via-api
+    # https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md#get-v1search
+    # https://stackoverflow.com/questions/48251633/list-all-public-packages-in-the-npm-registry
 
     @staticmethod
     def _parse_npm(ds: Dataset, data: list):
