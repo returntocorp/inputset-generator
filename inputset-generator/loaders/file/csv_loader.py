@@ -50,9 +50,12 @@ class CsvLoader(Loader):
                     if not project:
                         # map csv headers to project keywords, as applicable
                         meta = {}
-                        if 'name' in p_data: meta['name'] = lambda p: p.name
-                        if 'org' in p_data: meta['org'] = lambda p: p.org
-                        if 'url' in p_data: meta['url'] = lambda p: p.url
+                        if 'name' in p_data:
+                            meta['name'] = lambda p: p.name
+                        if 'org' in p_data:
+                            meta['org'] = lambda p: p.org
+                        if 'url' in p_data:
+                            meta['url'] = lambda p: p.url
 
                         # create the new project & add it to the dataset
                         p_class = p_class_map.get(ds.registry, DefaultProject)
@@ -63,8 +66,10 @@ class CsvLoader(Loader):
                     if v_data and not project.find_version(**v_data):
                         # map csv headers to version keywords, as applicable
                         meta = {}
-                        if 'version' in v_data: meta['version'] = lambda v: v.version
-                        if 'commit' in v_data: meta['commit'] = lambda v: v.commit
+                        if 'version' in v_data:
+                            meta['version'] = lambda v: v.version
+                        if 'commit' in v_data:
+                            meta['commit'] = lambda v: v.commit
 
                         # create the new version & add it to the project
                         v_class = v_class_map.get(ds.registry, DefaultVersion)

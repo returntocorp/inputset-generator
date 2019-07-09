@@ -58,9 +58,12 @@ class JsonLoader(Loader):
             if not project:
                 # map csv headers to project keywords, as applicable
                 meta = {}
-                if 'package_name' in p_data: meta['name'] = lambda p: p.package_name
-                if 'repo_url' in p_data: meta['url'] = lambda p: p.repo_url
-                if 'url' in p_data: meta['url'] = lambda p: p.url
+                if 'package_name' in p_data:
+                    meta['name'] = lambda p: p.package_name
+                if 'repo_url' in p_data:
+                    meta['url'] = lambda p: p.repo_url
+                if 'url' in p_data:
+                    meta['url'] = lambda p: p.url
 
                 # create the new project & add it to the dataset
                 p_class = p_class_map.get(ds.registry, DefaultProject)
@@ -71,8 +74,10 @@ class JsonLoader(Loader):
             if v_data and not project.find_version(**v_data):
                 # map csv headers to version keywords, as applicable
                 meta = {}
-                if 'version' in v_data: meta['version'] = lambda v: v.version
-                if 'commit_hash' in v_data: meta['commit'] = lambda v: v.commit_hash
+                if 'version' in v_data:
+                    meta['version'] = lambda v: v.version
+                if 'commit_hash' in v_data:
+                    meta['commit'] = lambda v: v.commit_hash
 
                 # create the new version & add it to the project
                 v_class = v_class_map.get(ds.registry, DefaultVersion)
