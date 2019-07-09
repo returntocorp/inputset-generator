@@ -61,11 +61,7 @@ class Project:
         return False
 
     def __repr__(self):
-        return 'Project(%s)' % ', '.join([
-            '%s=%s' % (a, repr(getattr(self, a)))
-            for a in dir(self)
-            if getattr(self, a)
-               and a is not 'meta_'                # ignore meta_ dict
-               and not a.startswith('__')          # ignore dunders
-               and not callable(getattr(self, a))  # ignore functions
-        ])
+        # only return project identifiers
+        return 'Project(%s' % ', '.join([
+            '%s=%s' % (k, func()) for k, func in self.meta_.items()
+        ]) + ', versions=[%s], ...)' % ('...' if self.versions else '')

@@ -162,10 +162,11 @@ class Dataset:
         return None
 
     def __repr__(self):
-        return 'Dataset(%s)' % ', '.join([
+        return 'Dataset(%s' % ', '.join([
             '%s=%s' % (a, repr(getattr(self, a)))
             for a in dir(self)
             if getattr(self, a)
-               and not a.startswith('__')
-               and not callable(getattr(self, a))
-        ])
+               and a is not 'projects'             # ignore projects list
+               and not a.startswith('__')          # ignore dunders
+               and not callable(getattr(self, a))  # ignore functions
+        ]) + ', projects=[%s])' % ('...' if self.projects else '')
