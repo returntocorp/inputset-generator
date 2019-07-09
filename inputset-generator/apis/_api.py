@@ -44,8 +44,8 @@ class Api(ABC):
                 raise Exception('Exception: %s' % str(data))
 
         except:
-            raise Exception('Error: No response or non-json response'
-                            ' for url %s.' % url)
+            raise Exception('No response or non-json response for url '
+                            '%s.' % url)
 
         # save the response json to cache
         with open(filepath, 'w') as json_file:

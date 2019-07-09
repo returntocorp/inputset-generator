@@ -14,7 +14,7 @@ def get_dataset(ctx) -> Dataset:
     ds = ctx.obj.get('dataset', None)
 
     if not ds:
-        raise Exception('Error: Dataset has not been loaded.')
+        raise Exception('Dataset has not been loaded.')
 
     return ds
 
