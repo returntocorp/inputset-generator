@@ -20,9 +20,9 @@ class Github(Api):
 
     @staticmethod
     def _make_api_url(project: GithubRepo) -> str:
-        if 'name' in project.uuids_ and 'org' in project.uuids_:
+        if 'name' in project.uuids_ and 'org' in project.meta_:
             name = project.uuids_['name']()
-            org = project.uuids_['org']()
+            org = project.meta_['org']()
 
         else:
             # extract the name/org from the url

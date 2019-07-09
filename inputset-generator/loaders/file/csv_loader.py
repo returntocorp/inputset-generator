@@ -53,17 +53,17 @@ class CsvLoader(Loader):
 
                     else:
                         # map csv headers to project keywords, as applicable
-                        uuids = {}
+                        uuids, meta = {}, {}
                         if 'name' in p_data:
                             uuids['name'] = lambda p: p.name
                         if 'org' in p_data:
-                            uuids['org'] = lambda p: p.org
+                            meta['org'] = lambda p: p.org
                         if 'url' in p_data:
                             uuids['url'] = lambda p: p.url
 
                         # create the new project & add it to the dataset
                         p_class = p_class_map.get(ds.registry, DefaultProject)
-                        project = p_class(uuids_=uuids, **p_data)
+                        project = p_class(uuids_=uuids, meta_=meta, **p_data)
                         ds.projects.append(project)
 
                     # create the new version, if it doesn't already exist
