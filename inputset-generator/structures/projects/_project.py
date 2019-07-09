@@ -26,9 +26,9 @@ class Project:
         self.check_guarantees()
 
     def check_guarantees(self) -> None:
-        """Guarantees a url."""
-        if 'url' not in self.meta_:
-            raise Exception('Project url must be provided.')
+        """Guarantees nothing (vanilla Project knows nothing about its
+        contents)."""
+        pass
 
     def find_version(self, **kwargs) -> Optional[Version]:
         """Gets a version matching all kwargs or returns None."""
@@ -46,11 +46,8 @@ class Project:
         return None
 
     def to_inputset(self) -> list:
-        """Converts vanilla project to HttpUrl dict."""
-        return [{
-            'input_type': 'HttpUrl',
-            'url': self.meta_['url']()
-        }]
+        """Vanilla project can't be converted to an r2c input set."""
+        raise Exception('Project class has no associated R2C input set type.')
 
     def __repr__(self):
         return 'Project(%s)' % ', '.join([

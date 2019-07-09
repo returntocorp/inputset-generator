@@ -1,6 +1,6 @@
 import csv
 
-from structures import Dataset, Project, Version
+from structures import Dataset, DefaultProject, DefaultVersion
 from structures.projects import class_map as p_class_map
 from structures.versions import class_map as v_class_map
 from loaders import Loader
@@ -55,7 +55,7 @@ class CsvLoader(Loader):
                         if 'url' in p_data: meta['url'] = lambda p: p.url
 
                         # create the new project & add it to the dataset
-                        p_class = p_class_map.get(ds.registry, Project)
+                        p_class = p_class_map.get(ds.registry, DefaultProject)
                         project = p_class(meta_=meta, **p_data)
                         ds.projects.append(project)
 
@@ -67,5 +67,5 @@ class CsvLoader(Loader):
                         if 'commit' in v_data: meta['commit'] = lambda v: v.commit
 
                         # create the new version & add it to the project
-                        v_class = v_class_map.get(ds.registry, Version)
+                        v_class = v_class_map.get(ds.registry, DefaultVersion)
                         project.versions.append(v_class(meta_=meta, **v_data))
