@@ -60,7 +60,7 @@ class JsonLoader(Loader):
                 project.update(**p_data)
 
             else:
-                # map csv headers to project keywords, as applicable
+                # map json headers to project keywords, as applicable
                 uuids = {}
                 if 'package_name' in p_data:
                     uuids['name'] = lambda p: p.package_name
