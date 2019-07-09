@@ -55,9 +55,6 @@ class Pypi(Api):
             latest_key: str = data['info']['version']
             releases = {latest_key: releases[latest_key]}
 
-            # trim existing releases to the latest release only
-            temp = 5
-
         for v_str, v_data in releases.items():
             # Note: The pypi api returns versions as a dict mapping of
             # version strings to lists of dicts of versions (ie, a single
@@ -76,14 +73,18 @@ class Pypi(Api):
 
             # add the data to the version
             release = project.find_version(**v_data)
-            if not release:
+            if historical == 'latest':
+                # trim existing releases to the latest release only
+                project.versions = [release] if release else []
+
+            if release:
+                # update the existing release
+                release.update(**v_data)
+
+            else:
                 # create a new release
                 uuids = {
                     'version': lambda v: v.version
                 }
                 release = PypiRelease(uuids_=uuids, **v_data)
                 project.versions.append(release)
-
-            else:
-                # update the existing release
-                release.update(**v_data)

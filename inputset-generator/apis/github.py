@@ -64,17 +64,18 @@ class Github(Api):
 
             for v_data in data:
                 commit = project.find_version(**v_data)
-                if not commit:
+                if historical == 'latest':
+                    # trim existing commits to the latest commit only
+                    project.versions = [commit] if commit else []
+
+                if commit:
+                    # update the existing commit
+                    commit.update(**v_data)
+
+                else:
                     # create a new commit
                     uuids = {
                         'commit': lambda v: v.sha
                     }
                     commit = GithubCommit(uuids_=uuids, **v_data)
                     project.versions.append(commit)
-
-                else:
-                    # update the existing commit
-                    commit.update(**v_data)
-
-        # trim existing commits to the latest commit only
-        temp = 5

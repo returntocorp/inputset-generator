@@ -56,19 +56,20 @@ class Npm(Api):
             latest_key = data['dist-tags']['latest']
             versions = {latest_key: versions[latest_key]}
 
-            # trim existing versions to the latest version only
-            temp = 5
-
         for _, v_data in versions.items():
             version = project.find_version(**v_data)
-            if not version:
+            if historical == 'latest':
+                # trim existing versions to the version release only
+                project.versions = [version] if version else []
+
+            if version:
+                # update the existing version
+                version.update(**v_data)
+
+            else:
                 # create a new version
                 uuids = {
                     'version': lambda v: v.version
                 }
                 version = NpmVersion(uuids_=uuids, **v_data)
                 project.versions.append(version)
-
-            else:
-                # update the existing version
-                version.update(**v_data)
