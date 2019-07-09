@@ -4,7 +4,7 @@ from types import MethodType
 from structures.versions import Version
 
 
-class Project:
+class Project(object):
     def __init__(self, uuids_: dict = {}, meta_: dict = {}, **kwargs):
         # a project contains versions
         self.versions: List[Version] = []

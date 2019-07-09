@@ -1,7 +1,7 @@
 from types import MethodType
 
 
-class Version:
+class Version(object):
     def __init__(self, uuids_: dict = {}, **kwargs):
         # set the attr functions as method types (to autopass self)
         self.uuids_ = {}

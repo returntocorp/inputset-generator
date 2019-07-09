@@ -6,7 +6,7 @@ from pathlib import Path
 from structures.projects import Project
 
 
-class Dataset:
+class Dataset(object):
     def __init__(self, registry: str = None):
         from apis import class_map as apis_list
         from structures import Project
