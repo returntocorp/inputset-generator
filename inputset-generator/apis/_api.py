@@ -20,22 +20,24 @@ class Api(ABC):
         # set how long a cached file is valid
         self.cache_timeout = cache_timeout or timedelta(weeks=1)
 
-    def request(self, url: str, **headers) -> Union[dict, list]:
+    def request(self, url: str,
+                nocache: bool = False, **headers) -> Union[dict, list]:
         """Loads a url from cache or downloads it from the web."""
 
         # try loading the data from the cache
-        filename = md5(url.encode()).hexdigest()
-        filepath = '%s/%s.json' % (self.cache_dir, filename)
+        if not nocache:
+            filename = md5(url.encode()).hexdigest()
+            filepath = '%s/%s.json' % (self.cache_dir, filename)
 
-        if os.path.isfile(filepath):
-            # load the file from disk
-            cached = json.load(open(filepath))
-            cached_date = datetime.strptime(cached['timestamp'],
-                                            '%Y-%m-%d %H:%M:%S.%f')
+            if os.path.isfile(filepath):
+                # load the file from disk
+                cached = json.load(open(filepath))
+                cached_date = datetime.strptime(cached['timestamp'],
+                                                '%Y-%m-%d %H:%M:%S.%f')
 
-            if datetime.utcnow() < cached_date + self.cache_timeout:
-                # cached data isn't too old; return it
-                return cached['json']
+                if datetime.utcnow() < cached_date + self.cache_timeout:
+                    # cached data isn't too old; return it
+                    return cached['json']
 
         # download the url
         try:
