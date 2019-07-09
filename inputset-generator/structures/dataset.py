@@ -145,15 +145,19 @@ class Dataset:
     def find_project(self, **kwargs) -> Optional[Project]:
         """Gets the first project with attributes matching all kwargs."""
 
+        # build a temporary project containing the kwargs
+        this_p = Project(**kwargs)
+
         # linear search function for now; potentially quite slow...
-        for p in self.projects:
-            match = True
-            for param, val in kwargs.items():
-                if getattr(p, param, None) != val:
-                    match = False
-                    break
-            if match:
-                return p
+        for other_p in self.projects:
+            # copy over the other project's meta lambda funcs so the two
+            # projects can be compared (need to rebind the lambda func
+            # to this_p instead of other_p--hence the __func__ ref)
+            for k, func in other_p.meta_.items():
+                this_p.meta_[k] = MethodType(func.__func__, this_p)
+
+            if this_p == other_p:
+                return other_p
 
         return None
 

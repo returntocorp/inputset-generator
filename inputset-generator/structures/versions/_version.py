@@ -24,6 +24,13 @@ class Version:
         contents)."""
         pass
 
+    def __eq__(self, other):
+        # the two versions are equal if one of the uuids matches
+        for k, val in self.meta_.items():
+            if val() == other.meta_[k]():
+                return True
+        return False
+
     def __repr__(self):
         return 'Version(%s)' % ', '.join([
             '%s=%s' % (a, repr(getattr(self, a)))
