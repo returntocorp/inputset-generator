@@ -22,7 +22,9 @@ class Dataset(object):
         # set up the api
         api_class = apis_list.get(self.registry, None)
         cache_dir = kwargs.get('cache_dir', None)
-        self.api = None if not api_class else api_class(cache_dir)
+        cache_timeout = kwargs.get('cache_timeout', None)
+        self.api = None if not api_class \
+            else api_class(cache_dir=cache_dir, cache_timeout=cache_timeout)
 
         # register the various transformation functions
         for name, function in function_map.items():

@@ -13,7 +13,6 @@ class GithubLoader(Loader):
                 'getter': self._get_top1kforked,
                 'parser': self._parse_github
             }
-
         }
 
     def load(self, ds: Dataset, name: str, **_) -> None:

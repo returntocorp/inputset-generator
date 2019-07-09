@@ -10,14 +10,15 @@ from structures import Project
 
 
 class Api(ABC):
-    def __init__(self, cache_dir: str = 'cache'):
+    def __init__(self, cache_dir: str = 'cache',
+                 cache_timeout: timedelta = timedelta(weeks=1), **_):
         # set/create the cache dir
         self.cache_dir = cache_dir or 'cache'
         if not os.path.exists(self.cache_dir):
             os.makedirs(self.cache_dir)
 
         # set how long a cached file is valid
-        self.cache_timeout = timedelta(weeks=1)
+        self.cache_timeout = cache_timeout or timedelta(weeks=1)
 
     def request(self, url: str, **headers) -> Union[dict, list]:
         """Loads a url from cache or downloads it from the web."""
