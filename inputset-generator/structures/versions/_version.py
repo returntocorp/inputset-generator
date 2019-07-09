@@ -2,7 +2,7 @@ from types import MethodType
 
 
 class Version:
-    def __init__(self, meta_: dict = None, **kwargs):
+    def __init__(self, meta_: dict = {}, **kwargs):
         # set the attr functions as method types (to autopass self)
         self.meta_ = {}
         for attr, func in meta_.items():

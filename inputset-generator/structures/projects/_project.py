@@ -5,7 +5,7 @@ from structures.versions import Version
 
 
 class Project:
-    def __init__(self, meta_: dict = None, **kwargs):
+    def __init__(self, meta_: dict = {}, **kwargs):
         # a project contains versions
         self.versions: List[Version] = []
 
