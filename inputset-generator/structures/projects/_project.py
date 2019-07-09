@@ -67,4 +67,4 @@ class Project:
         # only return project identifiers
         return 'Project(%s' % ', '.join([
             '%s=%s' % (k, func()) for k, func in self.uuids_.items()
-        ]) + ', versions=[%s], ...)' % ('...' if self.versions else '')
+        ]) + ', versions=%s)' % repr(self.versions)

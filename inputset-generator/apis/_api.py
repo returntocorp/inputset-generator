@@ -74,4 +74,4 @@ class Api(ABC):
                      hist: str = 'all') -> None: pass
 
     def __repr__(self):
-        return self.__class__.__name__
+        return 'Api(%s)' % self.__class__.__name__
