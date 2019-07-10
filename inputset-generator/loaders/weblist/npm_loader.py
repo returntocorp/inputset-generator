@@ -5,11 +5,19 @@ from loaders import Loader
 class NpmLoader(Loader):
     def __init__(self):
         self.weblists = {
-            'allbydownloads': {
-                'getter': self._get_allbydownloads,
-                'parser': self._parse_npm
-            }
         }
+
+        """
+        Other possible sources:
+        - List of the top 108 most depended-upon packages:
+          https://www.npmjs.com/browse/depended
+        - List of the top 1k most depended upon, most dependencies, and
+          highest PageRank score packages as of December 2018:
+          https://gist.github.com/anvaka/8e8fa57c7ee1350e3491
+        - Good sources of discussion on npm api options:
+          https://stackoverflow.com/questions/34071621/query-npmjs-registry-via-api
+          https://stackoverflow.com/questions/48251633/list-all-public-packages-in-the-npm-registry
+        """
 
     def load(self, ds: Dataset, name: str, **kwargs) -> None:
         # load the data
@@ -18,16 +26,49 @@ class NpmLoader(Loader):
         # parse the data
         self.weblists[name]['parser'](ds, data)
 
+    '''
     @staticmethod
-    def _get_allbydownloads(api, **kwargs) -> list:
+    def _get_[DEPRECATED](api, **kwargs) -> list:
+        """
+        Approach:
+        1. Download list of all 1.02M NPM packages from npmjs.
+
+        2. Split list into scoped packages (names contain a '/') and
+           non-scoped packages
+
+        3. Request non-scoped packages from npmjs downloads endpoint
+           (128/request; ~6,700 requests). Mark 'source' in all packages
+           as 'npmjs'.
+
+        4. Request the 172k scoped packages from npms.io (250/request;
+           ~700 requests). Mark 'source' in all packages as 'npms.io'.
+
+           Problem: npmjs includes new packages that npms.io has not yet
+           found. When npms.io is asked for packages it doesn't have, it
+           responds with a 500 internal server error, but does not list
+           the offending package, making it practically impossible to
+           determine *which* package was the problem (short of using
+           some sort of tree search). An issue has been submitted; see:
+           https://github.com/npms-io/npms-api/issues/88
+
+        5. Combine and return the two lists.
+
+        6. When parsing, use the 'source' attribute to determine how to
+           handle the data (npms.io returns a lot more data than npm).
+           May need to standardize what data gets parsed out, as having
+           varying attributes would add a lot of complexity to sorting/
+           filtering the dataset.
+        """
+
         # load a list of projects
         url = 'https://replicate.npmjs.com/_all_docs'
         package_list = api.request(url, **kwargs)['rows']
 
-        # get the downloads count
         packages = []
+
+        # GET FROM NPMJS API...
         for start_at in range(0, len(package_list), 128):
-            # build the bulk request to the downloads count endpoint
+            # build the bulk request to the npm downloads count endpoint
             # Note: Up to 128 packages may be requested at a time. See:
             # https://github.com/npm/registry/blob/master/docs/download-counts.md#limits
             names = ','.join([
@@ -35,19 +76,35 @@ class NpmLoader(Loader):
             ])
             url = 'https://api.npmjs.org/downloads/point/last-month/%s' % names
 
-            # request the data from the api (cache/web)
-            data_dict = api.request(url, **kwargs)
-            packages.extend(list(data_dict.values()))
+            # submit the request
+            data = api.request(url, **kwargs)
+
+            # add the response data to the list of packages
+            packages.extend(list(data.values()))
+
+        # ...OR GET FROM NPMS.IO API
+        for start_at in range(0, len(package_list), 250):
+            # build a mget (multiple get) request to the npms.io api
+            # Note: Up to 250 packages may be requested at a time.
+            # api docs at: https://api-docs.npms.io/
+            url = 'https://api.npms.io/v2/package/mget'
+
+            # overwrite any headers/data attrs in kwargs
+            h_args = {'content-type': 'application/json'}
+            d_args = [p['id'] for p in package_list[start_at: start_at + 250]]
+
+            # one month cache timeout, as it's thousands of requests otherwise
+            timeout = timedelta(weeks=4)
+
+            # submit the request
+            data = api.request(url, request_type='post', cache_timeout=timeout,
+                               headers=h_args, data=d_args, **kwargs)
+
+            # add the response data to the list of packages
+            packages.extend(list(data.values()))
 
         return packages
-
-    # https://api-docs.npms.io/
-    # https://www.npmjs.com/browse/depended
-    # https://github.com/npm/download-counts
-    # https://gist.github.com/anvaka/8e8fa57c7ee1350e3491
-    # https://stackoverflow.com/questions/34071621/query-npmjs-registry-via-api
-    # https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md#get-v1search
-    # https://stackoverflow.com/questions/48251633/list-all-public-packages-in-the-npm-registry
+    '''
 
     @staticmethod
     def _parse_npm(ds: Dataset, data: list):
