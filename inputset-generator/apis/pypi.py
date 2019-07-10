@@ -6,12 +6,19 @@ from structures.versions import PypiRelease
 
 
 class Pypi(Api):
+    @property
+    def _base_api_url(self):
+        return 'https://pypi.org'
+
     def request(self, url, **kwargs) -> Union[dict, list]:
         """Manages API rate limitations before calling super().request()."""
 
         # Note: The pypi json api does not currently have any sort of
         # rate limiting policies in effect. See:
         # https://warehouse.readthedocs.io/api-reference/#rate-limiting
+        if self._base_api_url in url:
+            # implement any internal rate limiting here...
+            pass
 
         return super().request(url, **kwargs)
 
@@ -25,7 +32,7 @@ class Pypi(Api):
             # extract the name from the url
             name = project.uuids_['url']().strip('/').split('/')[-2]
 
-        return 'https://pypi.org/pypi/%s/json' % name
+        return '%s/pypi/%s/json' % (Pypi._base_api_url, name)
 
     def get_project(self, project: PypiProject, **kwargs) -> None:
         """Gets a project's metadata."""

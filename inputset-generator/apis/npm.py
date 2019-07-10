@@ -6,6 +6,10 @@ from structures.versions import NpmVersion
 
 
 class Npm(Api):
+    @property
+    def _base_api_url(self):
+        return 'https://registry.npmjs.com'
+
     def request(self, url, **kwargs) -> Union[dict, list]:
         """Manages API rate limitations before calling super().request()."""
 
@@ -16,6 +20,9 @@ class Npm(Api):
         # https://blog.npmjs.org/post/164799520460/api-rate-limiting-rolling-out#_=
         # https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md
         # https://github.com/renovatebot/renovate/issues/754
+        if self._base_api_url in url:
+            # implement any internal rate limiting here...
+            pass
 
         return super().request(url, **kwargs)
 
@@ -29,7 +36,7 @@ class Npm(Api):
             # extract the name from the url
             name = project.uuids_['url']().strip('/').split('/')[-1]
 
-        return 'https://registry.npmjs.com/%s' % name
+        return '%s/%s' % (Npm._base_api_url, name)
 
     def get_project(self, project: NpmPackage, **kwargs) -> None:
         """Gets a package's metadata."""

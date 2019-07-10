@@ -7,12 +7,19 @@ from structures.versions import GithubCommit
 
 
 class Github(Api):
+    @property
+    def _base_api_url(self):
+        return 'https://api.github.com'
+
     def request(self, url: str, headers: dict = {}, **kwargs) -> Union[dict, list]:
         """Manages API rate limitations before calling super().request()."""
 
         # Note: Github's api limits requests to 5,000/hour if the
         # requester is authenticated, and 60/hour if not. See:
         # https://developer.github.com/v3/#rate-limiting
+        if self._base_api_url in url:
+            # implement any internal rate limiting here...
+            pass
 
         # add github personal access token to request headers
         github_pat = os.getenv('github_pat')
@@ -32,7 +39,7 @@ class Github(Api):
             name = url.strip('/').split('/')[-1]
             org = url.strip('/').split('/')[-2]
 
-        return 'https://api.github.com/repos/%s/%s' % (org, name)
+        return '%s/repos/%s/%s' % (Github._base_api_url, org, name)
 
     def get_project(self, project: GithubRepo, **kwargs) -> None:
         """Gets a repo's metadata."""
