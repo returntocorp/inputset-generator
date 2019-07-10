@@ -11,18 +11,18 @@ class NpmLoader(Loader):
             }
         }
 
-    def load(self, ds: Dataset, name: str, **_) -> None:
+    def load(self, ds: Dataset, name: str, **kwargs) -> None:
         # load the data
-        data = self.weblists[name]['getter'](api=ds.api)
+        data = self.weblists[name]['getter'](api=ds.api, **kwargs)
 
         # parse the data
         self.weblists[name]['parser'](ds, data)
 
     @staticmethod
-    def _get_allbydownloads(api, **_) -> list:
+    def _get_allbydownloads(api, **kwargs) -> list:
         # load a list of projects
         url = 'https://replicate.npmjs.com/_all_docs'
-        package_list = api.request(url)['rows']
+        package_list = api.request(url, **kwargs)['rows']
 
         # get the downloads count
         packages = []
@@ -36,13 +36,15 @@ class NpmLoader(Loader):
             url = 'https://api.npmjs.org/downloads/point/last-month/%s' % names
 
             # request the data from the api (cache/web)
-            data_dict = api.request(url)
+            data_dict = api.request(url, **kwargs)
             packages.extend(list(data_dict.values()))
 
         return packages
 
+    # https://api-docs.npms.io/
     # https://www.npmjs.com/browse/depended
     # https://github.com/npm/download-counts
+    # https://gist.github.com/anvaka/8e8fa57c7ee1350e3491
     # https://stackoverflow.com/questions/34071621/query-npmjs-registry-via-api
     # https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md#get-v1search
     # https://stackoverflow.com/questions/48251633/list-all-public-packages-in-the-npm-registry

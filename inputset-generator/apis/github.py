@@ -7,16 +7,18 @@ from structures.versions import GithubCommit
 
 
 class Github(Api):
-    def request(self, url: str, **_) -> Union[dict, list]:
+    def request(self, url: str, headers: dict = {}, **kwargs) -> Union[dict, list]:
         """Manages API rate limitations before calling super().request()."""
 
         # Note: Github's api limits requests to 5,000/hour if the
         # requester is authenticated, and 60/hour if not. See:
         # https://developer.github.com/v3/#rate-limiting
 
-        # add github personal access token to header
+        # add github personal access token to request headers
         github_pat = os.getenv('github_pat')
-        return super().request(url, Authorization='token %s' % github_pat)
+        headers['Authorization'] = 'token %s' % github_pat
+
+        return super().request(url, headers=headers, **kwargs)
 
     @staticmethod
     def _make_api_url(project: GithubRepo) -> str:
@@ -32,11 +34,12 @@ class Github(Api):
 
         return 'https://api.github.com/repos/%s/%s' % (org, name)
 
-    def get_project(self, project: GithubRepo) -> None:
+    def get_project(self, project: GithubRepo, **kwargs) -> None:
         """Gets a repo's metadata."""
 
         # load the url from cache or the web
-        data = self.request(self._make_api_url(project))
+        url = self._make_api_url(project)
+        data = self.request(url, **kwargs)
 
         # the 'url' key actually relates to the api; indicate as much
         data['api_url'] = data.pop('url')
@@ -45,7 +48,7 @@ class Github(Api):
         project.update(**data)
 
     def get_versions(self, project: GithubRepo,
-                     historical: str = 'all') -> None:
+                     historical: str = 'all', **kwargs) -> None:
         """Gets a commit's historical releases."""
 
         # github commit json is paginated--30 commits per page
@@ -53,7 +56,8 @@ class Github(Api):
         end_page = 1 if historical == 'latest' else 999999
         for i in range(1, end_page + 1):
             # load the url from cache or from the web
-            data = self.request('%s/commits?page=%d' % (api_url, i))
+            url = '%s/commits?page=%d' % (api_url, i)
+            data = self.request(url, **kwargs)
             if not data:
                 # no more pages; break
                 break

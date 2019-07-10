@@ -15,40 +15,42 @@ class GithubLoader(Loader):
             }
         }
 
-    def load(self, ds: Dataset, name: str, **_) -> None:
+    def load(self, ds: Dataset, name: str, **kwargs) -> None:
         # load the data
-        data = self.weblists[name]['getter'](api=ds.api)
+        data = self.weblists[name]['getter'](api=ds.api, **kwargs)
 
         # parse the data
         self.weblists[name]['parser'](ds, data)
 
     @staticmethod
-    def _get_top1kstarred(api, **_) -> list:
+    def _get_top1kstarred(api, **kwargs) -> list:
         # url courtesy of: https://stackoverflow.com/questions/19855552/
         # how-to-find-out-the-most-popular-repositories-on-github
-        url = 'https://api.github.com/search/repositories?' \
-              'q=stars%%3A>0&sort=stars&per_page=100&page=%d'
+        url_format = 'https://api.github.com/search/repositories?' \
+                     'q=stars%%3A>0&sort=stars&per_page=100&page=%d'
 
-        # results are limited to 100 per page; load & merge 10 pages
+        # github liits results to the top 1k at 100 per page
         projects = []
-        for u in [(url % d) for d in range(1, 11)]:
+        for url in [(url_format % d) for d in range(1, 11)]:
             # request the data via the github api
-            projects.extend(api.request(u)['items'])
+            data = api.request(url, **kwargs)
+            projects.extend(data['items'])
 
         return projects
 
     @staticmethod
-    def _get_top1kforked(api, **_) -> list:
+    def _get_top1kforked(api, **kwargs) -> list:
         # url courtesy of: https://stackoverflow.com/questions/19855552/
         # how-to-find-out-the-most-popular-repositories-on-github
-        url = 'https://api.github.com/search/repositories?' \
-              'q=forks%%3A>0&sort=forks&per_page=100&page=%d'
+        url_format = 'https://api.github.com/search/repositories?' \
+                     'q=forks%%3A>0&sort=forks&per_page=100&page=%d'
 
-        # results are limited to 100 per page; load & merge 10 pages
+        # github liits results to the top 1k at 100 per page
         projects = []
-        for u in [(url % d) for d in range(1, 11)]:
+        for url in [(url_format % d) for d in range(1, 11)]:
             # request the data via the github api
-            projects.extend(api.request(u)['items'])
+            data = api.request(url, **kwargs)
+            projects.extend(data['items'])
 
         return projects
 

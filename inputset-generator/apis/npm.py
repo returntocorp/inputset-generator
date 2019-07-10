@@ -6,7 +6,7 @@ from structures.versions import NpmVersion
 
 
 class Npm(Api):
-    def request(self, url: str, **_) -> Union[dict, list]:
+    def request(self, url, **kwargs) -> Union[dict, list]:
         """Manages API rate limitations before calling super().request()."""
 
         # Note: The npm registry json api states that rate limiting is
@@ -17,7 +17,7 @@ class Npm(Api):
         # https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md
         # https://github.com/renovatebot/renovate/issues/754
 
-        return super().request(url)
+        return super().request(url, **kwargs)
 
     @staticmethod
     def _make_api_url(project: NpmPackage) -> str:
@@ -31,11 +31,12 @@ class Npm(Api):
 
         return 'https://registry.npmjs.com/%s' % name
 
-    def get_project(self, project: NpmPackage) -> None:
+    def get_project(self, project: NpmPackage, **kwargs) -> None:
         """Gets a package's metadata."""
 
         # load the url from cache or the web
-        data = self.request(self._make_api_url(project))
+        url = self._make_api_url(project)
+        data = self.request(url, **kwargs)
 
         # ignore version-related data
         data.pop('versions')
@@ -44,11 +45,12 @@ class Npm(Api):
         project.update(**data)
 
     def get_versions(self, project: NpmPackage,
-                     historical: str = 'all') -> None:
+                     historical: str = 'all', **kwargs) -> None:
         """Gets a version's historical releases."""
 
         # load the url from cache or from the web
-        data = self.request(self._make_api_url(project))
+        url = self._make_api_url(project)
+        data = self.request(url, **kwargs)
         versions = data['versions']
 
         if historical == 'latest':

@@ -6,14 +6,14 @@ from structures.versions import PypiRelease
 
 
 class Pypi(Api):
-    def request(self, url: str, **_) -> Union[dict, list]:
+    def request(self, url, **kwargs) -> Union[dict, list]:
         """Manages API rate limitations before calling super().request()."""
 
         # Note: The pypi json api does not currently have any sort of
         # rate limiting policies in effect. See:
         # https://warehouse.readthedocs.io/api-reference/#rate-limiting
 
-        return super().request(url)
+        return super().request(url, **kwargs)
 
     @staticmethod
     def _make_api_url(project: PypiProject) -> str:
@@ -27,11 +27,12 @@ class Pypi(Api):
 
         return 'https://pypi.org/pypi/%s/json' % name
 
-    def get_project(self, project: PypiProject) -> None:
+    def get_project(self, project: PypiProject, **kwargs) -> None:
         """Gets a project's metadata."""
 
         # load the url from cache or the web
-        data = self.request(self._make_api_url(project))
+        url = self._make_api_url(project)
+        data = self.request(url, **kwargs)
 
         # ignore version-related data
         data.pop('releases')
@@ -43,11 +44,12 @@ class Pypi(Api):
         project.update(**data)
 
     def get_versions(self, project: PypiProject,
-                     historical: str = 'all') -> None:
+                     historical: str = 'all', **kwargs) -> None:
         """Gets a project's historical releases."""
 
         # load the url from cache or from the web
-        data = self.request(self._make_api_url(project))
+        url = self._make_api_url(project)
+        data = self.request(url, **kwargs)
         releases = data['releases']
 
         if historical == 'latest':

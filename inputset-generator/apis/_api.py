@@ -20,8 +20,8 @@ class Api(ABC):
         # set how long a cached file is valid
         self.cache_timeout = cache_timeout or timedelta(weeks=1)
 
-    def request(self, url: str,
-                nocache: bool = False, **headers) -> Union[dict, list]:
+    def request(self, url: str, nocache: bool = False,
+                headers: dict = {}, data: dict = {}, **_) -> Union[dict, list]:
         """Loads a url from cache or downloads it from the web."""
 
         # try loading the data from the cache
@@ -41,7 +41,7 @@ class Api(ABC):
 
         # download the url
         try:
-            r = requests.get(url, headers=headers)
+            r = requests.get(url, headers=headers, data=json.dumps(data))
             data = r.json()
             if r.status_code != 200:
                 raise Exception('Exception: %s' % str(data))
@@ -61,11 +61,11 @@ class Api(ABC):
         return data
 
     @abstractmethod
-    def get_project(self, project: Project) -> None: pass
+    def get_project(self, project: Project, **kwargs) -> None: pass
 
     @abstractmethod
     def get_versions(self, project: Project,
-                     hist: str = 'all') -> None: pass
+                     hist: str = 'all', **kwargs) -> None: pass
 
     def __repr__(self):
         return 'Api(%s)' % self.__class__.__name__

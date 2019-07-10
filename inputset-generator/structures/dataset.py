@@ -63,7 +63,7 @@ class Dataset(object):
         else:
             loader().load(self, path)
 
-    def load_weblist(self, name: str) -> None:
+    def load_weblist(self, name: str, nocache: bool = False) -> None:
         """Uses a weblist loader to load an initial dataset from a weblist."""
         from loaders.weblist import class_map
 
@@ -82,15 +82,16 @@ class Dataset(object):
         print("Loading '%s' from %s" % (name, self.registry))
         loader().load(self, name)
 
-    def get_projects_meta(self) -> None:
+    def get_projects_meta(self, nocache: bool = False) -> None:
         """Gets the metadata for all projects."""
         for p in self.projects:
-            self.api.get_project(p)
+            self.api.get_project(p, nocache=nocache)
 
-    def get_project_versions(self, historical: str = 'all') -> None:
+    def get_project_versions(self, historical: str = 'all',
+                             nocache: bool = False) -> None:
         """Gets the historical versions for all projects."""
         for p in self.projects:
-            self.api.get_versions(p, historical)
+            self.api.get_versions(p, historical=historical, nocache=nocache)
 
     def set_meta(self, name=None, version=None, description=None,
                  readme=None, author=None, email=None):

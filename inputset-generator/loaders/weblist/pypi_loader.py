@@ -17,24 +17,24 @@ class PypiLoader(Loader):
             }
         }
 
-    def load(self, ds: Dataset, name: str, **_) -> None:
+    def load(self, ds: Dataset, name: str, **kwargs) -> None:
         # load the data
-        data = self.weblists[name]['getter'](api=ds.api)
+        data = self.weblists[name]['getter'](api=ds.api, **kwargs)
 
         # parse the data
         self.weblists[name]['parser'](ds, data)
 
     @staticmethod
-    def _get_top5kyear(api, **_) -> list:
+    def _get_top5kyear(api, **kwargs) -> list:
         url = 'https://hugovk.github.io/top-pypi-packages/' \
               'top-pypi-packages-365-days.json'
-        return api.request(url)['rows']
+        return api.request(url, **kwargs)['rows']
 
     @staticmethod
-    def _get_top5kmonth(api, **_) -> list:
+    def _get_top5kmonth(api, **kwargs) -> list:
         url = 'https://hugovk.github.io/top-pypi-packages/' \
               'top-pypi-packages-30-days.json'
-        return api.request(url)['rows']
+        return api.request(url, **kwargs)['rows']
 
     @staticmethod
     def _parse_hugovk(ds: Dataset, data: list) -> None:
