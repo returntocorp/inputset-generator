@@ -24,31 +24,45 @@ class Api(ABC):
     @abstractmethod
     def _base_api_url(self) -> str: pass
 
-    def request(self, url: str, nocache: bool = False,
+    def request(self, url: str, request_type: str = 'get',
+                nocache: bool = False, cache_timeout: timedelta = None,
                 headers: dict = {}, data: dict = {}, **_) -> Union[dict, list]:
         """Loads a url from cache or downloads it from the web."""
 
-        # try loading the data from the cache
-        if not nocache:
-            filename = md5(url.encode()).hexdigest()
-            filepath = '%s/%s.json' % (self.cache_dir, filename)
+        # url + request type + headers + data uniquely identifies a
+        # request in the cache
+        uuid = '%s%s%s%s' % (url, request_type, str(headers), str(data))
+        filename = md5(uuid.encode()).hexdigest()
+        filepath = '%s/%s.json' % (self.cache_dir, filename)
 
+        if not nocache:
+            # try loading the data from cache
+            # use default cache timeout if caller hasn't provided one
+            cache_timeout = cache_timeout or self.cache_timeout
             if os.path.isfile(filepath):
                 # load the file from disk
                 cached = json.load(open(filepath))
                 cached_date = datetime.strptime(cached['timestamp'],
                                                 '%Y-%m-%d %H:%M:%S.%f')
 
-                if datetime.utcnow() < cached_date + self.cache_timeout:
+                if datetime.utcnow() < cached_date + cache_timeout:
                     # cached data isn't too old; return it
                     return cached['json']
 
-        # download the url
+        # download the url (if not loaded from file)
         try:
-            r = requests.get(url, headers=headers, data=json.dumps(data))
-            data = r.json()
-            if r.status_code != 200:
+            # get/post request the data (default is get)
+            if request_type == 'post':
+                r = requests.post(url, headers=headers, data=json.dumps(data))
+            else:
+                r = requests.get(url, headers=headers, data=json.dumps(data))
+
+            # check for non-2xx (error) response codes
+            if r.status_code // 100 != 2:
                 raise Exception('Exception: %s' % str(data))
+
+            # get response json
+            data = r.json()
 
         except:
             raise Exception('No response or non-json response for url '
