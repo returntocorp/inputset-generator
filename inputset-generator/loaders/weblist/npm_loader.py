@@ -5,16 +5,27 @@ from loaders import Loader
 class NpmLoader(Loader):
     def __init__(self):
         self.weblists = {
+            'allbydependents': {
+                'getter': self._get_allbydependents,
+                'parser': self._parse_niceregistry
+            }
         }
 
         """
-        Other possible sources:
-        - List of the top 108 most depended-upon packages:
+        Other possible sources/useful links:
+        - Realtime list of the top 108 most depended-upon packages:
           https://www.npmjs.com/browse/depended
+
         - List of the top 1k most depended upon, most dependencies, and
           highest PageRank score packages as of December 2018:
           https://gist.github.com/anvaka/8e8fa57c7ee1350e3491
-        - Good sources of discussion on npm api options:
+
+        - Other projects by nice-registry:
+          https://github.com/nice-registry/ghub.io
+          https://github.com/nice-registry/nice-package
+          https://github.com/nice-registry/all-the-package-repos
+
+        - Discussions of npm api options:
           https://stackoverflow.com/questions/34071621/query-npmjs-registry-via-api
           https://stackoverflow.com/questions/48251633/list-all-public-packages-in-the-npm-registry
         """
@@ -26,9 +37,34 @@ class NpmLoader(Loader):
         # parse the data
         self.weblists[name]['parser'](ds, data)
 
+    @staticmethod
+    def _get_allbydependents(api, **kwargs) -> list:
+        url = 'https://github.com/nice-registry/all-the-package-names/raw/master/names.json'
+        data = api.request(url, **kwargs)
+        return data
+
+    @staticmethod
+    def _parse_niceregistry(ds: Dataset, data: list):
+        from structures.projects import NpmPackage
+
+        # map data keys to package keywords
+        uuids = {
+            'name': lambda p: p.name
+        }
+
+        # turn a list of names ordered from most to least dependents
+        # into a list of dicts containing name and dependents rank
+        parsed = [{
+            'name': d,
+            'dependents_rank': i  # package with rank 1 has the most dependents
+        } for i, d in enumerate(data)]
+
+        # create the projects
+        ds.projects = [NpmPackage(uuids_=uuids, **p) for p in parsed]
+
     '''
     @staticmethod
-    def _get_[DEPRECATED](api, **kwargs) -> list:
+    def _get_[incomplete--see problem in approach #4](api, **kwargs) -> list:
         """
         Approach:
         1. Download list of all 1.02M NPM packages from npmjs.
@@ -105,15 +141,3 @@ class NpmLoader(Loader):
 
         return packages
     '''
-
-    @staticmethod
-    def _parse_npm(ds: Dataset, data: list):
-        from structures.projects import NpmPackage
-
-        # map data keys to package keywords
-        uuids = {
-            'name': lambda p: p.package
-        }
-
-        # create the projects
-        ds.projects = [NpmPackage(uuids_=uuids, **d) for d in data]
