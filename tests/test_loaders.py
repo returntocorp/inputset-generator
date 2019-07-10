@@ -70,6 +70,14 @@ def test_weblist():
     ds.get_project_versions('latest')
     ds.save('../test.json')
 
+    # test npm
+    ds = Dataset('npm', cache_dir='../cache')
+    ds.set_meta('test', '1.0')
+    ds.load_weblist('allbydependents')
+    ds.head(10)
+    ds.get_project_versions('latest')
+    ds.save('../test.json')
+
     # test pypi
     ds = Dataset('pypi', cache_dir='../cache')
     ds.set_meta('test', '1.0')

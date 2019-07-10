@@ -91,9 +91,6 @@ class NpmLoader(Loader):
 
         6. When parsing, use the 'source' attribute to determine how to
            handle the data (npms.io returns a lot more data than npm).
-           May need to standardize what data gets parsed out, as having
-           varying attributes would add a lot of complexity to sorting/
-           filtering the dataset.
         """
 
         # load a list of projects

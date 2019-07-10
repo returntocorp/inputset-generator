@@ -79,7 +79,7 @@ class Dataset(object):
                             'are: %s' % (self.registry, str(class_map)))
 
         # load initial data from the weblist
-        print("Loading '%s' from %s" % (name, self.registry))
+        print("Loading %s %s" % (self.registry, name))
         loader().load(self, name)
 
     def get_projects_meta(self, nocache: bool = False) -> None:
