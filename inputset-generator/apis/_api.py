@@ -1,5 +1,6 @@
 import os
 import json
+import shutil
 import requests
 from typing import Union
 from datetime import datetime, timedelta
@@ -73,6 +74,11 @@ class Api(ABC):
             json.dump(cached, json_file, indent=4, default=str)
 
         return data
+
+    def clear_cache(self):
+        """Deletes all cached files."""
+        shutil.rmtree(self.cache_dir)
+        os.mkdir(self.cache_dir)
 
     @abstractmethod
     def get_project(self, project: Project, **kwargs) -> None: pass
