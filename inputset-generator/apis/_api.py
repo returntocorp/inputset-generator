@@ -20,10 +20,6 @@ class Api(ABC):
         # set how long a cached file is valid
         self.cache_timeout = cache_timeout or timedelta(weeks=1)
 
-    @property
-    @abstractmethod
-    def _base_api_url(self) -> str: pass
-
     def request(self, url: str, request_type: str = 'get',
                 nocache: bool = False, cache_timeout: timedelta = None,
                 headers: dict = {}, data: dict = {}, **_) -> Union[dict, list]:

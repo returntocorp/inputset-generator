@@ -7,9 +7,11 @@ from structures.versions import GithubCommit
 
 
 class Github(Api):
-    @property
-    def _base_api_url(self):
-        return 'https://api.github.com'
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        # set base url for github's api
+        self._base_api_url = 'https://api.github.com'
 
     def request(self, url: str, headers: dict = {}, **kwargs) -> Union[dict, list]:
         """Manages API rate limitations before calling super().request()."""
@@ -27,8 +29,7 @@ class Github(Api):
 
         return super().request(url, headers=headers, **kwargs)
 
-    @staticmethod
-    def _make_api_url(project: GithubRepo) -> str:
+    def _make_api_url(self, project: GithubRepo) -> str:
         if 'name' in project.uuids_ and 'org' in project.meta_:
             name = project.uuids_['name']()
             org = project.meta_['org']()
@@ -39,7 +40,7 @@ class Github(Api):
             name = url.strip('/').split('/')[-1]
             org = url.strip('/').split('/')[-2]
 
-        return '%s/repos/%s/%s' % (Github._base_api_url, org, name)
+        return '%s/repos/%s/%s' % (self._base_api_url, org, name)
 
     def get_project(self, project: GithubRepo, **kwargs) -> None:
         """Gets a repo's metadata."""

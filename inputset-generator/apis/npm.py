@@ -6,9 +6,11 @@ from structures.versions import NpmVersion
 
 
 class Npm(Api):
-    @property
-    def _base_api_url(self):
-        return 'https://registry.npmjs.com'
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        # set the base url for npm's api
+        self._base_api_url = 'https://registry.npmjs.com'
 
     def request(self, url, **kwargs) -> Union[dict, list]:
         """Manages API rate limitations before calling super().request()."""
@@ -26,8 +28,7 @@ class Npm(Api):
 
         return super().request(url, **kwargs)
 
-    @staticmethod
-    def _make_api_url(project: NpmPackage) -> str:
+    def _make_api_url(self, project: NpmPackage) -> str:
         # get the package name and convert to api url
         if 'name' in project.uuids_:
             name = project.uuids_['name']()
@@ -36,7 +37,7 @@ class Npm(Api):
             # extract the name from the url
             name = project.uuids_['url']().strip('/').split('/')[-1]
 
-        return '%s/%s' % (Npm._base_api_url, name)
+        return '%s/%s' % (self._base_api_url, name)
 
     def get_project(self, project: NpmPackage, **kwargs) -> None:
         """Gets a package's metadata."""

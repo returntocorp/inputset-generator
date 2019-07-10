@@ -6,9 +6,11 @@ from structures.versions import PypiRelease
 
 
 class Pypi(Api):
-    @property
-    def _base_api_url(self):
-        return 'https://pypi.org'
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        # set the base url for pypi's api
+        self._base_api_url = 'https://pypi.org'
 
     def request(self, url, **kwargs) -> Union[dict, list]:
         """Manages API rate limitations before calling super().request()."""
@@ -22,8 +24,7 @@ class Pypi(Api):
 
         return super().request(url, **kwargs)
 
-    @staticmethod
-    def _make_api_url(project: PypiProject) -> str:
+    def _make_api_url(self, project: PypiProject) -> str:
         # get the package name and convert to api url
         if 'name' in project.uuids_:
             name = project.uuids_['name']()
@@ -32,7 +33,7 @@ class Pypi(Api):
             # extract the name from the url
             name = project.uuids_['url']().strip('/').split('/')[-2]
 
-        return '%s/pypi/%s/json' % (Pypi._base_api_url, name)
+        return '%s/pypi/%s/json' % (self._base_api_url, name)
 
     def get_project(self, project: PypiProject, **kwargs) -> None:
         """Gets a project's metadata."""
