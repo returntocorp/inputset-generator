@@ -60,15 +60,6 @@ class Api(ABC):
 
         return data
 
-    def clean_cache(self, url):
-        """Deletes the cache file associated with this url."""
-
-        # find the file and delete it
-        filename = md5(url.encode()).hexdigest()
-        filepath = '%s/%s.json' % (self.cache_dir, filename)
-        if os.path.isfile(filepath):
-            os.remove(filepath)
-
     @abstractmethod
     def get_project(self, project: Project) -> None: pass
 
