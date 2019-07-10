@@ -25,16 +25,16 @@ class PypiLoader(Loader):
         self.weblists[name]['parser'](ds, data)
 
     @staticmethod
-    def _get_top5kyear(**_) -> list:
+    def _get_top5kyear(api, **_) -> list:
         url = 'https://hugovk.github.io/top-pypi-packages/' \
               'top-pypi-packages-365-days.json'
-        return requests.get(url).json()['rows']
+        return api.request(url)['rows']
 
     @staticmethod
-    def _get_top5kmonth(**_) -> list:
+    def _get_top5kmonth(api, **_) -> list:
         url = 'https://hugovk.github.io/top-pypi-packages/' \
               'top-pypi-packages-30-days.json'
-        return requests.get(url).json()['rows']
+        return api.request(url)['rows']
 
     @staticmethod
     def _parse_hugovk(ds: Dataset, data: list) -> None:
