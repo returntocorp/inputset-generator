@@ -34,18 +34,40 @@ def sort(ds: Dataset, params: List[str]) -> None:
             # set the sort order
             reverse = (param == 'desc')
 
-        elif param.startswith('v.'):
-            # sort by version attribute
-            param = param[2:]
-            for project in ds.projects:
-                project.versions.sort(
-                    key=lambda version: clean(getattr(version, param, '')),
-                    reverse=reverse
-                )
-
         else:
-            # sort by project attribute
-            ds.projects.sort(
-                key=lambda project: clean(getattr(project, param, '')),
-                reverse=reverse
-            )
+            # sort on this parameter
+            # Note: Parameter strings can follow these formats:
+            #   'attr'          sort on project attribute
+            #   'uuids.key'     sort on project uuid
+            #   'meta.key'      sort on project meta
+            #   'v.attr'        sort on version attribute
+            #   'v.uuids.key'   sort on version uuid
+            #   'v.meta.key'    sort on version meta
+
+            p_list = param.split('.')
+
+            # determine if we're sorting on project or version
+            on_project = True
+            if p_list[0] == 'v':
+                on_project = False
+                p_list.pop(0)
+
+            # build a sort function
+            if p_list[0] == 'uuids':
+                # sort on a uuid value
+                sort_func = lambda o: o.uuids_[p_list[1]]()
+            elif p_list[0] == 'meta':
+                # sort on a meta value
+                sort_func = lambda o: o.meta_[p_list[1]]()
+            else:
+                # sort on a regular attribute
+                sort_func = lambda o: clean(getattr(o, p_list[0], ''))
+
+            # perform the sort
+            if on_project:
+                # sort on project
+                ds.projects.sort(key=sort_func, reverse=reverse)
+            else:
+                # sort on version
+                for project in ds.projects:
+                    project.versions.sort(key=sort_func, reverse=reverse)
