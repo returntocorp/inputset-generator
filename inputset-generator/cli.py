@@ -96,13 +96,13 @@ def save(ctx, filepath):
     ds.save(filepath)
 
 
-@cli.command('head')
+@cli.command('truncate')
 @argument('n', type=int)
 @option('-p/-v', '--projects/--versions', 'on_projects', default=True)
 @click.pass_context
-def head(ctx, n, on_projects):
+def truncate(ctx, n, on_projects):
     ds = get_dataset(ctx)
-    ds.head(n, on_projects)
+    ds.truncate(n, on_projects)
 
 
 @cli.command('sort')
