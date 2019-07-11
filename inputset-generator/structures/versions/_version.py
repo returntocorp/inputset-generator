@@ -36,6 +36,6 @@ class Version(object):
 
     def __repr__(self):
         # only return version identifiers
-        return 'Version(%s)' % ', '.join([
-            '%s' % func() for k, func in self.uuids_.items()
-        ])
+        cls = str(type(self).__name__)
+        uuids = [str(func()) for _, func in self.uuids_.items()]
+        return '%s(%s)' % (cls, ', '.join(uuids))

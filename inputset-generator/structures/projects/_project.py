@@ -65,6 +65,9 @@ class Project(object):
 
     def __repr__(self):
         # only return project identifiers
-        return 'Project(%s' % ', '.join([
-            '%s=%s' % (k, func()) for k, func in self.uuids_.items()
-        ]) + ', versions=%s)' % repr(self.versions)
+        cls = str(type(self).__name__)
+        uuids = [str(func()) for _, func in self.uuids_.items()]
+        versions = [repr(v) for v in self.versions]
+        return '%s(%s, versions=[%s])' % (cls,
+                                          ', '.join(uuids),
+                                          ', '.join(versions))
