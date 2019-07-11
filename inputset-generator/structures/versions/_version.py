@@ -2,11 +2,14 @@ from types import MethodType
 
 
 class Version(object):
-    def __init__(self, uuids_: dict = {}, **kwargs):
-        # set the attr functions as method types (to autopass self)
+    def __init__(self, uuids_: dict = {}, meta_: dict = {}, **kwargs):
+        # set the uuid/meta functions as method types (to autopass self)
         self.uuids_ = {}
         for attr, func in uuids_.items():
             self.uuids_[attr] = MethodType(func, self)
+        self.meta_ = {}
+        for attr, func in meta_.items():
+            self.meta_[attr] = MethodType(func, self)
 
         # load all attributes into the version
         self.update(**kwargs)
