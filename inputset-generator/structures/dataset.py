@@ -2,8 +2,11 @@ import json
 from typing import List, Optional
 from types import MethodType
 from pathlib import Path
+from dill.source import getsource
 
-from structures.projects import Project
+from structures.projects import Project, DefaultProject, \
+    class_map as projects_map
+from structures.versions import DefaultVersion, class_map as versions_map
 
 
 class Dataset(object):
@@ -164,6 +167,101 @@ class Dataset(object):
                 return other_p
 
         return None
+
+    def head(self, n: int = 5, details: bool = False):
+        """Summarizes the key data of the first n projects."""
+        for p in self.projects[:n]:
+            project_type = str(type(p).__name__)
+            attr_indent = len(project_type) + 5
+            val_indent = 11
+
+            # print project uuids
+            print('%s(%s' % (
+                (' ' * 4) + project_type,
+                ('\n' + ' ' * attr_indent).join([
+                    '%s = %s' % (
+                        a.ljust(val_indent - 3),
+                        str(func())) for a, func in p.uuids_.items()
+                ])
+            ))
+
+            # print versions
+            print('%s = [%s])' % (
+                (' ' * attr_indent) + 'versions',
+                ('\n' + ' ' * (attr_indent + val_indent + 1)).join([
+                    repr(v) for v in p.versions
+                ])
+            ))
+
+    def describe(self, scope: str = 'dataset'):
+        """Describes the dataset/project/version structures."""
+        if scope == 'dataset':
+            # describe the dataset
+            col_width = 13
+
+            # print the attributes in the following order:
+            attrs = ['registry', 'name', 'version',
+                     'description', 'readme', 'author', 'email']
+            for a in attrs:
+                val = getattr(self, a, None)
+                print('    %s%s' % (a.ljust(col_width), val))
+
+            # print projects summary info
+            print('    projects')
+            project_type = projects_map.get(self.registry,
+                                            DefaultProject).__name__
+            print('    %s%s' % ('    type'.ljust(col_width),
+                                'list(%s)' % project_type))
+            print('    %s%d' % ('    len'.ljust(col_width),
+                                len(self.projects)))
+
+        elif scope in ['project', 'version']:
+            # describe a project or version
+            obj = self.projects[0]
+            if scope == 'version':
+                obj = self.projects[0].versions[0]
+
+            # calculate the width of the first columne
+            col_width = max([len(a) for a in vars(obj)]) + 2
+
+            # print uuids & meta vars
+            for key in ['uuids', 'meta']:
+                print('    %s' % key)
+                key_dict = getattr(obj, key + '_')
+                if len(key_dict) == 0:
+                    print('    none')
+                for a, func in key_dict.items():
+                    # convert the lambda function code to a string
+                    func_str = getsource(func).split(': ', 1)[1].strip()
+                    print('    %s%s' % (
+                        ('    ' + a).ljust(col_width),
+                        func_str
+                    ))
+
+            # print all the attributes
+            special_attrs = ['uuids_', 'meta_', 'versions']
+            for a in sorted(vars(obj)):
+                if a in special_attrs:
+                    continue
+
+                print('    %s%s' % (
+                    a.ljust(col_width),
+                    type(getattr(obj, a)).__name__
+                ))
+
+            if scope == 'project':
+                # print versions summary info, if applicable
+                print('    versions')
+                version_type = versions_map.get(self.registry,
+                                                DefaultVersion).__name__
+                print('    %s%s' % (
+                    '    type'.ljust(col_width),
+                    'list(%s)' % version_type
+                ))
+                print('    %s%d' % (
+                    '    len'.ljust(col_width),
+                    len(obj.versions)
+                ))
 
     def __repr__(self):
         return 'Dataset(%s' % ', '.join([

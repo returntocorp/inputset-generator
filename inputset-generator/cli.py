@@ -73,29 +73,6 @@ def get(ctx, metadata, versions):
         ds.get_project_versions(versions)
 
 
-@cli.command('meta')
-@option('-n', '--name', help='Dataset name.')
-@option('-v', '--version', help='Dataset version.')
-@option('-d', '--description', help='Description string.')
-@option('-r', '--readme', help='Readme string.')
-@option('-a', '--author', default=get_user_name,
-        help='Author name. Defaults to git user.name.')
-@option('-e', '--email', default=get_user_email,
-        help='Author email. Defaults to git user.email.')
-@click.pass_context
-def meta(ctx, name, version, description, readme, author, email):
-    ds = get_dataset(ctx)
-    ds.set_meta(name, version, description, readme, author, email)
-
-
-@cli.command('save')
-@argument('filepath')
-@click.pass_context
-def save(ctx, filepath):
-    ds = get_dataset(ctx)
-    ds.save(filepath)
-
-
 @cli.command('truncate')
 @argument('n', type=int)
 @option('-p/-v', '--projects/--versions', 'on_projects', default=True)
@@ -120,6 +97,46 @@ def sort(ctx, params):
 def sample(ctx, n, on_projects):
     ds = get_dataset(ctx)
     ds.sample(n, on_projects)
+
+
+@cli.command('meta')
+@option('-n', '--name', help='Dataset name.')
+@option('-v', '--version', help='Dataset version.')
+@option('-d', '--description', help='Description string.')
+@option('-r', '--readme', help='Readme string.')
+@option('-a', '--author', default=get_user_name,
+        help='Author name. Defaults to git user.name.')
+@option('-e', '--email', default=get_user_email,
+        help='Author email. Defaults to git user.email.')
+@click.pass_context
+def meta(ctx, name, version, description, readme, author, email):
+    ds = get_dataset(ctx)
+    ds.set_meta(name, version, description, readme, author, email)
+
+
+@cli.command('head')
+@argument('n', type=int, default=5)
+@option('-d', '--details', is_flag=True, default=False)
+@click.pass_context
+def save(ctx, n, details):
+    ds = get_dataset(ctx)
+    ds.head(n, details)
+
+
+@cli.command('describe')
+@argument('scope', type=Choice(['dataset', 'project', 'version']))
+@click.pass_context
+def save(ctx, scope):
+    ds = get_dataset(ctx)
+    ds.describe(scope)
+
+
+@cli.command('save')
+@argument('filepath')
+@click.pass_context
+def save(ctx, filepath):
+    ds = get_dataset(ctx)
+    ds.save(filepath)
 
 
 if __name__ == '__main__':
