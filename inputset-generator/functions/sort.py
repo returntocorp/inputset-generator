@@ -39,13 +39,13 @@ def sort(ds: Dataset, params: List[str]) -> None:
             param = param[2:]
             for project in ds.projects:
                 project.versions.sort(
-                    key=lambda version: clean(getattr(version, param)),
+                    key=lambda version: clean(getattr(version, param, '')),
                     reverse=reverse
                 )
 
         else:
             # sort by project attribute
             ds.projects.sort(
-                key=lambda project: clean(getattr(project, param)),
+                key=lambda project: clean(getattr(project, param, '')),
                 reverse=reverse
             )

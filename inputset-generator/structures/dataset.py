@@ -169,7 +169,7 @@ class Dataset(object):
         return 'Dataset(%s' % ', '.join([
             '%s=%s' % (a, repr(getattr(self, a)))
             for a in dir(self)
-            if getattr(self, a)
+            if getattr(self, a, None)
                and a is not 'projects'             # ignore projects list
                and not a.startswith('__')          # ignore dunders
                and not callable(getattr(self, a))  # ignore functions
