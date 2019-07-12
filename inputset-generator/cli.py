@@ -118,7 +118,7 @@ def meta(ctx, name, version, description, readme, author, email):
 @argument('n', type=int, default=5)
 @option('-d', '--details', is_flag=True, default=False)
 @click.pass_context
-def save(ctx, n, details):
+def head(ctx, n, details):
     ds = get_dataset(ctx)
     ds.head(n, details)
 
@@ -126,17 +126,17 @@ def save(ctx, n, details):
 @cli.command('describe')
 @argument('scope', type=Choice(['dataset', 'project', 'version']))
 @click.pass_context
-def save(ctx, scope):
+def describe(ctx, scope):
     ds = get_dataset(ctx)
     ds.describe(scope)
 
 
-@cli.command('save')
+@cli.command('export')
 @argument('filepath')
 @click.pass_context
-def save(ctx, filepath):
+def export(ctx, filepath):
     ds = get_dataset(ctx)
-    ds.save(filepath)
+    ds.export_inputset(filepath)
 
 
 if __name__ == '__main__':

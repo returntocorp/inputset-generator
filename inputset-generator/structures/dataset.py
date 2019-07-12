@@ -85,17 +85,6 @@ class Dataset(object):
         print("Loading %s %s" % (self.registry, name))
         loader().load(self, name)
 
-    def save(self, filepath: str = None) -> None:
-        # file name is dataset name, if not provided by user
-        filepath = filepath or (self.name + '.json')
-
-        # convert the dataset to an input set json
-        inputset = self.to_inputset()
-
-        # save to disk
-        print('Saving results to %s' % filepath)
-        with open(filepath, 'w') as file:
-            json.dump(inputset, file, indent=4)
 
     def to_json(self) -> dict:
         """Converts a dataset to a json."""
@@ -111,6 +100,22 @@ class Dataset(object):
         data['projects'] = [p.to_json() for p in self.projects]
 
         return data
+
+    def export_inputset(self, filepath: str = None) -> None:
+        """Exports a dataset to an r2c input set json file."""
+
+        # file name is dataset name, if not provided by user
+        filepath = filepath or self.name
+        if not filepath.endswith('.json'):
+            filepath += '.json'
+
+        # convert the dataset to an input set json
+        inputset = self.to_inputset()
+
+        # save to disk
+        print('Exporting input set to %s' % filepath)
+        with open(filepath, 'w') as file:
+            json.dump(inputset, file, indent=4)
 
     def to_inputset(self) -> dict:
         """Converts a dataset to an input set json."""
@@ -147,8 +152,9 @@ class Dataset(object):
         for p in self.projects:
             self.api.get_versions(p, historical=historical, nocache=nocache)
 
-    def set_meta(self, name=None, version=None, description=None,
-                 readme=None, author=None, email=None):
+    def set_meta(self, name: str = None, version: str = None,
+                 description: str = None, readme: str = None,
+                 author: str = None, email: str = None) -> None:
         """Sets dataset metadata."""
         if not (name or version or description
                 or readme or author or email):
