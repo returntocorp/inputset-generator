@@ -1,7 +1,7 @@
 from structures import Dataset
 
 
-def truncate(ds: Dataset, n: int, on_projects: bool = True) -> None:
+def trim(ds: Dataset, n: int, on_projects: bool = True) -> None:
     """Keep only the first n projects inplace."""
 
     # select a sample of projects

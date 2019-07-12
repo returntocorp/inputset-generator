@@ -1,10 +1,10 @@
-from .truncate import truncate
+from .trim import trim
 from .sample import sample
 from .sort import sort
 
 
 function_map = {
-    'truncate': truncate,
+    'trim': trim,
     'sample': sample,
     'sort': sort
 }

@@ -73,13 +73,13 @@ def get(ctx, metadata, versions):
         ds.get_project_versions(versions)
 
 
-@cli.command('truncate')
+@cli.command('trim')
 @argument('n', type=int)
 @option('-p/-v', '--projects/--versions', 'on_projects', default=True)
 @click.pass_context
-def truncate(ctx, n, on_projects):
+def trim(ctx, n, on_projects):
     ds = get_dataset(ctx)
-    ds.truncate(n, on_projects)
+    ds.trim(n, on_projects)
 
 
 @cli.command('sort')
