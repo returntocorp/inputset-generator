@@ -210,6 +210,17 @@ class Dataset(object):
 
     def describe(self, scope: str = 'dataset'):
         """Describes the dataset/project/version structures."""
+        '''
+        https://stackoverflow.com/questions/9989334/create-nice-column-output-in-python        
+        table_data = [
+            ['a', 'b', 'c'],
+            ['aaaaaaaaaa', 'b', 'c'],
+            ['a', 'bbbbbbbbmsk', 'c']
+        ]
+        for row in table_data:
+            print("{: <20} {: <20} {: <20}".format(*row))
+        '''
+
         if scope == 'dataset':
             # describe the dataset
             col_width = 13
