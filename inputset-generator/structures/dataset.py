@@ -62,27 +62,27 @@ class Dataset(object):
         self.author = author or self.author
         self.email = email or self.email
 
-    def load_file(self, path: str, fileargs: str = None) -> None:
+    def load_file(self, filepath: str, fileargs: str = None) -> None:
         """Loads a file and parses it into a dataset."""
         from loaders.file import class_map
 
         # check if the path is valid
-        if not Path(path).is_file():
+        if not Path(filepath).is_file():
             raise Exception('Invalid path; file does not exist.')
 
         # check if the filetype is valid
-        extension = Path(path).suffix
+        extension = Path(filepath).suffix
         loader = class_map.get(extension, None)
         if not loader:
             raise Exception("Invalid input file type '%s'. Valid types"
                             "are: %s." % (extension, list(class_map)))
 
         # load initial data from the file
-        print('Loading %s' % path)
+        print('Loading %s' % filepath)
         if fileargs:
-            loader().load(self, path, fileargs)
+            loader().load(self, filepath, fileargs)
         else:
-            loader().load(self, path)
+            loader().load(self, filepath)
 
     def load_weblist(self, name: str, nocache: bool = False) -> None:
         """Loads a weblist and parses it into a dataset."""
@@ -105,15 +105,19 @@ class Dataset(object):
 
     def restore(self, filepath: str) -> None:
         """Restores a complete dataset from a json file."""
+
+        # check if the path is valid
+        if not Path(filepath).is_file():
+            raise Exception('Invalid path; file does not exist.')
+
+        print("Restoring %s" % filepath)
         pass
 
     def save(self, filepath: str = None) -> None:
         """Saves a complete dataset to a json file."""
 
         # file name is dataset name, if not provided by user
-        filepath = filepath or self.name
-        if not filepath.endswith('.json'):
-            filepath += '.json'
+        filepath = filepath or (self.name + '.json')
 
         # convert the dataset to an input set json
         data = self.to_json()
@@ -140,15 +144,20 @@ class Dataset(object):
 
     def import_inputset(self, filepath: str) -> None:
         """Imports an r2c input set and parses it into a dataset."""
-        pass
+        from loaders.core import R2cLoader
+
+        # check if the path is valid
+        if not Path(filepath).is_file():
+            raise Exception('Invalid path; file does not exist.')
+
+        # load the input set
+        R2cLoader().load(self, filepath)
 
     def export_inputset(self, filepath: str = None) -> None:
         """Exports a dataset to an r2c input set json file."""
 
         # file name is dataset name, if not provided by user
-        filepath = filepath or self.name
-        if not filepath.endswith('.json'):
-            filepath += '.json'
+        filepath = filepath or (self.name + '.json')
 
         # convert the dataset to an input set json
         inputset = self.to_inputset()

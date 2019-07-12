@@ -8,12 +8,16 @@ from loaders import Loader
 
 class JsonLoader(Loader):
     def __init__(self):
-        self.parsers = {
-            'r2c': self._parse_r2c
-        }
+        # Note: No Json parsers are provided by default.
+        self.parsers = {}
 
-    def load(self, ds: Dataset, filepath: str, parser: str = 'r2c') -> None:
+    def load(self, ds: Dataset, filepath: str, parser: str = None) -> None:
         """Loads a json file."""
+
+        # ensure the user specified which parser to use
+        if not parser:
+            raise Exception('Missing json parser. Valid options are: %s'
+                            % list(self.parsers))
 
         # load the file
         data = json.load(open(filepath))
@@ -27,68 +31,3 @@ class JsonLoader(Loader):
 
         # run the appropriate parser
         self.parsers[parser](ds, data)
-
-    @staticmethod
-    def _parse_r2c(ds: Dataset, data: dict):
-        # don't overwrite previously set metadata
-        ds.name = ds.name or data['name']
-        ds.version = ds.version or data['version']
-
-        # grab any optional metadata
-        ds.description = ds.description or data.get('description', None)
-        ds.readme = ds.readme or data.get('readme', None)
-        ds.author = ds.author or data.get('author', None)
-        ds.email = ds.email or data.get('email', None)
-
-        # generate the projects and versions
-        for input_ in data['inputs']:
-            # split out project- vs. version-level information
-            p_data, v_data = {}, {}
-            p_keys = ['repo_url', 'url', 'package_name']
-            v_keys = ['commit_hash', 'version']
-            for k, val in input_.items():
-                # add the attribute to the project or version
-                if k in v_keys:
-                    v_data[k] = val
-                elif k in p_keys:
-                    p_data[k] = val
-
-            # get or create the new project
-            project = ds.find_project(**p_data)
-            if project:
-                # update the existing project
-                project.update(**p_data)
-
-            else:
-                # map json headers to project keywords, as applicable
-                uuids = {}
-                if 'package_name' in p_data:
-                    uuids['name'] = lambda p: p.package_name
-                if 'repo_url' in p_data:
-                    uuids['url'] = lambda p: p.repo_url
-                if 'url' in p_data:
-                    uuids['url'] = lambda p: p.url
-
-                # create the new project & add it to the dataset
-                p_class = p_class_map.get(ds.registry, DefaultProject)
-                project = p_class(uuids_=uuids, **p_data)
-                ds.projects.append(project)
-
-            # create the new version, if it doesn't already exist
-            if v_data:
-                version = project.find_version(**v_data)
-                if version:
-                    # update the existing version
-                    version.update(**v_data)
-
-                else:
-                    # map csv headers to version keywords, as applicable
-                    uuids = {}
-                    if 'version' in v_data:
-                        uuids['version'] = lambda v: v.version
-                    if 'commit_hash' in v_data:
-                        uuids['commit'] = lambda v: v.commit_hash
-
-                    # create the new version & add it to the project
-                    v_class = v_class_map.get(ds.registry, DefaultVersion)
-                    project.versions.append(v_class(uuids_=uuids, **v_data))
