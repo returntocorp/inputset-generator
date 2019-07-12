@@ -45,7 +45,7 @@ class Dataset(object):
         self.email = get_user_email()  # default to git user.email
 
     def load_file(self, path: str, fileargs: str = None) -> None:
-        """Uses a file loader to load an initial dataset from file."""
+        """Loads a file and parses it into a dataset."""
         from loaders.file import class_map
 
         # check if the path is valid
@@ -67,7 +67,7 @@ class Dataset(object):
             loader().load(self, path)
 
     def load_weblist(self, name: str, nocache: bool = False) -> None:
-        """Uses a weblist loader to load an initial dataset from a weblist."""
+        """Loads a weblist and parses it into a dataset."""
         from loaders.weblist import class_map
 
         # check if the registry has been set
@@ -85,9 +85,16 @@ class Dataset(object):
         print("Loading %s %s" % (self.registry, name))
         loader().load(self, name)
 
+    def restore(self, filepath: str) -> None:
+        """Restores a complete dataset from a json file."""
+        pass
+
+    def save(self, filepath: str = None) -> None:
+        """Saves a complete dataset to a json file."""
+        pass
 
     def to_json(self) -> dict:
-        """Converts a dataset to a json."""
+        """Converts a complete dataset to a json."""
 
         # grab dataset attributes
         data = {
@@ -100,6 +107,10 @@ class Dataset(object):
         data['projects'] = [p.to_json() for p in self.projects]
 
         return data
+
+    def import_inputset(self, filepath: str) -> None:
+        """Imports an r2c input set and parses it into a dataset."""
+        pass
 
     def export_inputset(self, filepath: str = None) -> None:
         """Exports a dataset to an r2c input set json file."""
@@ -151,6 +162,10 @@ class Dataset(object):
         """Gets the historical versions for all projects."""
         for p in self.projects:
             self.api.get_versions(p, historical=historical, nocache=nocache)
+
+    def set_api(self, name: str) -> None:
+        """Sets the dataset's api."""
+        pass
 
     def set_meta(self, name: str = None, version: str = None,
                  description: str = None, readme: str = None,
