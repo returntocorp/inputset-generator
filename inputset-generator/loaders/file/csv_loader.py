@@ -1,8 +1,8 @@
 import csv
 
 from structures import Dataset, DefaultProject, DefaultVersion
-from structures.projects import class_map as p_class_map
-from structures.versions import class_map as v_class_map
+from structures.projects import project_map
+from structures.versions import version_map
 from loaders import Loader
 
 
@@ -62,7 +62,7 @@ class CsvLoader(Loader):
                             uuids['url'] = lambda p: p.url
 
                         # create the new project & add it to the dataset
-                        p_class = p_class_map.get(ds.registry, DefaultProject)
+                        p_class = project_map.get(ds.registry, DefaultProject)
                         project = p_class(uuids_=uuids, meta_=meta, **p_data)
                         ds.projects.append(project)
 
@@ -82,5 +82,5 @@ class CsvLoader(Loader):
                                 uuids['commit'] = lambda v: v.commit
 
                             # create the new version & add it to the project
-                            v_class = v_class_map.get(ds.registry, DefaultVersion)
+                            v_class = version_map.get(ds.registry, DefaultVersion)
                             project.versions.append(v_class(uuids_=uuids, **v_data))

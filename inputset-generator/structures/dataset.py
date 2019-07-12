@@ -4,14 +4,12 @@ from types import MethodType
 from pathlib import Path
 from dill.source import getsource
 
-from structures.projects import Project, DefaultProject, \
-    class_map as projects_map
-from structures.versions import DefaultVersion, class_map as versions_map
+from structures.projects import Project
 
 
 class Dataset(object):
     def __init__(self, registry: str = None, **kwargs):
-        from apis import class_map as apis_list
+        from apis import api_map as apis_list
         from structures import Project
         from functions import function_map
         from util import get_user_name, get_user_email
@@ -64,7 +62,7 @@ class Dataset(object):
 
     def load_file(self, filepath: str, fileargs: str = None) -> None:
         """Loads a file and parses it into a dataset."""
-        from loaders.file import class_map
+        from loaders.file import fileloader_map
 
         # check if the path is valid
         if not Path(filepath).is_file():
@@ -72,10 +70,10 @@ class Dataset(object):
 
         # check if the filetype is valid
         extension = Path(filepath).suffix
-        loader = class_map.get(extension, None)
+        loader = fileloader_map.get(extension, None)
         if not loader:
             raise Exception("Invalid input file type '%s'. Valid types"
-                            "are: %s." % (extension, list(class_map)))
+                            "are: %s." % (extension, list(fileloader_map)))
 
         # load initial data from the file
         print('Loading %s' % filepath)
@@ -86,18 +84,18 @@ class Dataset(object):
 
     def load_weblist(self, name: str, nocache: bool = False) -> None:
         """Loads a weblist and parses it into a dataset."""
-        from loaders.weblist import class_map
+        from loaders.weblist import weblistloader_map
 
         # check if the registry has been set
         if not self.registry:
             raise Exception('Registry has not been set. Valid '
-                            'registries are: %s' % str(class_map))
+                            'registries are: %s' % str(weblistloader_map))
 
         # check if the name is valid
-        loader = class_map.get(self.registry, None)
+        loader = weblistloader_map.get(self.registry, None)
         if not loader:
             raise Exception('Invalid weblist for %s. Valid weblists'
-                            'are: %s' % (self.registry, str(class_map)))
+                            'are: %s' % (self.registry, str(weblistloader_map)))
 
         # load initial data from the weblist
         print("Loading %s %s" % (self.registry, name))
@@ -248,6 +246,10 @@ class Dataset(object):
 
     def describe(self, scope: str = 'dataset'):
         """Describes the dataset/project/version structures."""
+        from structures import DefaultProject, DefaultVersion
+        from structures.projects import project_map
+        from structures.versions import version_map
+
         '''
         https://stackoverflow.com/questions/9989334/create-nice-column-output-in-python        
         table_data = [
@@ -272,8 +274,8 @@ class Dataset(object):
 
             # print projects summary info
             print('    projects')
-            project_type = projects_map.get(self.registry,
-                                            DefaultProject).__name__
+            project_type = project_map.get(self.registry,
+                                           DefaultProject).__name__
             print('    %s%s' % ('    type'.ljust(col_width),
                                 'list(%s)' % project_type))
             print('    %s%d' % ('    len'.ljust(col_width),
@@ -316,8 +318,8 @@ class Dataset(object):
             if scope == 'project':
                 # print versions summary info, if applicable
                 print('    versions')
-                version_type = versions_map.get(self.registry,
-                                                DefaultVersion).__name__
+                version_type = version_map.get(self.registry,
+                                               DefaultVersion).__name__
                 print('    %s%s' % (
                     '    type'.ljust(col_width),
                     'list(%s)' % version_type

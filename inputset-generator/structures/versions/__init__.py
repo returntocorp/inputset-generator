@@ -4,7 +4,7 @@ from .github_commit import GithubCommit
 from .npm_version import NpmVersion
 from .pypi_release import PypiRelease
 
-class_map = {
+version_map = {
     'github': GithubCommit,
     'npm': NpmVersion,
     'pypi': PypiRelease,

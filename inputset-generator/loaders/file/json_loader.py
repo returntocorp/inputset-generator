@@ -1,8 +1,8 @@
 import json
 
 from structures import Dataset, DefaultProject, DefaultVersion
-from structures.projects import class_map as p_class_map
-from structures.versions import class_map as v_class_map
+from structures.projects import project_map
+from structures.versions import version_map
 from loaders import Loader
 
 
