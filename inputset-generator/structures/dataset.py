@@ -44,10 +44,6 @@ class Dataset(object):
         self.author = get_user_name()  # default to git user.name
         self.email = get_user_email()  # default to git user.email
 
-    def set_type(self, type_: str) -> None:
-        """Sets the api and project/version types for the dataset."""
-        pass
-
     def set_meta(self, name: str = None, version: str = None,
                  description: str = None, readme: str = None,
                  author: str = None, email: str = None) -> None:
@@ -113,7 +109,19 @@ class Dataset(object):
 
     def save(self, filepath: str = None) -> None:
         """Saves a complete dataset to a json file."""
-        pass
+
+        # file name is dataset name, if not provided by user
+        filepath = filepath or self.name
+        if not filepath.endswith('.json'):
+            filepath += '.json'
+
+        # convert the dataset to an input set json
+        data = self.to_json()
+
+        # save to disk
+        print('Saving dataset to %s' % filepath)
+        with open(filepath, 'w') as file:
+            json.dump(data, file, indent=4)
 
     def to_json(self) -> dict:
         """Converts a complete dataset to a json."""

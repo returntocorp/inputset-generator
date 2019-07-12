@@ -29,14 +29,6 @@ def cli(ctx):
     ctx.ensure_object(dict)
 
 
-@cli.command('type')
-@argument('type', name='type_')
-@click.pass_context
-def meta(ctx, type_):
-    ds = get_dataset(ctx)
-    ds.set_type(type_)
-
-
 @cli.command('meta')
 @option('-n', '--name', help='Dataset name.')
 @option('-v', '--version', help='Dataset version.')
@@ -70,15 +62,39 @@ def load(ctx, registry, handle, fileargs):
 
     if '.' in handle:
         # read in a file (fileargs is either a header string for csv
-        # or a file structure handle--eg, 'r2c'--for json)
+        # or a file structure handle for json)
         ds.load_file(handle, fileargs)
     else:
         # download a weblist
         ds.load_weblist(handle)
 
 
-@cli.command('export')
+@cli.command('restore')
 @argument('filepath')
+@click.pass_context
+def restore(ctx, filepath):
+    ds = get_dataset(ctx)
+    ds.restore(filepath)
+
+
+@cli.command('save')
+@argument('filepath', default=None)
+@click.pass_context
+def save(ctx, filepath):
+    ds = get_dataset(ctx)
+    ds.save(filepath)
+
+
+@cli.command('import')
+@argument('filepath')
+@click.pass_context
+def import_(ctx, filepath):
+    ds = get_dataset(ctx)
+    ds.import_inputset(filepath)
+
+
+@cli.command('export')
+@argument('filepath', default=None)
 @click.pass_context
 def export(ctx, filepath):
     ds = get_dataset(ctx)
@@ -129,19 +145,19 @@ def sample(ctx, n, on_projects):
     ds.sample(n, on_projects)
 
 
-@cli.command('head')
+@cli.command('print head')
 @argument('n', type=int, default=5)
 @option('-d', '--details', is_flag=True, default=False)
 @click.pass_context
-def head(ctx, n, details):
+def print_head(ctx, n, details):
     ds = get_dataset(ctx)
     ds.head(n, details)
 
 
-@cli.command('describe')
+@cli.command('print structure')
 @argument('scope', type=Choice(['dataset', 'project', 'version']))
 @click.pass_context
-def describe(ctx, scope):
+def print_structure(ctx, scope):
     ds = get_dataset(ctx)
     ds.describe(scope)
 
