@@ -1,4 +1,5 @@
 from types import MethodType
+from dill.source import getsource
 
 
 class Version(object):
@@ -26,6 +27,24 @@ class Version(object):
         """Guarantees nothing (vanilla Version knows nothing about its
         contents)."""
         pass
+
+    def to_json(self) -> dict:
+        """Converts all of the version's attributes to a json."""
+
+        # grab version attributes
+        data = {
+            attr: val for attr, val in vars(self).items()
+            if attr not in ['uuids_', 'meta_']
+               and not callable(val)
+        }
+
+        # add uuids & meta (convert lambdas to strings)
+        data['uuids_'] = {attr: getsource(func).split(': ', 1)[1].strip()
+                          for attr, func in self.uuids_.items()}
+        data['meta_'] = {attr: getsource(func).split(': ', 1)[1].strip()
+                         for attr, func in self.meta_.items()}
+
+        return data
 
     def __eq__(self, other):
         # the two versions are equal if one of the uuids matches

@@ -149,6 +149,21 @@ class Dataset(object):
 
         return d
 
+    def to_json(self) -> dict:
+        """Converts a dataset to a json."""
+
+        # grab dataset attributes
+        data = {
+            attr: val for attr, val in vars(self).items()
+            if attr not in ['api', 'projects']
+               and not callable(val)
+        }
+
+        # add project (& version) attributes
+        data['projects'] = [p.to_json() for p in self.projects]
+
+        return data
+
     def find_project(self, **kwargs) -> Optional[Project]:
         """Gets the first project with attributes matching all kwargs."""
 
