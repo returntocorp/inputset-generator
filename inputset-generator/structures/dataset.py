@@ -16,7 +16,7 @@ class Dataset(object):
 
         # validate registry name (if provided) and set
         if registry and registry not in apis_list:
-            raise Exception('Invalid registry. Valid types are: %s'
+            raise Exception('Invalid registry type. Valid types are: %s'
                             % list(apis_list))
         self.registry = registry
 
@@ -103,13 +103,14 @@ class Dataset(object):
 
     def restore(self, filepath: str) -> None:
         """Restores a complete dataset from a json file."""
+        from loaders.core import DatasetLoader
 
         # check if the path is valid
         if not Path(filepath).is_file():
             raise Exception('Invalid path; file does not exist.')
 
         print("Restoring %s" % filepath)
-        pass
+        DatasetLoader().load(self, filepath)
 
     def save(self, filepath: str = None) -> None:
         """Saves a complete dataset to a json file."""

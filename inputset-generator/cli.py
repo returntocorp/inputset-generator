@@ -73,7 +73,11 @@ def load(ctx, registry, handle, fileargs):
 @argument('filepath')
 @click.pass_context
 def restore(ctx, filepath):
-    ds = get_dataset(ctx)
+    # initialize a dataset (registry will be set by the loader)
+    ds = Dataset()
+    ctx.obj['dataset'] = ds
+
+    # restore the dataset from file
     ds.restore(filepath)
 
 
