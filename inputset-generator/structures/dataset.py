@@ -73,7 +73,7 @@ class Dataset(object):
         loader = fileloader_map.get(extension, None)
         if not loader:
             raise Exception("Invalid input file type '%s'. Valid types"
-                            "are: %s." % (extension, list(fileloader_map)))
+                            'are: %s.' % (extension, list(fileloader_map)))
 
         # load initial data from the file
         print('Loading %s' % filepath)
@@ -98,7 +98,7 @@ class Dataset(object):
                             'are: %s' % (self.registry, str(weblistloader_map)))
 
         # load initial data from the weblist
-        print("Loading %s %s" % (self.registry, name))
+        print('Loading %s %s' % (self.registry, name))
         loader().load(self, name)
 
     def restore(self, filepath: str) -> None:
@@ -109,7 +109,10 @@ class Dataset(object):
         if not Path(filepath).is_file():
             raise Exception('Invalid path; file does not exist.')
 
-        print("Restoring %s" % filepath)
+        print('Restoring %s' % filepath)
+        print('Note: Restoring datasets loads uuid and meta lambda '
+              'functions from file. Do not do this unless you trust '
+              "the dataset's source.")
         DatasetLoader().load(self, filepath)
 
     def save(self, filepath: str = None) -> None:
