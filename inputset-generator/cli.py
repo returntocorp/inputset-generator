@@ -19,8 +19,7 @@ def get_dataset(ctx) -> Dataset:
     return ds
 
 
-@shell(chain=True, prompt='inputset-generator > ',
-       intro='Starting input set generator')
+@shell(chain=True, prompt='r2c-isg> ')
 @click.pass_context
 def cli(ctx):
     # pull in any environment vars
@@ -28,6 +27,29 @@ def cli(ctx):
 
     # create the ctx.obj dictionary
     ctx.ensure_object(dict)
+
+
+@cli.command('type')
+@argument('type', name='type_')
+@click.pass_context
+def meta(ctx, type_):
+    ds = get_dataset(ctx)
+    ds.set_type(type_)
+
+
+@cli.command('meta')
+@option('-n', '--name', help='Dataset name.')
+@option('-v', '--version', help='Dataset version.')
+@option('-d', '--description', help='Description string.')
+@option('-r', '--readme', help='Readme string.')
+@option('-a', '--author', default=get_user_name,
+        help='Author name. Defaults to git user.name.')
+@option('-e', '--email', default=get_user_email,
+        help='Author email. Defaults to git user.email.')
+@click.pass_context
+def meta(ctx, name, version, description, readme, author, email):
+    ds = get_dataset(ctx)
+    ds.set_meta(name, version, description, readme, author, email)
 
 
 @cli.command('load')
@@ -53,6 +75,14 @@ def load(ctx, registry, handle, fileargs):
     else:
         # download a weblist
         ds.load_weblist(handle)
+
+
+@cli.command('export')
+@argument('filepath')
+@click.pass_context
+def export(ctx, filepath):
+    ds = get_dataset(ctx)
+    ds.export_inputset(filepath)
 
 
 @cli.command('get')
@@ -99,21 +129,6 @@ def sample(ctx, n, on_projects):
     ds.sample(n, on_projects)
 
 
-@cli.command('meta')
-@option('-n', '--name', help='Dataset name.')
-@option('-v', '--version', help='Dataset version.')
-@option('-d', '--description', help='Description string.')
-@option('-r', '--readme', help='Readme string.')
-@option('-a', '--author', default=get_user_name,
-        help='Author name. Defaults to git user.name.')
-@option('-e', '--email', default=get_user_email,
-        help='Author email. Defaults to git user.email.')
-@click.pass_context
-def meta(ctx, name, version, description, readme, author, email):
-    ds = get_dataset(ctx)
-    ds.set_meta(name, version, description, readme, author, email)
-
-
 @cli.command('head')
 @argument('n', type=int, default=5)
 @option('-d', '--details', is_flag=True, default=False)
@@ -129,14 +144,6 @@ def head(ctx, n, details):
 def describe(ctx, scope):
     ds = get_dataset(ctx)
     ds.describe(scope)
-
-
-@cli.command('export')
-@argument('filepath')
-@click.pass_context
-def export(ctx, filepath):
-    ds = get_dataset(ctx)
-    ds.export_inputset(filepath)
 
 
 if __name__ == '__main__':

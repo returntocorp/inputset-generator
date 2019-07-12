@@ -44,6 +44,28 @@ class Dataset(object):
         self.author = get_user_name()  # default to git user.name
         self.email = get_user_email()  # default to git user.email
 
+    def set_type(self, type_: str) -> None:
+        """Sets the api and project/version types for the dataset."""
+        pass
+
+    def set_meta(self, name: str = None, version: str = None,
+                 description: str = None, readme: str = None,
+                 author: str = None, email: str = None) -> None:
+        """Sets dataset metadata."""
+        if not (name or version or description
+                or readme or author or email):
+            raise Exception('Error setting metadata. Must provide at '
+                            'least one of name, version, description, '
+                            'readme, author, or email.')
+
+        # override existing data only if the override is not None
+        self.name = name or self.name
+        self.version = version or self.version
+        self.description = description or self.description
+        self.readme = readme or self.readme
+        self.author = author or self.author
+        self.email = email or self.email
+
     def load_file(self, path: str, fileargs: str = None) -> None:
         """Loads a file and parses it into a dataset."""
         from loaders.file import class_map
@@ -162,28 +184,6 @@ class Dataset(object):
         """Gets the historical versions for all projects."""
         for p in self.projects:
             self.api.get_versions(p, historical=historical, nocache=nocache)
-
-    def set_api(self, name: str) -> None:
-        """Sets the dataset's api."""
-        pass
-
-    def set_meta(self, name: str = None, version: str = None,
-                 description: str = None, readme: str = None,
-                 author: str = None, email: str = None) -> None:
-        """Sets dataset metadata."""
-        if not (name or version or description
-                or readme or author or email):
-            raise Exception('Error setting metadata. Must provide at '
-                            'least one of name, version, description, '
-                            'readme, author, or email.')
-
-        # override existing data only if the override is not None
-        self.name = name or self.name
-        self.version = version or self.version
-        self.description = description or self.description
-        self.readme = readme or self.readme
-        self.author = author or self.author
-        self.email = email or self.email
 
     def find_project(self, **kwargs) -> Optional[Project]:
         """Gets the first project with attributes matching all kwargs."""
