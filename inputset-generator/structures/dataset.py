@@ -16,9 +16,8 @@ class Dataset(object):
         from util import get_user_name, get_user_email
 
         # validate registry name (if provided) and set
-        if registry and registry not in apis_list:
-            raise Exception('Invalid registry type. Valid types are: %s'
-                            % list(apis_list))
+        assert registry and registry in apis_list, \
+            'Invalid registry type. Valid types are: %s' % list(apis_list)
         self.registry = registry
 
         # set up the api
@@ -47,9 +46,8 @@ class Dataset(object):
                  description: str = None, readme: str = None,
                  author: str = None, email: str = None) -> None:
         """Sets dataset metadata."""
-        if not (name or version or description
-                or readme or author or email):
-            raise Exception('Error setting metadata. Must provide at '
+        assert (name or version or description or readme or author
+                or email), ('Error setting metadata. Must provide at '
                             'least one of name, version, description, '
                             'readme, author, or email.')
 
@@ -68,15 +66,13 @@ class Dataset(object):
         from loaders.file import fileloader_map
 
         # check if the path is valid
-        if not Path(filepath).is_file():
-            raise Exception('Invalid path; file does not exist.')
+        assert Path(filepath).is_file(), 'Invalid path; file does not exist.'
 
         # check if the filetype is valid
         extension = Path(filepath).suffix
         loader = fileloader_map.get(extension, None)
-        if not loader:
-            raise Exception("Invalid input file type '%s'. Valid types"
-                            'are: %s.' % (extension, list(fileloader_map)))
+        assert loader, ("Invalid input file type '%s'. Valid types"
+                        'are: %s.' % (extension, list(fileloader_map)))
 
         # load initial data from the file
         print('Loading %s' % filepath)
@@ -90,9 +86,8 @@ class Dataset(object):
 
         # check if the name is valid
         loader = weblistloader_map.get(registry, None)
-        if not loader:
-            raise Exception('Invalid weblist for %s. Valid weblists '
-                            'are: %s' % (registry, str(weblistloader_map)))
+        assert loader, ('Invalid weblist for %s. Valid weblists are: '
+                        '%s' % (registry, str(weblistloader_map)))
 
         # load initial data from the weblist
         print('Loading %s %s' % (registry, name))
@@ -104,8 +99,7 @@ class Dataset(object):
         from loaders.core import DatasetLoader
 
         # check if the path is valid
-        if not Path(filepath).is_file():
-            raise Exception('Invalid path; file does not exist.')
+        assert Path(filepath).is_file(), 'Invalid path; file does not exist.'
 
         # load the pickled dataset
         return DatasetLoader.load(filepath, **kwargs)
@@ -143,8 +137,7 @@ class Dataset(object):
         from loaders.core import R2cLoader
 
         # check if the path is valid
-        if not Path(filepath).is_file():
-            raise Exception('Invalid path; file does not exist.')
+        assert Path(filepath).is_file(), 'Invalid path; file does not exist.'
 
         # load the input set
         print('Loading %s input set from %s' % (registry, filepath))
@@ -167,10 +160,10 @@ class Dataset(object):
     def to_inputset(self) -> dict:
         """Converts a dataset to an input set json."""
 
-        # check that all necessary meta values have been set
-        if not (self.name and self.version):
-            # name and version are mandatory
-            raise Exception('Dataset name and/or version are missing.')
+        # name and version are mandatory
+        assert self.name and self.version, (
+            'Dataset name and/or version are missing. Set them using '
+            "the 'meta' command.")
 
         # jsonify the dataset's metadata
         d = dict()

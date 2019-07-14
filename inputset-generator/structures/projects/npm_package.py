@@ -4,13 +4,13 @@ from structures.projects import Project
 class NpmPackage(Project):
     def check_guarantees(self) -> None:
         """Guarantees a name or a url."""
-        if 'name' not in self.uuids_ and 'url' not in self.uuids_:
-            raise Exception('Package name or url must be provided.')
+        assert 'name' in self.uuids_ or 'url' in self.uuids_, \
+            'Package name or url must be provided.'
 
     def to_inputset(self) -> list:
         """Converts npm packages/versions to PackageVersion dict."""
-        if not self.versions:
-            raise Exception('Npm package must have at least one version.')
+        assert self.versions, ('Npm package must contain at least one '
+                               'version before exporting to an input set.')
 
         if 'name' in self.uuids_:
             name = self.uuids_['name']()

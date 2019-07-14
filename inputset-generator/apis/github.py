@@ -24,7 +24,7 @@ class Github(Api):
             pass
 
         # add github personal access token to request headers
-        github_pat = os.getenv('github_pat')
+        github_pat = os.getenv('GITHUB_PAT')
         headers['Authorization'] = 'token %s' % github_pat
 
         return super().request(url, headers=headers, **kwargs)

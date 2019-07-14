@@ -55,8 +55,7 @@ class Api(ABC):
                 r = requests.get(url, headers=headers, data=json.dumps(data))
 
             # check for non-2xx (error) response codes
-            if r.status_code // 100 != 2:
-                raise Exception('Exception: %s' % str(data))
+            assert r.status_code // 100 == 2, 'Non-200 response from website.'
 
             # get response json
             data = r.json()

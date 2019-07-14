@@ -4,9 +4,9 @@ from structures.projects import Project
 class GithubRepo(Project):
     def check_guarantees(self) -> None:
         """Guarantees a name/org or a url."""
-        if 'url' not in self.uuids_ and ('name' not in self.uuids_ or
-                                         'org' not in self.meta_):
-            raise Exception('Repo name/org or url must be provided.')
+        assert ('url' in self.uuids_ or (
+                'name' in self.uuids_ and 'org' in self.meta_)
+                ), 'Repo name/org or url must be provided.'
 
     def to_inputset(self) -> list:
         """Converts github repos/commits to GitRepo/GitRepoCommit dict."""

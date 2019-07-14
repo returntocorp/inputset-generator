@@ -4,13 +4,13 @@ from structures.projects import Project
 class PypiProject(Project):
     def check_guarantees(self) -> None:
         """Guarantees a name or a url."""
-        if 'name' not in self.uuids_ and 'url' not in self.uuids_:
-            raise Exception('Project name or url must be provided.')
+        assert 'name' in self.uuids_ or 'url' in self.uuids_, \
+            'Project name or url must be provided.'
 
     def to_inputset(self) -> list:
         """Converts pypi projects/releases to PackageVersion dict."""
-        if not self.versions:
-            raise Exception('Pypi project must have at least one release.')
+        assert self.versions, ('Pypi project must contain at least one '
+                               'release before exporting to an input set.')
 
         if 'name' in self.uuids_:
             name = self.uuids_['name']()

@@ -9,7 +9,7 @@ def get_user_name():
         return subprocess.check_output(
             ['git', 'config', '--get', 'user.name']
         ).decode("utf-8").strip()
-    except Exception:
+    except:
         return None
 
 
@@ -21,5 +21,5 @@ def get_user_email():
         return subprocess.check_output(
             ['git', 'config', '--get', 'user.email']
         ).decode("utf-8").strip()
-    except Exception:
+    except:
         return None

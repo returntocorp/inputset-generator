@@ -13,8 +13,7 @@ def get_dataset(ctx) -> Dataset:
     """Checks that the dataset has been loaded."""
     ds = ctx.obj.get('dataset', None)
 
-    if not ds:
-        raise Exception('Dataset has not been loaded.')
+    assert ds, 'Dataset has not been loaded.'
 
     return ds
 
