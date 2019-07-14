@@ -16,8 +16,9 @@ class Dataset(object):
         from util import get_user_name, get_user_email
 
         # validate registry name (if provided) and set
-        assert registry and registry in apis_list, \
-            'Invalid registry type. Valid types are: %s' % list(apis_list)
+        if registry:
+            assert registry in apis_list, ('Invalid registry type. Valid'
+                                           'types are: %s' % list(apis_list))
         self.registry = registry
 
         # set up the api
