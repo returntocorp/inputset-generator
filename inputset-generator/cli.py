@@ -55,30 +55,26 @@ def meta(ctx, name, version, description, readme, author, email):
 def load(ctx, registry, handle, fileargs):
     # initialize a dataset and add it to the context
     if registry == 'noreg':
-        ds = Dataset()
-    else:
-        ds = Dataset(registry)
-    ctx.obj['dataset'] = ds
+        registry = None
 
     if '.' in handle:
         # read in a file (fileargs is either a header string for csv
         # or a parser handle for json)
-        ds.load_file(handle, fileargs)
+        ds = Dataset.load_file(handle, registry)
     else:
         # download a weblist
-        ds.load_weblist(handle)
+        ds = Dataset.load_weblist(handle, registry)
+
+    ctx.obj['dataset'] = ds
 
 
 @cli.command('restore')
 @argument('filepath')
 @click.pass_context
 def restore(ctx, filepath):
-    # initialize a dataset (registry will be set by the loader)
-    ds = Dataset()
-    ctx.obj['dataset'] = ds
-
     # restore the dataset from file
-    ds.restore(filepath)
+    ds = Dataset.restore(filepath)
+    ctx.obj['dataset'] = ds
 
 
 @cli.command('backup')
@@ -96,14 +92,9 @@ def backup(ctx, filepath):
 def import_(ctx, registry, filepath):
     # initialize a dataset and add it to the context
     if registry == 'noreg':
-        ds = Dataset()
-    else:
-        ds = Dataset(registry)
+        registry = None
+    ds = Dataset.import_inputset(filepath, registry)
     ctx.obj['dataset'] = ds
-
-    # import the r2c input set
-    ds = get_dataset(ctx)
-    ds.import_inputset(filepath)
 
 
 @cli.command('export')

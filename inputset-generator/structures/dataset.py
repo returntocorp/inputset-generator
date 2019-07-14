@@ -61,8 +61,10 @@ class Dataset(object):
         self.author = author or self.author
         self.email = email or self.email
 
-    def load_file(self, filepath: str, fileargs: str = None) -> None:
-        """Loads a file and parses it into a dataset."""
+    @classmethod
+    def load_file(cls, filepath: str,
+                  registry: str = None, **kwargs) -> 'Dataset':
+        """Factory method that builds a dataset from a file."""
         from loaders.file import fileloader_map
 
         # check if the path is valid
@@ -78,32 +80,27 @@ class Dataset(object):
 
         # load initial data from the file
         print('Loading %s' % filepath)
-        if fileargs:
-            loader().load(self, filepath, fileargs)
-        else:
-            loader().load(self, filepath)
+        return loader.load(filepath, registry=registry, **kwargs)
 
-    def load_weblist(self, name: str, nocache: bool = False) -> None:
-        """Loads a weblist and parses it into a dataset."""
+    @classmethod
+    def load_weblist(cls, name: str,
+                     registry: str = None, **kwargs) -> 'Dataset':
+        """Factory method that builds a dataset from a weblist."""
         from loaders.weblist import weblistloader_map
 
-        # check if the registry has been set
-        if not self.registry:
-            raise Exception('Registry has not been set. Valid '
-                            'registries are: %s' % str(weblistloader_map))
-
         # check if the name is valid
-        loader = weblistloader_map.get(self.registry, None)
+        loader = weblistloader_map.get(registry, None)
         if not loader:
-            raise Exception('Invalid weblist for %s. Valid weblists'
-                            'are: %s' % (self.registry, str(weblistloader_map)))
+            raise Exception('Invalid weblist for %s. Valid weblists '
+                            'are: %s' % (registry, str(weblistloader_map)))
 
         # load initial data from the weblist
-        print('Loading %s %s' % (self.registry, name))
-        loader().load(self, name)
+        print('Loading %s %s' % (registry, name))
+        return loader.load(name, registry=registry, **kwargs)
 
-    def restore(self, filepath: str) -> None:
-        """Restores pickled dataset."""
+    @classmethod
+    def restore(cls, filepath: str, **kwargs) -> 'Dataset':
+        """Factory method that restores a pickled dataset."""
         from loaders.core import DatasetLoader
 
         # check if the path is valid
@@ -111,7 +108,7 @@ class Dataset(object):
             raise Exception('Invalid path; file does not exist.')
 
         # load the pickled dataset
-        DatasetLoader().load(self, filepath)
+        return DatasetLoader.load(filepath, **kwargs)
 
     def backup(self, filepath: str = None) -> None:
         """Pickles a dataset."""
@@ -139,8 +136,10 @@ class Dataset(object):
 
         return data
 
-    def import_inputset(self, filepath: str) -> None:
-        """Imports an r2c input set and parses it into a dataset."""
+    @classmethod
+    def import_inputset(cls, filepath: str,
+                        registry: str = None, **kwargs) -> 'Dataset':
+        """Factory method that builds a dataset from an R2C input set json."""
         from loaders.core import R2cLoader
 
         # check if the path is valid
@@ -148,7 +147,8 @@ class Dataset(object):
             raise Exception('Invalid path; file does not exist.')
 
         # load the input set
-        R2cLoader().load(self, filepath)
+        print('Loading %s input set from %s' % (registry, filepath))
+        return R2cLoader.load(filepath, registry=registry, **kwargs)
 
     def export_inputset(self, filepath: str = None) -> None:
         """Exports a dataset to an r2c input set json file."""

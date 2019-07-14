@@ -4,5 +4,6 @@ from structures import Dataset
 
 
 class Loader(ABC):
+    @classmethod
     @abstractmethod
-    def load(self, ds: Dataset, handle: str, **kwargs) -> None: pass
+    def load(cls, handle: str, **kwargs) -> Dataset: pass

@@ -3,24 +3,31 @@ from loaders import Loader
 
 
 class GithubLoader(Loader):
-    def __init__(self):
-        self.weblists = {
+    @classmethod
+    def weblists(cls):
+        return {
             'top1kstarred': {
-                'getter': self._get_top1kstarred,
-                'parser': self._parse_github
+                'getter': GithubLoader._get_top1kstarred,
+                'parser': GithubLoader._parse_github
             },
             'top1kforked': {
-                'getter': self._get_top1kforked,
-                'parser': self._parse_github
+                'getter': GithubLoader._get_top1kforked,
+                'parser': GithubLoader._parse_github
             }
         }
 
-    def load(self, ds: Dataset, name: str, **kwargs) -> None:
+    @classmethod
+    def load(cls, name: str, **kwargs) -> Dataset:
+        # initialize a registry
+        ds = Dataset(**kwargs)
+
         # load the data
-        data = self.weblists[name]['getter'](api=ds.api, **kwargs)
+        data = cls.weblists()[name]['getter'](api=ds.api, **kwargs)
 
         # parse the data
-        self.weblists[name]['parser'](ds, data)
+        cls.weblists()[name]['parser'](ds, data)
+
+        return ds
 
     @staticmethod
     def _get_top1kstarred(api, **kwargs) -> list:
@@ -29,7 +36,7 @@ class GithubLoader(Loader):
         url_format = 'https://api.github.com/search/repositories?' \
                      'q=stars%%3A>0&sort=stars&per_page=100&page=%d'
 
-        # github liits results to the top 1k at 100 per page
+        # github limits results to the top 1k at 100 per page
         projects = []
         for url in [(url_format % d) for d in range(1, 11)]:
             # request the data via the github api
@@ -45,7 +52,7 @@ class GithubLoader(Loader):
         url_format = 'https://api.github.com/search/repositories?' \
                      'q=forks%%3A>0&sort=forks&per_page=100&page=%d'
 
-        # github liits results to the top 1k at 100 per page
+        # github limits results to the top 1k at 100 per page
         projects = []
         for url in [(url_format % d) for d in range(1, 11)]:
             # request the data via the github api
@@ -55,7 +62,7 @@ class GithubLoader(Loader):
         return projects
 
     @staticmethod
-    def _parse_github(ds: Dataset, data: list):
+    def _parse_github(ds: Dataset, data: list) -> None:
         from structures.projects import GithubRepo
 
         # map data keys to project keywords

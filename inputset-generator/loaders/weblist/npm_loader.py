@@ -3,14 +3,8 @@ from loaders import Loader
 
 
 class NpmLoader(Loader):
-    def __init__(self):
-        self.weblists = {
-            'allbydependents': {
-                'getter': self._get_allbydependents,
-                'parser': self._parse_niceregistry
-            }
-        }
-
+    @classmethod
+    def weblists(cls):
         """
         Other possible sources/useful links:
         - Realtime list of the top 108 most depended-upon packages:
@@ -30,12 +24,25 @@ class NpmLoader(Loader):
           https://stackoverflow.com/questions/48251633/list-all-public-packages-in-the-npm-registry
         """
 
-    def load(self, ds: Dataset, name: str, **kwargs) -> None:
+        return {
+            'allbydependents': {
+                'getter': NpmLoader._get_allbydependents,
+                'parser': NpmLoader._parse_niceregistry
+            }
+        }
+
+    @classmethod
+    def load(cls, name: str, **kwargs) -> Dataset:
+        # initialize a registry
+        ds = Dataset(**kwargs)
+
         # load the data
-        data = self.weblists[name]['getter'](api=ds.api, **kwargs)
+        data = cls.weblists()[name]['getter'](api=ds.api, **kwargs)
 
         # parse the data
-        self.weblists[name]['parser'](ds, data)
+        cls.weblists()[name]['parser'](ds, data)
+
+        return ds
 
     @staticmethod
     def _get_allbydependents(api, **kwargs) -> list:

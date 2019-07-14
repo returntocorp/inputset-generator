@@ -5,8 +5,16 @@ from structures import Dataset
 
 
 class DatasetLoader(Loader):
-    def load(self, ds: Dataset, filepath: str, **_) -> None:
+    @classmethod
+    def load(cls, filepath: str, **_) -> Dataset:
         """Loads a complete dataset from a pickle file."""
 
+        # Note: This may fail to load or produce unexpected behavior if
+        # dataset/project/version models have been altered after the
+        # backup was made. For now, this scenario has been left
+        # unaddressed, as the backup functionality is intended to be
+        # used more for quick and easy checkpointing than a full-
+        # featured archiving system.
+
         # load the file
-        ds = pickle.load(open(filepath, 'rb'))
+        return pickle.load(open(filepath, 'rb'))

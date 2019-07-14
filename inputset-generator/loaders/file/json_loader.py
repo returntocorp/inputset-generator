@@ -7,27 +7,31 @@ from loaders import Loader
 
 
 class JsonLoader(Loader):
-    def __init__(self):
-        # Note: No Json parsers are provided by default.
-        self.parsers = {}
+    @classmethod
+    def parsers(cls):
+        # no parsers programmed by default
+        return {}
 
-    def load(self, ds: Dataset, filepath: str, parser: str = None) -> None:
+    @classmethod
+    def load(cls, filepath: str, parser: str = None, **kwargs) -> Dataset:
         """Loads a json file."""
 
         # ensure the user specified which parser to use
         if not parser:
             raise Exception('Missing json parser. Valid options are: %s'
-                            % list(self.parsers))
+                            % list(cls.parsers()))
+
+        # initialize a dataset
+        ds = Dataset(**kwargs)
 
         # load the file
         data = json.load(open(filepath))
 
         # check if the parsing schema exists
-        if parser not in self.parsers:
+        if parser not in cls.parsers:
             raise Exception('Unrecognized json parsing schema.')
 
-        # remove any existing projects
-        ds.projects = []
-
         # run the appropriate parser
-        self.parsers[parser](ds, data)
+        cls.parsers()[parser](ds, data)
+
+        return ds

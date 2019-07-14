@@ -1,28 +1,33 @@
-import requests
-
 from structures import Dataset
 from loaders import Loader
 
 
 class PypiLoader(Loader):
-    def __init__(self):
-        self.weblists = {
+    @classmethod
+    def weblists(cls):
+        return {
             'top5kmonth': {
-                'getter': self._get_top5kmonth,
-                'parser': self._parse_hugovk
+                'getter': PypiLoader._get_top5kmonth,
+                'parser': PypiLoader._parse_hugovk
             },
             'top5kyear': {
-                'getter': self._get_top5kyear,
-                'parser': self._parse_hugovk
+                'getter': PypiLoader._get_top5kyear,
+                'parser': PypiLoader._parse_hugovk
             }
         }
 
-    def load(self, ds: Dataset, name: str, **kwargs) -> None:
+    @classmethod
+    def load(cls, name: str, **kwargs) -> Dataset:
+        # initialize a registry
+        ds = Dataset(**kwargs)
+
         # load the data
-        data = self.weblists[name]['getter'](api=ds.api, **kwargs)
+        data = cls.weblists()[name]['getter'](api=ds.api, **kwargs)
 
         # parse the data
-        self.weblists[name]['parser'](ds, data)
+        cls.weblists()[name]['parser'](ds, data)
+
+        return ds
 
     @staticmethod
     def _get_top5kyear(api, **kwargs) -> list:
@@ -47,3 +52,5 @@ class PypiLoader(Loader):
 
         # create the projects
         ds.projects = [PypiProject(uuids_=uuids, **d) for d in data]
+
+

@@ -7,8 +7,12 @@ from loaders import Loader
 
 
 class R2cLoader(Loader):
-    def load(self, ds: Dataset, filepath: str, **_) -> None:
+    @classmethod
+    def load(cls, filepath: str, **kwargs) -> Dataset:
         """Loads an r2c input set json file."""
+
+        # initialize the dataset
+        ds = Dataset(**kwargs)
 
         # load the file
         data = json.load(open(filepath))
@@ -78,3 +82,5 @@ class R2cLoader(Loader):
                     # create the new version & add it to the project
                     v_class = version_map.get(ds.registry, DefaultVersion)
                     project.versions.append(v_class(uuids_=uuids, **v_data))
+
+        return ds

@@ -7,21 +7,20 @@ from loaders import Loader
 
 
 class CsvLoader(Loader):
-    def __init__(self):
-        # set default headers for csv files
-        self.headers = ['name', 'v.version']
-        self.user_defined = False
-
-    def load(self, ds: Dataset, filepath: str, headers: str = None) -> None:
+    @classmethod
+    def load(cls, filepath: str, headers: str = None, **kwargs) -> Dataset:
         """Loads a csv file."""
 
-        # remove any existing projects
-        ds.projects = []
+        # initialize a dataset
+        ds = Dataset(**kwargs)
 
         # user-defined headers override default headers
-        if headers:
-            self.headers = headers.split()
-            self.user_defined = True
+        if not headers:
+            user_defined = False
+            headers = ['name', 'v.version']
+        else:
+            user_defined = True
+            headers = headers.split()
 
         # load the file
         with open(filepath, mode='r', encoding='utf-8-sig') as file:
@@ -29,15 +28,15 @@ class CsvLoader(Loader):
             for row in csv_file:
                 if row[0].startswith('!'):
                     # read in a header row
-                    if not self.user_defined:
+                    if not user_defined:
                         # in-file headers override defaults
                         # (but not user-defined headers from the cli)
-                        self.headers = [h[1:] for h in row]
+                        headers = [h[1:] for h in row]
                 else:
                     # read in a data row
                     p_data, v_data = {}, {}
                     for i, val in enumerate(row):
-                        attr = self.headers[i]
+                        attr = headers[i]
 
                         # add the data to the project or version
                         if attr.startswith('v.'):
@@ -84,3 +83,5 @@ class CsvLoader(Loader):
                             # create the new version & add it to the project
                             v_class = version_map.get(ds.registry, DefaultVersion)
                             project.versions.append(v_class(uuids_=uuids, **v_data))
+
+        return ds
