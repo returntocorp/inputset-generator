@@ -81,12 +81,12 @@ def restore(ctx, filepath):
     ds.restore(filepath)
 
 
-@cli.command('save')
+@cli.command('backup')
 @argument('filepath', default=None)
 @click.pass_context
-def save(ctx, filepath):
+def backup(ctx, filepath):
     ds = get_dataset(ctx)
-    ds.save(filepath)
+    ds.backup(filepath)
 
 
 @cli.command('import')

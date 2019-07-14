@@ -1,4 +1,5 @@
 import json
+import dill as pickle
 from typing import List, Optional
 from types import MethodType
 from pathlib import Path
@@ -102,32 +103,26 @@ class Dataset(object):
         loader().load(self, name)
 
     def restore(self, filepath: str) -> None:
-        """Restores a complete dataset from a json file."""
+        """Restores pickled dataset."""
         from loaders.core import DatasetLoader
 
         # check if the path is valid
         if not Path(filepath).is_file():
             raise Exception('Invalid path; file does not exist.')
 
-        print('Restoring %s' % filepath)
-        print('Note: Restoring datasets loads uuid and meta lambda '
-              'functions from file. Do not do this unless you trust '
-              "the dataset's source.")
+        # load the pickled dataset
         DatasetLoader().load(self, filepath)
 
-    def save(self, filepath: str = None) -> None:
-        """Saves a complete dataset to a json file."""
+    def backup(self, filepath: str = None) -> None:
+        """Pickles a dataset."""
 
         # file name is dataset name, if not provided by user
-        filepath = filepath or (self.name + '.json')
-
-        # convert the dataset to an input set json
-        data = self.to_json()
+        filepath = filepath or (self.name + '.pickle')
 
         # save to disk
         print('Saving dataset to %s' % filepath)
-        with open(filepath, 'w') as file:
-            json.dump(data, file, indent=4)
+        with open(filepath, 'wb') as file:
+            pickle.dump(self, file)
 
     def to_json(self) -> dict:
         """Converts a complete dataset to a json."""
