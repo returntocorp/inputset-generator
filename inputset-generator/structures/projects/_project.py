@@ -53,27 +53,6 @@ class Project(object):
 
         return None
 
-    def to_json(self) -> dict:
-        """Converts all of the project's attributes to a json."""
-
-        # grab project attributes
-        data = {
-            attr: val for attr, val in vars(self).items()
-            if attr not in ['uuids_', 'meta_', 'versions']
-               and not callable(val)
-        }
-
-        # add uuids & meta (convert lambdas to strings)
-        data['uuids_'] = {attr: getsource(func).split(': ', 1)[1].strip()
-                          for attr, func in self.uuids_.items()}
-        data['meta_'] = {attr: getsource(func).split(': ', 1)[1].strip()
-                         for attr, func in self.meta_.items()}
-
-        # add version attributes
-        data['versions'] = [v.to_json() for v in self.versions]
-
-        return data
-
     def to_inputset(self) -> list:
         """Vanilla project can't be converted to an r2c input set."""
         raise Exception('Project class has no associated R2C input set type.')
