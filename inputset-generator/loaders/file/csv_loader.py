@@ -36,7 +36,13 @@ class CsvLoader(Loader):
                     # read in a data row
                     p_data, v_data = {}, {}
                     for i, val in enumerate(row):
-                        attr = headers[i]
+                        try:
+                            attr = headers[i]
+                        except IndexError as e:
+                            import sys
+                            raise type(e)(
+                                'a column is missing a header'
+                            ).with_traceback(sys.exc_info()[2])
 
                         # add the data to the project or version
                         if attr.startswith('v.'):
