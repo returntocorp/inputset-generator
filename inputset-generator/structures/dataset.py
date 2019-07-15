@@ -18,7 +18,8 @@ class Dataset(object):
         from util import get_user_name, get_user_email
 
         # set the debug flag
-        os.environ['ISG_DEBUG'] = kwargs.get('debug', '')
+        if kwargs.get('debug', None):
+            os.environ['ISG_DEBUG'] = 'true'
 
         # validate registry name (if provided) and set
         if registry:

@@ -12,7 +12,7 @@ def test_import_inputset():
         registry='github',
         cache_dir='../cache',
         debug=True,
-        github_pat=os.getenv('GITHUB_PAT', None)
+        github_pat=os.getenv('GITHUB_PAT')
     )
     ds.set_meta('test', '1.0')
     ds.backup('../test.p')
@@ -24,7 +24,7 @@ def test_import_inputset():
         registry='github',
         cache_dir='../cache',
         debug=True,
-        github_pat=os.getenv('GITHUB_PAT', None)
+        github_pat=os.getenv('GITHUB_PAT')
     )
     ds.set_meta('test', '1.0')
     ds.backup('../test.p')
@@ -76,7 +76,7 @@ def test_load_file():
         registry='github',
         cache_dir='../cache',
         debug=True,
-        github_pat=os.getenv('GITHUB_PAT', None)
+        github_pat=os.getenv('GITHUB_PAT')
     )
     ds.set_meta('test', '1.0')
     ds.backup('../test.p')
@@ -128,7 +128,7 @@ def test_load_weblist():
         registry='github',
         cache_dir='../cache',
         debug=True,
-        github_pat=os.getenv('GITHUB_PAT', None)
+        github_pat=os.getenv('GITHUB_PAT')
     )
     ds.trim(10)
     ds.get_project_versions('latest')
