@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
+import sys
 import click
+from copy import deepcopy
 from click import argument, option, Choice
 from click_shell import shell
 
@@ -36,7 +38,19 @@ def cli(ctx):
 @click.pass_context
 def meta(ctx, name, version, description, readme, author, email):
     ds = get_dataset(ctx)
-    ds.set_meta(name, version, description, readme, author, email)
+    backup_ds = deepcopy(ds)
+
+    try:
+        ds.set_meta(name, version, description, readme, author, email)
+
+    except Exception as e:
+        if isinstance(e, AssertionError):
+            # roll back the dataset
+            ctx.obj['dataset'] = backup_ds
+
+        raise type(e)(
+            str(e) + '; dataset has been reverted'
+        ).with_traceback(sys.exc_info()[2])
 
 
 @cli.command('load')
@@ -107,15 +121,38 @@ def export(ctx, filepath):
         help='Filter versions by historical order.')
 @click.pass_context
 def get(ctx, metadata, versions):
+    # get the dataset
     ds = get_dataset(ctx)
 
+    # load project metadata
     if metadata:
-        # load project metadata
-        ds.get_projects_meta()
+        backup_ds = deepcopy(ds)
+        try:
+            ds.get_projects_meta()
 
+        except Exception as e:
+            if isinstance(e, AssertionError):
+                # roll back the dataset
+                ctx.obj['dataset'] = backup_ds
+
+            raise type(e)(
+                str(e) + '; dataset has been reverted'
+            ).with_traceback(sys.exc_info()[2])
+
+    # load project versions
     if versions:
-        # load project versions
-        ds.get_project_versions(versions)
+        backup_ds = deepcopy(ds)
+        try:
+            ds.get_project_versions(versions)
+
+        except Exception as e:
+            if isinstance(e, AssertionError):
+                # roll back the dataset
+                ctx.obj['dataset'] = backup_ds
+
+            raise type(e)(
+                str(e) + '; dataset has been reverted'
+            ).with_traceback(sys.exc_info()[2])
 
 
 @cli.command('trim')
@@ -124,7 +161,19 @@ def get(ctx, metadata, versions):
 @click.pass_context
 def trim(ctx, n, on_projects):
     ds = get_dataset(ctx)
-    ds.trim(n, on_projects)
+    backup_ds = deepcopy(ds)
+
+    try:
+        ds.trim(n, on_projects)
+
+    except Exception as e:
+        if isinstance(e, AssertionError):
+            # roll back the dataset
+            ctx.obj['dataset'] = backup_ds
+
+        raise type(e)(
+            str(e) + '; dataset has been reverted'
+        ).with_traceback(sys.exc_info()[2])
 
 
 @cli.command('sort')
@@ -132,7 +181,19 @@ def trim(ctx, n, on_projects):
 @click.pass_context
 def sort(ctx, params):
     ds = get_dataset(ctx)
-    ds.sort(params.split())
+    backup_ds = deepcopy(ds)
+
+    try:
+        ds.sort(params.split())
+
+    except Exception as e:
+        if isinstance(e, AssertionError):
+            # roll back the dataset
+            ctx.obj['dataset'] = backup_ds
+
+        raise type(e)(
+            str(e) + '; dataset has been reverted'
+        ).with_traceback(sys.exc_info()[2])
 
 
 @cli.command('sample')
@@ -141,7 +202,19 @@ def sort(ctx, params):
 @click.pass_context
 def sample(ctx, n, on_projects):
     ds = get_dataset(ctx)
-    ds.sample(n, on_projects)
+    backup_ds = deepcopy(ds)
+
+    try:
+        ds.sample(n, on_projects)
+
+    except Exception as e:
+        if isinstance(e, AssertionError):
+            # roll back the dataset
+            ctx.obj['dataset'] = backup_ds
+
+        raise type(e)(
+            str(e) + '; dataset has been reverted'
+        ).with_traceback(sys.exc_info()[2])
 
 
 @cli.command('head')

@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional, Union
 
 from apis import Api
 from structures.projects import PypiProject
@@ -12,17 +12,20 @@ class Pypi(Api):
         # set the base url for pypi's api
         self._base_api_url = 'https://pypi.org'
 
-    def request(self, url, **kwargs) -> Union[dict, list]:
+    def request(self, url, **kwargs) -> (int, Optional[Union[dict, list]]):
         """Manages API rate limitations before calling super().request()."""
+
+        # get the response code/data
+        status, data = super().request(url, **kwargs)
 
         # Note: The pypi json api does not currently have any sort of
         # rate limiting policies in effect. See:
         # https://warehouse.readthedocs.io/api-reference/#rate-limiting
         if self._base_api_url in url:
-            # implement any internal rate limiting here...
+            # no specific pypi error codes to handle...
             pass
 
-        return super().request(url, **kwargs)
+        return status, data
 
     def _make_api_url(self, project: PypiProject) -> str:
         # get the package name and convert to api url
@@ -40,7 +43,15 @@ class Pypi(Api):
 
         # load the url from cache or the web
         url = self._make_api_url(project)
-        data = self.request(url, **kwargs)
+        status, data = self.request(url, **kwargs)
+
+        # skip this project if non-200 response (just return now)
+        if status != 200:
+            uuid = project.uuids_.get('name', None) or \
+                   project.uuids_.get('url', None)
+            print('Warning: Unexpected response from pypi api (HTTP %d); '
+                  'failed to retrieve metadata for %s.' % (status, uuid()))
+            return
 
         # ignore version-related data
         data.pop('releases')
@@ -57,7 +68,17 @@ class Pypi(Api):
 
         # load the url from cache or from the web
         url = self._make_api_url(project)
-        data = self.request(url, **kwargs)
+        status, data = self.request(url, **kwargs)
+
+        # skip this project if non-200 response (just return now)
+        if status != 200:
+            uuid = project.uuids_.get('name', None) or \
+                   project.uuids_.get('url', None)
+            print('Warning: Unexpected response from pypi api (HTTP %d); '
+                  'failed to retrieve versions for %s.' % (status, uuid()))
+            return
+
+        # get the releases list from the data
         releases = data['releases']
 
         if historical == 'latest':

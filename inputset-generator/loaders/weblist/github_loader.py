@@ -40,7 +40,9 @@ class GithubLoader(Loader):
         projects = []
         for url in [(url_format % d) for d in range(1, 11)]:
             # request the data via the github api
-            data = api.request(url, **kwargs)
+            status, data = api.request(url, **kwargs)
+            assert status == 200, 'Error downloading %s; is the url accessible?'
+
             projects.extend(data['items'])
 
         return projects
@@ -56,7 +58,9 @@ class GithubLoader(Loader):
         projects = []
         for url in [(url_format % d) for d in range(1, 11)]:
             # request the data via the github api
-            data = api.request(url, **kwargs)
+            status, data = api.request(url, **kwargs)
+            assert status == 200, 'Error downloading %s; is the url accessible?'
+
             projects.extend(data['items'])
 
         return projects

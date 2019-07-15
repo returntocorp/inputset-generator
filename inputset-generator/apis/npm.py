@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional, Union
 
 from apis import Api
 from structures.projects import NpmPackage
@@ -12,21 +12,28 @@ class Npm(Api):
         # set the base url for npm's api
         self._base_api_url = 'https://registry.npmjs.com'
 
-    def request(self, url, **kwargs) -> Union[dict, list]:
+    def request(self, url, **kwargs) -> (int, Optional[Union[dict, list]]):
         """Manages API rate limitations before calling super().request()."""
 
+        # get the response code/data
+        status, data = super().request(url, **kwargs)
+
         # Note: The npm registry json api states that rate limiting is
-        # in effect, but only publicizes the limits for the download
-        # counts endpoint, which we do not use. Consequently, no rate
-        # limitation have been implemented here. See:
+        # in effect, and the api will return a 429 code if you send too
+        # many requests. It only publicizes the limits for the download
+        # counts endpoint though, which we do not use. Consequently, we
+        # can't take any proactive measures; we can only tell the user
+        # if they've been rate limited after the fact. See:
         # https://blog.npmjs.org/post/164799520460/api-rate-limiting-rolling-out#_=
         # https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md
         # https://github.com/renovatebot/renovate/issues/754
         if self._base_api_url in url:
-            # implement any internal rate limiting here...
-            pass
+            # rate limiting--critical error
+            if status == 429:
+                raise Exception('The npm registry is limiting your request rate'
+                                ' (HTTP %d). Please try again later.' % status)
 
-        return super().request(url, **kwargs)
+        return status, data
 
     def _make_api_url(self, project: NpmPackage) -> str:
         # get the package name and convert to api url
@@ -44,7 +51,15 @@ class Npm(Api):
 
         # load the url from cache or the web
         url = self._make_api_url(project)
-        data = self.request(url, **kwargs)
+        status, data = self.request(url, **kwargs)
+
+        # skip this project if non-200 response (just return now)
+        if status != 200:
+            uuid = project.uuids_.get('name', None) or \
+                   project.uuids_.get('url', None)
+            print('Warning: Unexpected response from npm registry (HTTP %d); '
+                  'failed to retrieve metadata for %s.' % (status, uuid()))
+            return
 
         # ignore version-related data
         data.pop('versions')
@@ -58,7 +73,17 @@ class Npm(Api):
 
         # load the url from cache or from the web
         url = self._make_api_url(project)
-        data = self.request(url, **kwargs)
+        status, data = self.request(url, **kwargs)
+
+        # skip this project if non-200 response (just return now)
+        if status != 200:
+            uuid = project.uuids_.get('name', None) or \
+                   project.uuids_.get('url', None)
+            print('Warning: Unexpected response from npm registry (HTTP %d); '
+                  'failed to retrieve versions for %s.' % (status, uuid()))
+            return
+
+        # get the versions list from the data
         versions = data['versions']
 
         if historical == 'latest':

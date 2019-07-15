@@ -47,7 +47,10 @@ class NpmLoader(Loader):
     @staticmethod
     def _get_allbydependents(api, **kwargs) -> list:
         url = 'https://github.com/nice-registry/all-the-package-names/raw/master/names.json'
-        data = api.request(url, **kwargs)
+
+        status, data = api.request(url, **kwargs)
+        assert status == 200, 'Error downloading %s; is the url accessible?'
+
         return data
 
     @staticmethod

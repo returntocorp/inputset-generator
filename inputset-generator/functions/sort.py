@@ -9,7 +9,7 @@ def sort(ds: Dataset, params: List[str]) -> None:
 
     def clean(attr):
         """Cleans up the attribute to allow better sorting."""
-        if type(attr) is str:
+        if isinstance(attr, str):
             return attr.lower()
         return attr
 

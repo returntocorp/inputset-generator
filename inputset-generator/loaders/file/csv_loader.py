@@ -35,16 +35,14 @@ class CsvLoader(Loader):
                         # (but not user-defined headers from the cli)
                         headers = [h[1:] for h in row]
                 else:
+                    # ensure we have as many headers as cells in the row
+                    assert len(headers) >= len(row), \
+                        'A column is missing a header. Review your headers.'
+
                     # read in a data row
                     p_data, v_data = {}, {}
                     for i, val in enumerate(row):
-                        try:
-                            attr = headers[i]
-                        except IndexError as e:
-                            import sys
-                            raise type(e)(
-                                'a column is missing a header'
-                            ).with_traceback(sys.exc_info()[2])
+                        attr = headers[i]
 
                         # add the data to the project or version
                         if attr.startswith('v.'):

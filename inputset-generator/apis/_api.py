@@ -2,10 +2,12 @@ import os
 import json
 import shutil
 import requests
-from typing import Union
+from typing import Optional, Union
 from datetime import datetime, timedelta
 from hashlib import md5
 from abc import ABC, abstractmethod
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from structures import Project
 
@@ -21,9 +23,11 @@ class Api(ABC):
         # set how long a cached file is valid
         self.cache_timeout = cache_timeout or timedelta(weeks=1)
 
-    def request(self, url: str, request_type: str = 'get',
-                nocache: bool = False, cache_timeout: timedelta = None,
-                headers: dict = {}, data: dict = {}, **_) -> Union[dict, list]:
+    def request(
+            self, url: str, request_type: str = 'get',
+            nocache: bool = False, cache_timeout: timedelta = None,
+            headers: dict = {}, data: dict = {}, **_
+    ) -> (int, Optional[Union[dict, list]]):
         """Loads a url from cache or downloads it from the web."""
 
         # url + request type + headers + data uniquely identifies a
@@ -44,35 +48,45 @@ class Api(ABC):
 
                 if datetime.utcnow() < cached_date + cache_timeout:
                     # cached data isn't too old; return it
-                    return cached['json']
+                    return cached['status'], cached['json']
 
-        # download the url (if not loaded from file)
+        # get/post to request the data (if not loaded from file)
+        s = requests.Session()
+        # retry 3 times--after 0, 2, and 4 seconds--for basic connection
+        # issues (eg, DNS lookup errors) and 502/503/504
+        retries = Retry(total=3, backoff_factor=1,
+                        status_forcelist=[502, 503, 504])
+        # the first arg applies the adapter to only urls matching that
+        # prefix; in this case, we want to match all urls, so we use ''
+        s.mount('', HTTPAdapter(max_retries=retries))
         try:
-            # get/post request the data (default is get)
             if request_type == 'post':
-                r = requests.post(url, headers=headers, data=json.dumps(data))
+                r = s.post(url, headers=headers, data=json.dumps(data))
             else:
-                r = requests.get(url, headers=headers, data=json.dumps(data))
-
-            # check for non-2xx (error) response codes
-            assert r.status_code // 100 == 2, 'Non-200 response from website.'
-
-            # get response json
-            data = r.json()
-
+                r = s.get(url, headers=headers, data=json.dumps(data))
         except:
-            raise Exception('No response or non-json response for url '
-                            '%s.' % url)
+            print('Warning: Could not load %s.' % url)
+            # 0 status code means error
+            return 0, None
 
-        # save the response json to cache
+        # get response json
+        try:
+            data = r.json()
+        except json.JSONDecodeError as e:
+            print('Warning: Non-json response from %s.' % url)
+            # 0 status code means error
+            return 0, None
+
+        # save the response json to cache (only 2xx response codes are cached)
         with open(filepath, 'w') as json_file:
             cached = {
                 'timestamp': datetime.utcnow(),
+                'status': r.status_code,
                 'json': data
             }
             json.dump(cached, json_file, indent=4, default=str)
 
-        return data
+        return r.status_code, data
 
     def clear_cache(self):
         """Deletes all cached files."""

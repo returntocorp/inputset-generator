@@ -30,16 +30,24 @@ class PypiLoader(Loader):
         return ds
 
     @staticmethod
-    def _get_top5kyear(api, **kwargs) -> list:
-        url = 'https://hugovk.github.io/top-pypi-packages/' \
-              'top-pypi-packages-365-days.json'
-        return api.request(url, **kwargs)['rows']
-
-    @staticmethod
     def _get_top5kmonth(api, **kwargs) -> list:
         url = 'https://hugovk.github.io/top-pypi-packages/' \
               'top-pypi-packages-30-days.json'
-        return api.request(url, **kwargs)['rows']
+
+        status, data = api.request(url, **kwargs)
+        assert status == 200, 'Error downloading %s; is the url accessible?'
+
+        return data['rows']
+
+    @staticmethod
+    def _get_top5kyear(api, **kwargs) -> list:
+        url = 'https://hugovk.github.io/top-pypi-packages/' \
+              'top-pypi-packages-365-days.json'
+
+        status, data = api.request(url, **kwargs)
+        assert status == 200, 'Error downloading %s; is the url accessible?'
+
+        return data['rows']
 
     @staticmethod
     def _parse_hugovk(ds: Dataset, data: list) -> None:

@@ -3,3 +3,4 @@ click_shell
 python-dotenv
 requests
 dill
+urllib3
