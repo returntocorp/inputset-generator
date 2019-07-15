@@ -1,5 +1,4 @@
 from types import MethodType
-from dill.source import getsource
 
 
 class Version(object):
@@ -28,6 +27,9 @@ class Version(object):
         contents)."""
         pass
 
+    def to_inputset(self) -> dict:
+        """Vanilla version can't be converted to an r2c input set."""
+        raise Exception('Version class has no associated R2C input set type.')
 
     def __eq__(self, other):
         # the two versions are equal if one of the uuids matches

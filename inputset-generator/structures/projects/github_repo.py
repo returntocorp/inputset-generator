@@ -10,6 +10,7 @@ class GithubRepo(Project):
 
     def to_inputset(self) -> list:
         """Converts github repos/commits to GitRepo/GitRepoCommit dict."""
+        self.check_guarantees()
 
         if 'url' in self.uuids_:
             url = self.uuids_['url']()
@@ -29,5 +30,5 @@ class GithubRepo(Project):
         return[{
             'input_type': 'GitRepoCommit',
             'repo_url': url,
-            'commit_hash': v.uuids_['commit']()
+            **v.to_inputset()
         } for v in self.versions]

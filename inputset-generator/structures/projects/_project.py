@@ -1,6 +1,5 @@
 from typing import List, Optional
 from types import MethodType
-from dill.source import getsource
 
 from structures.versions import Version
 

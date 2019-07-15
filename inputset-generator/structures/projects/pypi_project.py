@@ -9,6 +9,8 @@ class PypiProject(Project):
 
     def to_inputset(self) -> list:
         """Converts pypi projects/releases to PackageVersion dict."""
+        self.check_guarantees()
+
         assert self.versions, ('Pypi project must contain at least one '
                                'release before exporting to an input set.')
 
@@ -21,5 +23,5 @@ class PypiProject(Project):
         return[{
             'input_type': 'PackageVersion',
             'package_name': name,
-            'version': v.uuids_['version']()
+            **v.to_inputset()
         } for v in self.versions]

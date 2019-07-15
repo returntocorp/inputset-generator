@@ -8,6 +8,7 @@ class DefaultProject(Project):
 
     def to_inputset(self) -> list:
         """Converts default project to HttpUrl dict."""
+        self.check_guarantees()
         return [{
             'input_type': 'HttpUrl',
             'url': self.uuids_['url']()

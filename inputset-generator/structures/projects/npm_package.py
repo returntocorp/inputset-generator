@@ -9,6 +9,8 @@ class NpmPackage(Project):
 
     def to_inputset(self) -> list:
         """Converts npm packages/versions to PackageVersion dict."""
+        self.check_guarantees()
+
         assert self.versions, ('Npm package must contain at least one '
                                'version before exporting to an input set.')
 
@@ -21,5 +23,5 @@ class NpmPackage(Project):
         return[{
             'input_type': 'PackageVersion',
             'package_name': name,
-            'version': v.uuids_['version']()
+            **v.to_inputset()
         } for v in self.versions]
