@@ -118,21 +118,6 @@ class Dataset(object):
         with open(filepath, 'wb') as file:
             pickle.dump(self, file)
 
-    def to_json(self) -> dict:
-        """Converts a complete dataset to a json."""
-
-        # grab dataset attributes
-        data = {
-            attr: val for attr, val in vars(self).items()
-            if attr not in ['api', 'projects']
-               and not callable(val)
-        }
-
-        # add project (& version) attributes
-        data['projects'] = [p.to_json() for p in self.projects]
-
-        return data
-
     @classmethod
     def import_inputset(cls, filepath: str,
                         registry: str = None, **kwargs) -> 'Dataset':
@@ -183,6 +168,21 @@ class Dataset(object):
             d['inputs'].extend(p.to_inputset())
 
         return d
+
+    def to_json(self) -> dict:
+        """Converts a complete dataset to a json."""
+
+        # grab dataset attributes
+        data = {
+            attr: val for attr, val in vars(self).items()
+            if attr not in ['api', 'projects']
+               and not callable(val)
+        }
+
+        # add project (& version) attributes
+        data['projects'] = [p.to_json() for p in self.projects]
+
+        return data
 
     def get_projects_meta(self, nocache: bool = False) -> None:
         """Gets the metadata for all projects."""
