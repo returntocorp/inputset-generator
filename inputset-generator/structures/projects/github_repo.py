@@ -8,6 +8,14 @@ class GithubRepo(Project):
                 'name' in self.uuids_ and 'org' in self.meta_)
                 ), 'Repo name/org or url must be provided.'
 
+    def get_name(self) -> str:
+        """Returns the project's name."""
+        if 'name' in self.uuids_:
+            return self.uuids_['name']()
+
+        # pull the name from the url
+        name = self.uuids_['url']().strip('/').split('/')[-1]
+
     def to_inputset(self) -> list:
         """Converts github repos/commits to GitRepo/GitRepoCommit dict."""
         self.check_guarantees()

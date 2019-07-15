@@ -33,6 +33,12 @@ class Project(object):
         contents)."""
         pass
 
+    def get_name(self) -> str:
+        """Returns the project's name."""
+        # child functions can override this to calculate the name--
+        # eg, extracting it from a url
+        return self.uuids_.get('name', '')
+
     def find_version(self, **kwargs) -> Optional[Version]:
         """Gets a version matching all kwargs or returns None."""
 

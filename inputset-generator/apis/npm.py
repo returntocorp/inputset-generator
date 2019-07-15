@@ -37,14 +37,7 @@ class Npm(Api):
 
     def _make_api_url(self, project: NpmPackage) -> str:
         # get the package name and convert to api url
-        if 'name' in project.uuids_:
-            name = project.uuids_['name']()
-
-        else:
-            # extract the name from the url
-            name = project.uuids_['url']().strip('/').split('/')[-1]
-
-        return '%s/%s' % (self._base_api_url, name)
+        return '%s/%s' % (self._base_api_url, project.get_name())
 
     def get_project(self, project: NpmPackage, **kwargs) -> None:
         """Gets a package's metadata."""
@@ -55,10 +48,9 @@ class Npm(Api):
 
         # skip this project if non-200 response (just return now)
         if status != 200:
-            uuid = project.uuids_.get('name', None) or \
-                   project.uuids_.get('url', None)
             print('Warning: Unexpected response from npm registry (HTTP %d); '
-                  'failed to retrieve metadata for %s.' % (status, uuid()))
+                  'failed to retrieve metadata for %s.' % (status,
+                                                           project.get_name()))
             return
 
         # ignore version-related data
@@ -77,10 +69,9 @@ class Npm(Api):
 
         # skip this project if non-200 response (just return now)
         if status != 200:
-            uuid = project.uuids_.get('name', None) or \
-                   project.uuids_.get('url', None)
             print('Warning: Unexpected response from npm registry (HTTP %d); '
-                  'failed to retrieve versions for %s.' % (status, uuid()))
+                  'failed to retrieve versions for %s.' % (status,
+                                                           project.get_name()))
             return
 
         # get the versions list from the data
