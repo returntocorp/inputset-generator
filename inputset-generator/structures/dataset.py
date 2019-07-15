@@ -1,3 +1,4 @@
+import os
 import json
 import dill as pickle
 from typing import List, Optional
@@ -16,6 +17,9 @@ class Dataset(object):
         from functions import function_map
         from util import get_user_name, get_user_email
 
+        # set the debug flag
+        os.environ['ISG_DEBUG'] = kwargs.get('debug', '')
+
         # validate registry name (if provided) and set
         if registry:
             assert registry in registry_map, (
@@ -24,11 +28,10 @@ class Dataset(object):
         self.registry = registry
 
         # set up the api
+        self.api = None
         api_class = api_map.get(self.registry, None)
-        cache_dir = kwargs.get('cache_dir', None)
-        cache_timeout = kwargs.get('cache_timeout', None)
-        self.api = None if not api_class \
-            else api_class(cache_dir=cache_dir, cache_timeout=cache_timeout)
+        if api_class:
+            self.api = api_class(**kwargs)
 
         # register the various transformation functions
         for name, function in function_map.items():

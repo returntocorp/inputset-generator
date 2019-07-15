@@ -1,5 +1,8 @@
+import os
 from structures import Dataset
 from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def test_import_inputset():
@@ -7,7 +10,9 @@ def test_import_inputset():
     ds = Dataset.import_inputset(
         'files/git_repo.json',
         registry='github',
-        cache_dir='../cache'
+        cache_dir='../cache',
+        debug=True,
+        github_pat=os.getenv('GITHUB_PAT', None)
     )
     ds.set_meta('test', '1.0')
     ds.backup('../test.p')
@@ -17,7 +22,9 @@ def test_import_inputset():
     ds = Dataset.import_inputset(
         'files/git_repo_commit.json',
         registry='github',
-        cache_dir='../cache'
+        cache_dir='../cache',
+        debug=True,
+        github_pat=os.getenv('GITHUB_PAT', None)
     )
     ds.set_meta('test', '1.0')
     ds.backup('../test.p')
@@ -28,7 +35,8 @@ def test_import_inputset():
     ds = Dataset.import_inputset(
         'files/name_version.json',
         registry='npm',
-        cache_dir='../cache'
+        cache_dir='../cache',
+        debug=True
     )
     ds.set_meta('test', '1.0')
     ds.backup('../test.p')
@@ -39,7 +47,8 @@ def test_import_inputset():
     ds = Dataset.import_inputset(
         'files/name_version.json',
         registry='pypi',
-        cache_dir='../cache'
+        cache_dir='../cache',
+        debug=True
     )
     ds.set_meta('test', '1.0')
     ds.backup('../test.p')
@@ -49,7 +58,8 @@ def test_import_inputset():
     # test vanilla
     ds = Dataset.import_inputset(
         'files/http_url.json',
-        cache_dir='../cache'
+        cache_dir='../cache',
+        debug=True
     )
     ds.set_meta('test', '1.0')
     ds.backup('../test.p')
@@ -64,7 +74,9 @@ def test_load_file():
     ds = Dataset.load_file(
         'files/git_urls_commits.csv',
         registry='github',
-        cache_dir='../cache'
+        cache_dir='../cache',
+        debug=True,
+        github_pat=os.getenv('GITHUB_PAT', None)
     )
     ds.set_meta('test', '1.0')
     ds.backup('../test.p')
@@ -75,7 +87,8 @@ def test_load_file():
     ds = Dataset.load_file(
         'files/names_versions.csv',
         registry='npm',
-        cache_dir='../cache'
+        cache_dir='../cache',
+        debug=True
     )
     ds.set_meta('test', '1.0')
     ds.backup('../test.p')
@@ -86,7 +99,8 @@ def test_load_file():
     ds = Dataset.load_file(
         'files/names_versions.csv',
         registry='pypi',
-        cache_dir='../cache'
+        cache_dir='../cache',
+        debug=True
     )
     ds.set_meta('test', '1.0')
     ds.backup('../test.p')
@@ -96,7 +110,8 @@ def test_load_file():
     # test vanilla
     ds = Dataset.load_file(
         'files/urls.csv',
-        cache_dir='../cache'
+        cache_dir='../cache',
+        debug=True
     )
     ds.set_meta('test', '1.0')
     ds.backup('../test.p')
@@ -107,13 +122,13 @@ def test_load_file():
 
 
 def test_load_weblist():
-    load_dotenv()
-
     # test github
     ds = Dataset.load_weblist(
         'top1kstarred',
         registry='github',
-        cache_dir='../cache'
+        cache_dir='../cache',
+        debug=True,
+        github_pat=os.getenv('GITHUB_PAT', None)
     )
     ds.trim(10)
     ds.get_project_versions('latest')
@@ -126,7 +141,8 @@ def test_load_weblist():
     ds = Dataset.load_weblist(
         'allbydependents',
         registry='npm',
-        cache_dir='../cache'
+        cache_dir='../cache',
+        debug=True
     )
     ds.trim(10)
     ds.get_project_versions('latest')
@@ -139,7 +155,8 @@ def test_load_weblist():
     ds = Dataset.load_weblist(
         'top5kyear',
         registry='pypi',
-        cache_dir='../cache'
+        cache_dir='../cache',
+        debug=True
     )
     ds.trim(10)
     ds.get_project_versions('latest')

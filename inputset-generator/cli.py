@@ -3,7 +3,6 @@
 import click
 from click import argument, option, Choice
 from click_shell import shell
-from dotenv import load_dotenv
 
 from structures import Dataset
 from util import get_user_name, get_user_email
@@ -21,9 +20,6 @@ def get_dataset(ctx) -> Dataset:
 @shell(chain=True, prompt='r2c-isg> ')
 @click.pass_context
 def cli(ctx):
-    # pull in any environment vars
-    load_dotenv()
-
     # create the ctx.obj dictionary
     ctx.ensure_object(dict)
 
