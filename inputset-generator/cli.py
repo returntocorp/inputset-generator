@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import sys
 import click
 import traceback
 from copy import deepcopy
@@ -21,6 +20,18 @@ def get_dataset(ctx) -> Dataset:
     assert ds, 'Dataset has not been loaded.'
 
     return ds
+
+
+def handle_error(ctx, err, backup_ds) -> None:
+    # print the exception info
+    if DEBUG:
+        traceback.print_tb(err.__traceback__)
+    print(err)
+
+    # roll back the dataset, if applicable
+    if isinstance(err, AssertionError):
+        ctx.obj['dataset'] = backup_ds
+        print('The dataset has been reverted.')
 
 
 @shell(chain=True, prompt='r2c-isg> ')
@@ -53,15 +64,7 @@ def meta(ctx, name, version, description, readme, author, email):
         ds.set_meta(name, version, description, readme, author, email)
 
     except Exception as e:
-        # print the exception info
-        if DEBUG:
-            traceback.print_tb(e.__traceback__)
-        print(e)
-
-        # roll back the dataset, if applicable
-        if isinstance(e, AssertionError):
-            ctx.obj['dataset'] = backup_ds
-            print('\nThe dataset has been reverted.')
+        handle_error(ctx, e, backup_ds)
 
 
 @cli.command('load')
@@ -142,16 +145,7 @@ def get(ctx, metadata, versions):
             ds.get_projects_meta()
 
         except Exception as e:
-            # print the exception info
-            if DEBUG:
-                traceback.print_tb(e.__traceback__)
-            print(e)
-
-            # roll back the dataset, if applcable
-            if isinstance(e, AssertionError):
-                ctx.obj['dataset'] = backup_ds
-                print('\nThe dataset has been reverted.')
-
+            handle_error(ctx, e, backup_ds)
 
     # load project versions
     if versions:
@@ -160,15 +154,7 @@ def get(ctx, metadata, versions):
             ds.get_project_versions(versions)
 
         except Exception as e:
-            # print the exception info
-            if DEBUG:
-                traceback.print_tb(e.__traceback__)
-            print(e)
-
-            # roll back the dataset, if applicable
-            if isinstance(e, AssertionError):
-                ctx.obj['dataset'] = backup_ds
-                print('\nThe dataset has been reverted.')
+            handle_error(ctx, e, backup_ds)
 
 
 @cli.command('trim')
@@ -183,15 +169,7 @@ def trim(ctx, n, on_projects):
         ds.trim(n, on_projects)
 
     except Exception as e:
-        # print the exception info
-        if DEBUG:
-            traceback.print_tb(e.__traceback__)
-        print(e)
-
-        # roll back the dataset, if applicable
-        if isinstance(e, AssertionError):
-            ctx.obj['dataset'] = backup_ds
-            print('\nThe dataset has been reverted.')
+        handle_error(ctx, e, backup_ds)
 
 
 @cli.command('sort')
@@ -205,15 +183,7 @@ def sort(ctx, params):
         ds.sort(params.split())
 
     except Exception as e:
-        # print the exception info
-        if DEBUG:
-            traceback.print_tb(e.__traceback__)
-        print(e)
-
-        # roll back the dataset, if applicable
-        if isinstance(e, AssertionError):
-            ctx.obj['dataset'] = backup_ds
-            print('\nThe dataset has been reverted.')
+        handle_error(ctx, e, backup_ds)
 
 
 @cli.command('sample')
@@ -228,15 +198,7 @@ def sample(ctx, n, on_projects):
         ds.sample(n, on_projects)
 
     except Exception as e:
-        # print the exception info
-        if DEBUG:
-            traceback.print_tb(e.__traceback__)
-        print(e)
-
-        # roll back the dataset, if applicable
-        if isinstance(e, AssertionError):
-            ctx.obj['dataset'] = backup_ds
-            print('\nThe dataset has been reverted.')
+        handle_error(ctx, e, backup_ds)
 
 
 @cli.command('head')
