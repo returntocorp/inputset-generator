@@ -13,10 +13,11 @@ class JsonLoader(Loader):
         return {}
 
     @classmethod
-    def load(cls, filepath: str, parser: str = None, **kwargs) -> Dataset:
+    def load(cls, filepath: str, **kwargs) -> Dataset:
         """Loads a json file."""
 
         # ensure the user specified which parser to use
+        parser = kwargs.get('parser', None)
         assert parser, ('Missing json parser. Valid options are: %s'
                         % list(cls.parsers()))
 

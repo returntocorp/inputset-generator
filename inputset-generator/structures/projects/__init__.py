@@ -8,5 +8,5 @@ from .pypi_project import PypiProject
 project_map = {
     'github': GithubRepo,
     'npm': NpmPackage,
-    'pypi': PypiProject,
+    'pypi': PypiProject
 }

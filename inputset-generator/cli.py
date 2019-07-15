@@ -55,7 +55,7 @@ def load(ctx, registry, handle, fileargs):
     if '.' in handle:
         # read in a file (fileargs is either a header string for csv
         # or a parser handle for json)
-        ds = Dataset.load_file(handle, registry)
+        ds = Dataset.load_file(handle, registry, fileargs=fileargs)
     else:
         # download a weblist
         ds = Dataset.load_weblist(handle, registry)

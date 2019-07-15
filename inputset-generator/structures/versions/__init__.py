@@ -7,5 +7,5 @@ from .pypi_release import PypiRelease
 version_map = {
     'github': GithubCommit,
     'npm': NpmVersion,
-    'pypi': PypiRelease,
+    'pypi': PypiRelease
 }
