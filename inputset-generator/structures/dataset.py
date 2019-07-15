@@ -10,19 +10,21 @@ from structures.projects import Project
 
 class Dataset(object):
     def __init__(self, registry: str = None, **kwargs):
-        from apis import api_map as apis_list
+        from apis import api_map
+        from structures.projects import project_map as registry_map
         from structures import Project
         from functions import function_map
         from util import get_user_name, get_user_email
 
         # validate registry name (if provided) and set
         if registry:
-            assert registry in apis_list, ('Invalid registry type. Valid'
-                                           'types are: %s' % list(apis_list))
+            assert registry in registry_map, (
+                    'Invalid registry type. Valid types are: '
+                    '%s' % list(registry_map))
         self.registry = registry
 
         # set up the api
-        api_class = apis_list.get(self.registry, None)
+        api_class = api_map.get(self.registry, None)
         cache_dir = kwargs.get('cache_dir', None)
         cache_timeout = kwargs.get('cache_timeout', None)
         self.api = None if not api_class \
