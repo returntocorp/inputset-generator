@@ -26,12 +26,8 @@ class GithubRepo(Project):
             }]
 
         # return input set type GitRepoCommit
-        ret = []
-        for v in self.versions:
-            ret.append({
-                'input_type': 'GitRepoCommit',
-                'repo_url': url,
-                'commit_hash': v.uuids_['commit']()
-            })
-
-        return ret
+        return[{
+            'input_type': 'GitRepoCommit',
+            'repo_url': url,
+            'commit_hash': v.uuids_['commit']()
+        } for v in self.versions]

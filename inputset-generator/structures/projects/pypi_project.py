@@ -18,12 +18,8 @@ class PypiProject(Project):
             # pull the name from the url
             name = self.uuids_['url']().strip('/').split('/')[-1]
 
-        ret = []
-        for v in self.versions:
-            ret.append({
-                'input_type': 'PackageVersion',
-                'package_name': name,
-                'version': v.uuids_['version']()
-            })
-
-        return ret
+        return[{
+            'input_type': 'PackageVersion',
+            'package_name': name,
+            'version': v.uuids_['version']()
+        } for v in self.versions]
