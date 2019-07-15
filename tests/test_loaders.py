@@ -10,8 +10,8 @@ def test_import_inputset():
         cache_dir='../cache'
     )
     ds.set_meta('test', '1.0')
-    ds.backup('../test.pickle')
-    ds = Dataset.restore('../test.pickle')
+    ds.backup('../test.p')
+    ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
 
     ds = Dataset.import_inputset(
@@ -20,8 +20,8 @@ def test_import_inputset():
         cache_dir='../cache'
     )
     ds.set_meta('test', '1.0')
-    ds.backup('../test.pickle')
-    ds = Dataset.restore('../test.pickle')
+    ds.backup('../test.p')
+    ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
 
     # test npm
@@ -31,8 +31,8 @@ def test_import_inputset():
         cache_dir='../cache'
     )
     ds.set_meta('test', '1.0')
-    ds.backup('../test.pickle')
-    ds = Dataset.restore('../test.pickle')
+    ds.backup('../test.p')
+    ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
 
     # test pypi
@@ -42,8 +42,8 @@ def test_import_inputset():
         cache_dir='../cache'
     )
     ds.set_meta('test', '1.0')
-    ds.backup('../test.pickle')
-    ds = Dataset.restore('../test.pickle')
+    ds.backup('../test.p')
+    ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
 
     # test vanilla
@@ -52,8 +52,8 @@ def test_import_inputset():
         cache_dir='../cache'
     )
     ds.set_meta('test', '1.0')
-    ds.backup('../test.pickle')
-    ds = Dataset.restore('../test.pickle')
+    ds.backup('../test.p')
+    ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
 
     temp = 5
@@ -67,8 +67,8 @@ def test_load_file():
         cache_dir='../cache'
     )
     ds.set_meta('test', '1.0')
-    ds.backup('../test.pickle')
-    ds = Dataset.restore('../test.pickle')
+    ds.backup('../test.p')
+    ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
 
     # test npm
@@ -78,8 +78,8 @@ def test_load_file():
         cache_dir='../cache'
     )
     ds.set_meta('test', '1.0')
-    ds.backup('../test.pickle')
-    ds = Dataset.restore('../test.pickle')
+    ds.backup('../test.p')
+    ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
 
     # test pypi
@@ -89,8 +89,8 @@ def test_load_file():
         cache_dir='../cache'
     )
     ds.set_meta('test', '1.0')
-    ds.backup('../test.pickle')
-    ds = Dataset.restore('../test.pickle')
+    ds.backup('../test.p')
+    ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
 
     # test vanilla
@@ -99,8 +99,8 @@ def test_load_file():
         cache_dir='../cache'
     )
     ds.set_meta('test', '1.0')
-    ds.backup('../test.pickle')
-    ds = Dataset.restore('../test.pickle')
+    ds.backup('../test.p')
+    ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
 
     temp = 5
@@ -118,8 +118,8 @@ def test_load_weblist():
     ds.trim(10)
     ds.get_project_versions('latest')
     ds.set_meta('test', '1.0')
-    ds.backup('../test.pickle')
-    ds = Dataset.restore('../test.pickle')
+    ds.backup('../test.p')
+    ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
 
     # test npm
@@ -131,8 +131,8 @@ def test_load_weblist():
     ds.trim(10)
     ds.get_project_versions('latest')
     ds.set_meta('test', '1.0')
-    ds.backup('../test.pickle')
-    ds = Dataset.restore('../test.pickle')
+    ds.backup('../test.p')
+    ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
 
     # test pypi
@@ -144,8 +144,8 @@ def test_load_weblist():
     ds.trim(10)
     ds.get_project_versions('latest')
     ds.set_meta('test', '1.0')
-    ds.backup('../test.pickle')
-    ds = Dataset.restore('../test.pickle')
+    ds.backup('../test.p')
+    ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
 
     temp = 5

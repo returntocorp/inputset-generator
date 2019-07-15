@@ -109,7 +109,7 @@ class Dataset(object):
         """Pickles a dataset."""
 
         # file name is dataset name, if not provided by user
-        filepath = filepath or (self.name + '.pickle')
+        filepath = filepath or (self.name + '.p')
 
         # save to disk
         print('Saving dataset to %s' % filepath)
