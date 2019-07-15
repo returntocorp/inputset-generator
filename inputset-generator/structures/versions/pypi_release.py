@@ -8,5 +8,6 @@ class PypiRelease(Version):
             'Release version string must be provided.'
 
     def to_inputset(self) -> dict:
+        """Extracts input set relevant attributes from the release."""
         self.check_guarantees()
         return {'version': self.uuids_['version']()}

@@ -28,7 +28,10 @@ class Version(object):
         pass
 
     def to_inputset(self) -> dict:
-        """Vanilla version can't be converted to an r2c input set."""
+        """Extracts input set relevant attributes from the version."""
+        # Note: The vanilla project is never used, even as a DefaultVersion.
+        # As such, this function should never be called. Instead, it's
+        # effectively an abstract method that child classes must implement.
         raise Exception('Version class has no associated R2C input set type.')
 
     def __eq__(self, other):

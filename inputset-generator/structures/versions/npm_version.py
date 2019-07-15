@@ -8,5 +8,6 @@ class NpmVersion(Version):
             'Version string must be provided.'
 
     def to_inputset(self) -> dict:
+        """Extracts input set relevant attributes from the version."""
         self.check_guarantees()
         return {'version': self.uuids_['version']()}

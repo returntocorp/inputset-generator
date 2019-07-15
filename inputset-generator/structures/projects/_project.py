@@ -54,6 +54,10 @@ class Project(object):
 
     def to_inputset(self) -> list:
         """Vanilla project can't be converted to an r2c input set."""
+        # Note: The only time a vanilla Project is used is in the function
+        # Dataset.find_project(), which never calls to_inputset(). As such,
+        # this function should never be called. Instead, it's effectively
+        # an abstract method that child classes must implement.
         raise Exception('Project class has no associated R2C input set type.')
 
     def __eq__(self, other):
