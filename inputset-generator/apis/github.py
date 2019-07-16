@@ -7,13 +7,20 @@ from structures.versions import GithubCommit
 
 class Github(Api):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
         # set base url for github's api
         self._base_api_url = 'https://api.github.com'
 
+        # set the default github personal access token
+        self.github_pat = None
+
+        super().__init__(**kwargs)
+
+    def update(self, **kwargs):
+        """Populates the github api with data from a dictionary."""
+        super().update(**kwargs)
+
         # set the personal access token
-        self.github_pat = kwargs.get('github_pat', None)
+        self.github_pat = kwargs.get('github_pat', None) or self.github_pat
 
     def request(self, url: str, headers: dict = {},
                 **kwargs) -> (int, Optional[Union[dict, list]]):

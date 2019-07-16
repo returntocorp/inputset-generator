@@ -169,17 +169,15 @@ class Dataset(object):
 
         return d
 
-    def get_projects_meta(self, nocache: bool = False, **kwargs) -> None:
+    def get_projects_meta(self, **kwargs) -> None:
         """Gets the metadata for all projects."""
         for p in self.projects:
-            self.api.get_project(p, nocache=nocache, **kwargs)
+            self.api.get_project(p, **kwargs)
 
-    def get_project_versions(self, historical: str = 'all',
-                             nocache: bool = False, **kwargs) -> None:
+    def get_project_versions(self, **kwargs) -> None:
         """Gets the historical versions for all projects."""
         for p in self.projects:
-            self.api.get_versions(p, historical=historical,
-                                  nocache=nocache, **kwargs)
+            self.api.get_versions(p, **kwargs)
 
     def find_project(self, **kwargs) -> Optional[Project]:
         """Gets the first project with attributes matching all kwargs."""

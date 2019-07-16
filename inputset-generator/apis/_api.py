@@ -13,19 +13,31 @@ from structures import Project
 
 
 class Api(ABC):
-    def __init__(self, cache_dir: str = 'cache',
-                 cache_timeout: timedelta = timedelta(weeks=1), **_):
+    def __init__(self, **kwargs):
+        self.cache_dir = 'cache'
+        self.cache_timeout = timedelta(weeks=1)
+        self.nocache = False
+
+        # call update to add any user-modifiable values
+        self.update(**kwargs)
+
+    def update(self, **kwargs):
+        """Populates the api with data from a dictionary."""
         # set/create the cache dir
-        self.cache_dir = cache_dir or 'cache'
+        self.cache_dir = kwargs.pop('cache_dir', None) or self.cache_dir
         if not os.path.exists(self.cache_dir):
             os.makedirs(self.cache_dir)
 
         # set how long a cached file is valid
-        self.cache_timeout = cache_timeout or timedelta(weeks=1)
+        self.cache_timeout = kwargs.pop('cache_timeout', None) \
+                             or self.cache_timeout
+
+        # set nocache (can be overridden by individual requests)
+        self.nocache = kwargs.pop('nocache', None) or self.nocache
 
     def request(
             self, url: str, request_type: str = 'get',
-            nocache: bool = False, cache_timeout: timedelta = None,
+            nocache: bool = None, cache_timeout: timedelta = None,
             headers: dict = {}, data: dict = {}, **_
     ) -> (int, Optional[Union[dict, list]]):
         """Loads a url from cache or downloads it from the web."""
@@ -36,6 +48,8 @@ class Api(ABC):
         filename = md5(uuid.encode()).hexdigest()
         filepath = '%s/%s.json' % (self.cache_dir, filename)
 
+        # request-specific nocache setting overrides the api-level setting
+        nocache = nocache if nocache is not None else self.nocache
         if not nocache:
             # try loading the data from cache
             # use default cache timeout if caller hasn't provided one
@@ -64,6 +78,9 @@ class Api(ABC):
                 r = s.post(url, headers=headers, data=json.dumps(data))
             else:
                 r = s.get(url, headers=headers, data=json.dumps(data))
+        except KeyboardInterrupt:
+            # allow ctrl-c to cancel the request
+            raise
         except:
             print('Warning: Could not load %s.' % url)
             # 0 status code means error

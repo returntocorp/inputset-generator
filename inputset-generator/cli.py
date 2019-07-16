@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import click
 import traceback
 from copy import deepcopy
@@ -23,6 +24,8 @@ def get_dataset(ctx) -> Dataset:
 
 
 def handle_error(ctx, err, backup_ds) -> None:
+    """Handles all cli errors."""
+
     # print the exception info
     if DEBUG:
         traceback.print_tb(err.__traceback__)
@@ -53,7 +56,7 @@ def spacer():
     pass
 
 
-@cli.command('meta')
+@cli.command('set-meta')
 @option('-n', '--name', help='Dataset name.')
 @option('-v', '--version', help='Dataset version.')
 @option('-d', '--description', help='Description string.')
@@ -63,12 +66,34 @@ def spacer():
 @option('-e', '--email', default=get_user_email,
         help='Author email. Defaults to git user.email.')
 @click.pass_context
-def meta(ctx, name, version, description, readme, author, email):
+def set_meta(ctx, name, version, description, readme, author, email):
     ds = get_dataset(ctx)
     backup_ds = deepcopy(ds)
 
     try:
         ds.set_meta(name, version, description, readme, author, email)
+
+    except Exception as e:
+        handle_error(ctx, e, backup_ds)
+
+
+@cli.command('set-api')
+@option('-d', '--cache_dir')
+@option('-t', '--cache_timeout')
+@option('--nocache', is_flag=True)
+@option('--github_pat')
+@click.pass_context
+def set_api(ctx, cache_dir, cache_timeout, nocache, github_pat):
+    ds = get_dataset(ctx)
+    backup_ds = deepcopy(ds)
+
+    try:
+        assert ds.api, 'Api has not been set for %s.' % ds.registry
+
+        ds.api.update(cache_dir=cache_dir,
+                      cache_timeout=cache_timeout,
+                      nocache=nocache,
+                      github_pat=github_pat)
 
     except Exception as e:
         handle_error(ctx, e, backup_ds)
@@ -158,7 +183,7 @@ def get(ctx, metadata, versions):
     if versions:
         backup_ds = deepcopy(ds)
         try:
-            ds.get_project_versions(versions)
+            ds.get_project_versions(historical=versions)
 
         except Exception as e:
             handle_error(ctx, e, backup_ds)

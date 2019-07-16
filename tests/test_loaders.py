@@ -131,7 +131,7 @@ def test_load_weblist():
         github_pat=os.getenv('GITHUB_PAT')
     )
     ds.trim(10)
-    ds.get_project_versions('latest')
+    ds.get_project_versions(historical='latest')
     ds.set_meta('test', '1.0')
     ds.backup('../test.p')
     ds = Dataset.restore('../test.p')
@@ -145,7 +145,7 @@ def test_load_weblist():
         debug=True
     )
     ds.trim(10)
-    ds.get_project_versions('latest')
+    ds.get_project_versions(historical='latest')
     ds.set_meta('test', '1.0')
     ds.backup('../test.p')
     ds = Dataset.restore('../test.p')
@@ -159,7 +159,7 @@ def test_load_weblist():
         debug=True
     )
     ds.trim(10)
-    ds.get_project_versions('latest')
+    ds.get_project_versions(historical='latest')
     ds.set_meta('test', '1.0')
     ds.backup('../test.p')
     ds = Dataset.restore('../test.p')
