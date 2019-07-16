@@ -97,7 +97,7 @@ class Dataset(object):
         return loader.load(name, registry=registry, **kwargs)
 
     @classmethod
-    def restore(cls, filepath: str, **kwargs) -> 'Dataset':
+    def restore(cls, filepath: str) -> 'Dataset':
         """Factory method that restores a pickled dataset."""
         from loaders.core import DatasetLoader
 
@@ -105,7 +105,7 @@ class Dataset(object):
         assert Path(filepath).is_file(), 'Invalid path; file does not exist.'
 
         # load the pickled dataset
-        return DatasetLoader.load(filepath, **kwargs)
+        return DatasetLoader.load(filepath)
 
     def backup(self, filepath: str = None) -> None:
         """Pickles a dataset."""
