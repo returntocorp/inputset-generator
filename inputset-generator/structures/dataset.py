@@ -17,10 +17,6 @@ class Dataset(object):
         from functions import function_map
         from util import get_user_name, get_user_email
 
-        # set the debug flag
-        if kwargs.get('debug', None):
-            os.environ['ISG_DEBUG'] = 'true'
-
         # validate registry name (if provided) and set
         if registry:
             assert registry in registry_map, (
