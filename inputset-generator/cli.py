@@ -46,6 +46,13 @@ def cli(ctx, debug):
     ctx.ensure_object(dict)
 
 
+@cli.command('and')
+def spacer():
+    """Does absolutely nothing, but sure does make command strings more
+    readable! :)"""
+    pass
+
+
 @cli.command('meta')
 @option('-n', '--name', help='Dataset name.')
 @option('-v', '--version', help='Dataset version.')
