@@ -198,7 +198,7 @@ class Dataset(object):
 
         return None
 
-    def head(self, n: int = 5, details: bool = False):
+    def show(self, n: int = 5, details: bool = False):
         """Summarizes the key data of the first n projects."""
         for p in self.projects[:n]:
             project_type = str(type(p).__name__)

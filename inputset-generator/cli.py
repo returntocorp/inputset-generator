@@ -56,7 +56,7 @@ def spacer():
     pass
 
 
-@cli.command('set-meta')
+@cli.command('meta')
 @option('-n', '--name', help='Dataset name.')
 @option('-v', '--version', help='Dataset version.')
 @option('-d', '--description', help='Description string.')
@@ -66,7 +66,7 @@ def spacer():
 @option('-e', '--email', default=get_user_email,
         help='Author email. Defaults to git user.email.')
 @click.pass_context
-def set_meta(ctx, name, version, description, readme, author, email):
+def meta(ctx, name, version, description, readme, author, email):
     ds = get_dataset(ctx)
     backup_ds = deepcopy(ds)
 
@@ -77,13 +77,13 @@ def set_meta(ctx, name, version, description, readme, author, email):
         handle_error(ctx, e, backup_ds)
 
 
-@cli.command('set-api')
+@cli.command('api')
 @option('-d', '--cache_dir')
 @option('-t', '--cache_timeout')
-@option('--nocache', is_flag=True)
-@option('--github_pat')
+@option('-n', '--nocache', is_flag=True)
+@option('-g', '--github_pat')
 @click.pass_context
-def set_api(ctx, cache_dir, cache_timeout, nocache, github_pat):
+def api(ctx, cache_dir, cache_timeout, nocache, github_pat):
     ds = get_dataset(ctx)
     backup_ds = deepcopy(ds)
 
@@ -234,19 +234,19 @@ def sample(ctx, n, on_projects, seed):
         handle_error(ctx, e, backup_ds)
 
 
-@cli.command('head')
+@cli.command('show')
 @argument('n', type=int, default=5)
 @option('-d', '--details', is_flag=True, default=False)
 @click.pass_context
-def print_head(ctx, n, details):
+def show(ctx, n, details):
     ds = get_dataset(ctx)
-    ds.head(n, details)
+    ds.show(n, details)
 
 
 @cli.command('describe')
 @argument('scope', type=Choice(['dataset', 'project', 'version']))
 @click.pass_context
-def print_structure(ctx, scope):
+def describe(ctx, scope):
     ds = get_dataset(ctx)
     ds.describe(scope)
 
