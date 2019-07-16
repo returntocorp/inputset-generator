@@ -274,7 +274,7 @@ class Dataset(object):
                 print('    %s' % key)
                 key_dict = getattr(obj, key + '_')
                 if len(key_dict) == 0:
-                    print('    none')
+                    print('        none')
                 for a, func in key_dict.items():
                     # convert the lambda function code to a string
                     func_str = getsource(func).split(': ', 1)[1].strip()
