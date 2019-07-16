@@ -3,8 +3,13 @@ import random
 from structures import Dataset
 
 
-def sample(ds: Dataset, n: int, on_projects: bool = True) -> None:
+def sample(ds: Dataset, n: int,
+           on_projects: bool = True, seed: str = None) -> None:
     """Samples n projects in place."""
+
+    # seed random, if a seed was provided
+    if seed:
+        random.seed(seed)
 
     # select a sample of projects
     if on_projects and len(ds.projects) > n:

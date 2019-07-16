@@ -189,13 +189,14 @@ def sort(ctx, params):
 @cli.command('sample')
 @argument('n', type=int)
 @option('-p/-v', '--projects/--versions', 'on_projects', default=True)
+@option('-s', '--seed')
 @click.pass_context
-def sample(ctx, n, on_projects):
+def sample(ctx, n, on_projects, seed):
     ds = get_dataset(ctx)
     backup_ds = deepcopy(ds)
 
     try:
-        ds.sample(n, on_projects)
+        ds.sample(n, on_projects, seed)
 
     except Exception as e:
         handle_error(ctx, e, backup_ds)
