@@ -215,7 +215,7 @@ def sample(ctx, n, on_projects, seed):
 @click.pass_context
 def show(ctx, n, details):
     ds = get_dataset(ctx)
-    ds.show(n, details)
+    visualizations.show(ds, n, details)
 
 
 @cli.command('describe')
@@ -223,7 +223,7 @@ def show(ctx, n, details):
 @click.pass_context
 def describe(ctx, scope):
     ds = get_dataset(ctx)
-    ds.describe(scope)
+    visualizations.describe(ds, scope)
 
 
 if __name__ == '__main__':
