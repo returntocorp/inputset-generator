@@ -15,7 +15,18 @@ class Dataset(object):
         from structures.projects import project_map as registry_map
         from structures import Project
         from functions import function_map
-        from util import get_user_name, get_user_email
+        from util import get_name, get_email
+
+        # a dataset contains projects
+        self.projects: List[Project] = []
+
+        # set default dataset metadata
+        self.name = kwargs.pop('name', None)
+        self.version = kwargs.pop('version', None)
+        self.description = kwargs.pop('description', None)
+        self.readme = kwargs.pop('readme', None)
+        self.author = kwargs.pop('author', None) or get_name()
+        self.email = kwargs.pop('email', None) or get_email()
 
         # validate registry name (if provided) and set
         if registry:
@@ -33,17 +44,6 @@ class Dataset(object):
         # register the various transformation functions
         for name, function in function_map.items():
             setattr(self, name, MethodType(function, self))
-
-        # a dataset contains projects
-        self.projects: List[Project] = []
-
-        # set default dataset metadata
-        self.name = None
-        self.version = None
-        self.description = None
-        self.readme = None
-        self.author = get_user_name()  # default to git user.name
-        self.email = get_user_email()  # default to git user.email
 
     @classmethod
     def load_file(cls, filepath: str,

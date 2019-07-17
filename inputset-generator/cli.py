@@ -1,40 +1,15 @@
 #!/usr/bin/env python3
 
-import os
 import click
-import traceback
 from copy import deepcopy
 from click import argument, option, Choice
 from click_shell import shell
 
 from structures import Dataset
-from util import get_user_name, get_user_email
+from util import get_name, get_email, get_dataset, handle_error
 
 
 DEBUG = False
-
-
-def get_dataset(ctx) -> Dataset:
-    """Gets the dataset from the context."""
-    ds = ctx.obj.get('dataset', None)
-
-    assert ds, 'Dataset has not been loaded.'
-
-    return ds
-
-
-def handle_error(ctx, err, backup_ds) -> None:
-    """Handles all cli errors."""
-
-    # print the exception info
-    if DEBUG:
-        traceback.print_tb(err.__traceback__)
-    print(err)
-
-    # roll back the dataset, if applicable
-    if isinstance(err, AssertionError):
-        ctx.obj['dataset'] = backup_ds
-        print('The dataset has been reverted.')
 
 
 @shell(chain=True, prompt='r2c-isg> ')
@@ -122,9 +97,9 @@ def export(ctx, filepath):
 @option('-v', '--version', help='Dataset version.')
 @option('-d', '--description', help='Description string.')
 @option('-r', '--readme', help='Readme string.')
-@option('-a', '--author', default=get_user_name,
+@option('-a', '--author', default=get_name,
         help='Author name. Defaults to git user.name.')
-@option('-e', '--email', default=get_user_email,
+@option('-e', '--email', default=get_email,
         help='Author email. Defaults to git user.email.')
 @click.pass_context
 def meta(ctx, name, version, description, readme, author, email):
@@ -135,7 +110,7 @@ def meta(ctx, name, version, description, readme, author, email):
         ds.set_meta(name, version, description, readme, author, email)
 
     except Exception as e:
-        handle_error(ctx, e, backup_ds)
+        handle_error(ctx, e, backup_ds, debug=DEBUG)
 
 
 @cli.command('api')
@@ -177,7 +152,7 @@ def get(ctx, metadata, versions):
             ds.get_projects_meta()
 
         except Exception as e:
-            handle_error(ctx, e, backup_ds)
+            handle_error(ctx, e, backup_ds, debug=DEBUG)
 
     # load project versions
     if versions:
@@ -186,7 +161,7 @@ def get(ctx, metadata, versions):
             ds.get_project_versions(historical=versions)
 
         except Exception as e:
-            handle_error(ctx, e, backup_ds)
+            handle_error(ctx, e, backup_ds, debug=DEBUG)
 
 
 @cli.command('trim')
@@ -201,7 +176,7 @@ def trim(ctx, n, on_projects):
         ds.trim(n, on_projects)
 
     except Exception as e:
-        handle_error(ctx, e, backup_ds)
+        handle_error(ctx, e, backup_ds, debug=DEBUG)
 
 
 @cli.command('sort')
@@ -215,7 +190,7 @@ def sort(ctx, params):
         ds.sort(params.split())
 
     except Exception as e:
-        handle_error(ctx, e, backup_ds)
+        handle_error(ctx, e, backup_ds, debug=DEBUG)
 
 
 @cli.command('sample')
@@ -231,7 +206,7 @@ def sample(ctx, n, on_projects, seed):
         ds.sample(n, on_projects, seed)
 
     except Exception as e:
-        handle_error(ctx, e, backup_ds)
+        handle_error(ctx, e, backup_ds, debug=DEBUG)
 
 
 @cli.command('show')
