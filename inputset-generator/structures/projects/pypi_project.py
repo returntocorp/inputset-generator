@@ -22,7 +22,7 @@ class PypiProject(Project):
         assert self.versions, ('Pypi project must contain at least one '
                                'release before exporting to an input set.')
 
-        return[{
+        return [{
             'input_type': 'PackageVersion',
             'package_name': self.get_name(),
             **v.to_inputset()

@@ -45,23 +45,6 @@ class Dataset(object):
         self.author = get_user_name()  # default to git user.name
         self.email = get_user_email()  # default to git user.email
 
-    def set_meta(self, name: str = None, version: str = None,
-                 description: str = None, readme: str = None,
-                 author: str = None, email: str = None) -> None:
-        """Sets dataset metadata."""
-        assert (name or version or description or readme or author
-                or email), ('Error setting metadata. Must provide at '
-                            'least one of name, version, description, '
-                            'readme, author, or email.')
-
-        # override existing data only if the override is not None
-        self.name = name or self.name
-        self.version = version or self.version
-        self.description = description or self.description
-        self.readme = readme or self.readme
-        self.author = author or self.author
-        self.email = email or self.email
-
     @classmethod
     def load_file(cls, filepath: str,
                   registry: str = None, **kwargs) -> 'Dataset':
@@ -144,6 +127,23 @@ class Dataset(object):
         print('Exporting input set to %s' % filepath)
         with open(filepath, 'w') as file:
             json.dump(inputset, file, indent=4)
+
+    def set_meta(self, name: str = None, version: str = None,
+                 description: str = None, readme: str = None,
+                 author: str = None, email: str = None) -> None:
+        """Sets dataset metadata."""
+        assert (name or version or description or readme or author
+                or email), ('Error setting metadata. Must provide at '
+                            'least one of name, version, description, '
+                            'readme, author, or email.')
+
+        # override existing data only if the override is not None
+        self.name = name or self.name
+        self.version = version or self.version
+        self.description = description or self.description
+        self.readme = readme or self.readme
+        self.author = author or self.author
+        self.email = email or self.email
 
     def to_inputset(self) -> dict:
         """Converts a dataset to an input set json."""

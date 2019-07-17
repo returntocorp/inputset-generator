@@ -15,7 +15,7 @@ DEBUG = False
 
 
 def get_dataset(ctx) -> Dataset:
-    """Checks that the dataset has been loaded."""
+    """Gets the dataset from the context."""
     ds = ctx.obj.get('dataset', None)
 
     assert ds, 'Dataset has not been loaded.'
@@ -54,49 +54,6 @@ def spacer():
     """Does absolutely nothing, but sure does make command strings more
     readable! :)"""
     pass
-
-
-@cli.command('meta')
-@option('-n', '--name', help='Dataset name.')
-@option('-v', '--version', help='Dataset version.')
-@option('-d', '--description', help='Description string.')
-@option('-r', '--readme', help='Readme string.')
-@option('-a', '--author', default=get_user_name,
-        help='Author name. Defaults to git user.name.')
-@option('-e', '--email', default=get_user_email,
-        help='Author email. Defaults to git user.email.')
-@click.pass_context
-def meta(ctx, name, version, description, readme, author, email):
-    ds = get_dataset(ctx)
-    backup_ds = deepcopy(ds)
-
-    try:
-        ds.set_meta(name, version, description, readme, author, email)
-
-    except Exception as e:
-        handle_error(ctx, e, backup_ds)
-
-
-@cli.command('api')
-@option('-d', '--cache_dir')
-@option('-t', '--cache_timeout')
-@option('-n', '--nocache', is_flag=True)
-@option('-g', '--github_pat')
-@click.pass_context
-def api(ctx, cache_dir, cache_timeout, nocache, github_pat):
-    ds = get_dataset(ctx)
-    backup_ds = deepcopy(ds)
-
-    try:
-        assert ds.api, 'Api has not been set for %s.' % ds.registry
-
-        ds.api.update(cache_dir=cache_dir,
-                      cache_timeout=cache_timeout,
-                      nocache=nocache,
-                      github_pat=github_pat)
-
-    except Exception as e:
-        handle_error(ctx, e, backup_ds)
 
 
 @cli.command('load')
@@ -158,6 +115,49 @@ def import_(ctx, registry, filepath):
 def export(ctx, filepath):
     ds = get_dataset(ctx)
     ds.export_inputset(filepath)
+
+
+@cli.command('meta')
+@option('-n', '--name', help='Dataset name.')
+@option('-v', '--version', help='Dataset version.')
+@option('-d', '--description', help='Description string.')
+@option('-r', '--readme', help='Readme string.')
+@option('-a', '--author', default=get_user_name,
+        help='Author name. Defaults to git user.name.')
+@option('-e', '--email', default=get_user_email,
+        help='Author email. Defaults to git user.email.')
+@click.pass_context
+def meta(ctx, name, version, description, readme, author, email):
+    ds = get_dataset(ctx)
+    backup_ds = deepcopy(ds)
+
+    try:
+        ds.set_meta(name, version, description, readme, author, email)
+
+    except Exception as e:
+        handle_error(ctx, e, backup_ds)
+
+
+@cli.command('api')
+@option('-d', '--cache_dir')
+@option('-t', '--cache_timeout')
+@option('-n', '--nocache', is_flag=True)
+@option('-g', '--github_pat')
+@click.pass_context
+def api(ctx, cache_dir, cache_timeout, nocache, github_pat):
+    ds = get_dataset(ctx)
+    backup_ds = deepcopy(ds)
+
+    try:
+        assert ds.api, 'Api has not been set for %s.' % ds.registry
+
+        ds.api.update(cache_dir=cache_dir,
+                      cache_timeout=cache_timeout,
+                      nocache=nocache,
+                      github_pat=github_pat)
+
+    except Exception as e:
+        handle_error(ctx, e, backup_ds)
 
 
 @cli.command('get')
