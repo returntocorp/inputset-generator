@@ -11,11 +11,8 @@ class CsvLoader(Loader):
     def load(cls, filepath: str, **kwargs) -> Dataset:
         """Loads a csv file."""
 
-        # initialize a dataset
-        ds = Dataset(**kwargs)
-
         # user-defined headers override default headers
-        headers = kwargs.get('fileargs', None)
+        headers = kwargs.pop('fileargs', None)
         if headers:
             user_defined = True
             headers = headers.split()
@@ -23,6 +20,9 @@ class CsvLoader(Loader):
             user_defined = False
             # default headers are name and version string
             headers = ['name', 'v.version']
+
+        # initialize a dataset
+        ds = Dataset(**kwargs)
 
         # load the file
         with open(filepath, mode='r', encoding='utf-8-sig') as file:

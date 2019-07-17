@@ -20,7 +20,7 @@ class Github(Api):
         super().update(**kwargs)
 
         # set the personal access token
-        self.github_pat = kwargs.get('github_pat', None) or self.github_pat
+        self.github_pat = kwargs.pop('github_pat', None) or self.github_pat
 
     def request(self, url: str, headers: dict = {},
                 **kwargs) -> (int, Optional[Union[dict, list]]):

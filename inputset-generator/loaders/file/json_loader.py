@@ -17,18 +17,18 @@ class JsonLoader(Loader):
         """Loads a json file."""
 
         # ensure the user specified which parser to use
-        parser = kwargs.get('parser', None)
+        parser = kwargs.pop('parser', None)
         assert parser, ('Missing json parser. Valid options are: %s'
                         % list(cls.parsers()))
+
+        # check if the parsing schema exists
+        assert parser in cls.parsers, 'Unrecognized json parser.'
 
         # initialize a dataset
         ds = Dataset(**kwargs)
 
         # load the file
         data = json.load(open(filepath))
-
-        # check if the parsing schema exists
-        assert parser in cls.parsers, 'Unrecognized json parser.'
 
         # run the appropriate parser
         cls.parsers()[parser](ds, data)
