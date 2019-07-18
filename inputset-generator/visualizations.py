@@ -83,8 +83,10 @@ def describe(ds: Dataset, scope: str = 'dataset'):
                                        DefaultProject).__name__
         print('    %s%s' % ('    type'.ljust(col_width),
                             'list(%s)' % project_type))
-        print('    %s%d' % ('    len'.ljust(col_width),
-                            len(ds.projects)))
+        print('    {:}{:,}'.format(
+            '    len'.ljust(col_width),
+            len(ds.projects)
+        ))
 
     elif scope in ['project', 'version']:
         # describe a project or version
@@ -129,7 +131,7 @@ def describe(ds: Dataset, scope: str = 'dataset'):
                 '    type'.ljust(col_width),
                 'list(%s)' % version_type
             ))
-            print('    %s%d' % (
+            print('    {:}{:,}'.format(
                 '    len'.ljust(col_width),
                 len(obj.versions)
             ))
