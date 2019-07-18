@@ -1,5 +1,6 @@
 import subprocess
 import traceback
+from typing import Union
 
 from structures import Dataset
 
@@ -32,12 +33,14 @@ def get_dataset(ctx) -> Dataset:
     """Gets the dataset from the CLI context."""
     ds = ctx.obj.get('dataset', None)
 
-    assert ds, 'You must load a dataset before using this command.'
+    if not ds:
+        raise Exception('You must load a dataset before using this command.')
 
     return ds
 
 
-def handle_error(ctx, err, backup_ds, debug=False) -> None:
+def handle_error(ctx, err: Exception,
+                 backup_ds: Union[Dataset, None], debug: bool = False) -> None:
     """Handles all CLI errors."""
 
     # print the exception info
@@ -49,4 +52,3 @@ def handle_error(ctx, err, backup_ds, debug=False) -> None:
     if isinstance(err, AssertionError):
         ctx.obj['dataset'] = backup_ds
         print('The dataset has been reverted.')
-

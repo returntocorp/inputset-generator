@@ -5,11 +5,13 @@ from copy import deepcopy
 from click import argument, option, Choice
 from click_shell import shell
 
+import visualizations
 from structures import Dataset
 from util import get_name, get_email, get_dataset, handle_error
 
 
 DEBUG = False
+META_DICT, API_DICT = dict(), dict()
 
 
 @shell(chain=True, prompt='r2c-isg> ')
@@ -40,36 +42,49 @@ def spacer():
         help="Handle for a custom-build json parser.")
 @click.pass_context
 def load(ctx, registry, handle, fileargs):
-    # initialize a dataset and add it to the context
-    if registry == 'noreg':
-        registry = None
+    """Generates a dataset from a weblist or file."""
+    try:
+        if registry == 'noreg':
+            registry = None
 
-    if '.' in handle:
-        # read in a file (fileargs is either a header string for csv
-        # or a parser handle for json)
-        ds = Dataset.load_file(handle, registry, fileargs=fileargs)
-    else:
-        # download a weblist
-        ds = Dataset.load_weblist(handle, registry)
+        if '.' in handle:
+            # read in a file (fileargs is either a header string for csv
+            # or a parser handle for json)
+            ds = Dataset.load_file(handle, registry, fileargs=fileargs)
+        else:
+            # download a weblist
+            ds = Dataset.load_weblist(handle, registry)
 
-    ctx.obj['dataset'] = ds
+        ctx.obj['dataset'] = ds
+
+    except Exception as e:
+        handle_error(ctx, e, None, DEBUG)
 
 
 @cli.command('restore')
 @argument('filepath')
 @click.pass_context
 def restore(ctx, filepath):
-    # restore the dataset from file
-    ds = Dataset.restore(filepath)
-    ctx.obj['dataset'] = ds
+    """Restores a pickled dataset file."""
+    try:
+        ds = Dataset.restore(filepath)
+        ctx.obj['dataset'] = ds
+
+    except Exception as e:
+        handle_error(ctx, e, None, DEBUG)
 
 
 @cli.command('backup')
 @argument('filepath', default=None)
 @click.pass_context
 def backup(ctx, filepath):
-    ds = get_dataset(ctx)
-    ds.backup(filepath)
+    """Backups up a pickled version of the dataset."""
+    try:
+        ds = get_dataset(ctx)
+        ds.backup(filepath)
+
+    except Exception as e:
+        handle_error(ctx, e, None, DEBUG)
 
 
 @cli.command('import')
@@ -77,19 +92,29 @@ def backup(ctx, filepath):
 @argument('filepath')
 @click.pass_context
 def import_(ctx, registry, filepath):
-    # initialize a dataset and add it to the context
-    if registry == 'noreg':
-        registry = None
-    ds = Dataset.import_inputset(filepath, registry)
-    ctx.obj['dataset'] = ds
+    """Imports an input set json file."""
+    try:
+        if registry == 'noreg':
+            registry = None
+
+        ds = Dataset.import_inputset(filepath, registry)
+        ctx.obj['dataset'] = ds
+
+    except Exception as e:
+        handle_error(ctx, e, None, DEBUG)
 
 
 @cli.command('export')
 @argument('filepath', default=None)
 @click.pass_context
 def export(ctx, filepath):
-    ds = get_dataset(ctx)
-    ds.export_inputset(filepath)
+    """Export a dataset to an input set json."""
+    try:
+        ds = get_dataset(ctx)
+        ds.export_inputset(filepath)
+
+    except Exception as e:
+        handle_error(ctx, e, None, DEBUG)
 
 
 @cli.command('meta')
@@ -103,10 +128,13 @@ def export(ctx, filepath):
         help='Author email. Defaults to git user.email.')
 @click.pass_context
 def meta(ctx, name, version, description, readme, author, email):
-    ds = get_dataset(ctx)
-    backup_ds = deepcopy(ds)
+    """Sets dataset metadata."""
+    backup_ds = None
 
     try:
+        ds = get_dataset(ctx)
+        backup_ds = deepcopy(ds)
+
         ds.set_meta(name, version, description, readme, author, email)
 
     except Exception as e:
@@ -120,10 +148,13 @@ def meta(ctx, name, version, description, readme, author, email):
 @option('-g', '--github_pat')
 @click.pass_context
 def api(ctx, cache_dir, cache_timeout, nocache, github_pat):
-    ds = get_dataset(ctx)
-    backup_ds = deepcopy(ds)
+    """Sets API settings."""
+    backup_ds = None
 
     try:
+        ds = get_dataset(ctx)
+        backup_ds = deepcopy(ds)
+
         assert ds.api, 'Api has not been set for %s.' % ds.registry
 
         ds.api.update(cache_dir=cache_dir,
@@ -132,7 +163,7 @@ def api(ctx, cache_dir, cache_timeout, nocache, github_pat):
                       github_pat=github_pat)
 
     except Exception as e:
-        handle_error(ctx, e, backup_ds)
+        handle_error(ctx, e, backup_ds, debug=DEBUG)
 
 
 @cli.command('get')
@@ -142,8 +173,14 @@ def api(ctx, cache_dir, cache_timeout, nocache, github_pat):
         help='Filter versions by historical order.')
 @click.pass_context
 def get(ctx, metadata, versions):
+    """Downloads project and version information."""
+
     # get the dataset
-    ds = get_dataset(ctx)
+    try:
+        ds = get_dataset(ctx)
+    except Exception as e:
+        handle_error(ctx, e, None, debug=DEBUG)
+        return
 
     # load project metadata
     if metadata:
@@ -169,10 +206,13 @@ def get(ctx, metadata, versions):
 @option('-p/-v', '--projects/--versions', 'on_projects', default=True)
 @click.pass_context
 def trim(ctx, n, on_projects):
-    ds = get_dataset(ctx)
-    backup_ds = deepcopy(ds)
+    """Trims projects or versions from a dataset."""
+    backup_ds = None
 
     try:
+        ds = get_dataset(ctx)
+        backup_ds = deepcopy(ds)
+
         ds.trim(n, on_projects)
 
     except Exception as e:
@@ -183,10 +223,13 @@ def trim(ctx, n, on_projects):
 @argument('params', type=str)
 @click.pass_context
 def sort(ctx, params):
-    ds = get_dataset(ctx)
-    backup_ds = deepcopy(ds)
+    """Sorts a dataset."""
+    backup_ds = None
 
     try:
+        ds = get_dataset(ctx)
+        backup_ds = deepcopy(ds)
+
         ds.sort(params.split())
 
     except Exception as e:
@@ -199,10 +242,13 @@ def sort(ctx, params):
 @option('-s', '--seed')
 @click.pass_context
 def sample(ctx, n, on_projects, seed):
-    ds = get_dataset(ctx)
-    backup_ds = deepcopy(ds)
+    """Samples projects or versions from a dataset."""
+    backup_ds = None
 
     try:
+        ds = get_dataset(ctx)
+        backup_ds = deepcopy(ds)
+
         ds.sample(n, on_projects, seed)
 
     except Exception as e:
@@ -214,16 +260,26 @@ def sample(ctx, n, on_projects, seed):
 @option('-d', '--details', is_flag=True, default=False)
 @click.pass_context
 def show(ctx, n, details):
-    ds = get_dataset(ctx)
-    visualizations.show(ds, n, details)
+    """Shows the details of the first n projects."""
+    try:
+        ds = get_dataset(ctx)
+        visualizations.show(ds, n, details)
+
+    except Exception as e:
+        handle_error(ctx, e, None, debug=DEBUG)
 
 
 @cli.command('describe')
 @argument('scope', type=Choice(['dataset', 'project', 'version']))
 @click.pass_context
 def describe(ctx, scope):
-    ds = get_dataset(ctx)
-    visualizations.describe(ds, scope)
+    """Describes the structure of the dataset/project/version."""
+    try:
+        ds = get_dataset(ctx)
+        visualizations.describe(ds, scope)
+
+    except Exception as e:
+        handle_error(ctx, e, None, debug=DEBUG)
 
 
 if __name__ == '__main__':
