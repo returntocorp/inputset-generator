@@ -135,7 +135,16 @@ def meta(ctx, name, version, description, readme, author, email):
         ds = get_dataset(ctx)
         backup_ds = deepcopy(ds)
 
-        ds.set_meta(name, version, description, readme, author, email)
+        assert name or version or description or readme or author or email, \
+            'Error setting metadata. You must provide a metadata value to set.'
+
+        # override existing dataset metadata
+        ds.name = name or ds.name
+        ds.version = version or ds.version
+        ds.description = description or ds.description
+        ds.readme = readme or ds.readme
+        ds.author = author or ds.author
+        ds.email = email or ds.email
 
     except Exception as e:
         handle_error(ctx, e, backup_ds, debug=DEBUG)
