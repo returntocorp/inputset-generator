@@ -5,7 +5,8 @@ class NpmVersion(Version):
     def check_guarantees(self) -> None:
         """Guarantees a version string."""
         assert 'version' in self.uuids_, \
-            'Version string must be provided.'
+            'Npm version guarantees not met; ' \
+            'version string must be provided.'
 
     def to_inputset(self) -> dict:
         """Extracts input set relevant attributes from the version."""

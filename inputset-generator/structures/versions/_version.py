@@ -32,8 +32,7 @@ class Version(object):
         # Note: The vanilla project is never used, even as a DefaultVersion.
         # As such, this function should never be called. Instead, it's
         # effectively an abstract method that child classes must implement.
-        raise Exception('    Version class has no associated '
-                        'R2C input set type.')
+        raise Exception('Version class has no associated R2C input set type.')
 
     def __eq__(self, other):
         # the two versions are equal if one of the uuids matches

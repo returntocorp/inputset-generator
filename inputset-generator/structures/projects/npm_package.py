@@ -5,7 +5,8 @@ class NpmPackage(Project):
     def check_guarantees(self) -> None:
         """Guarantees a name or a url."""
         assert 'name' in self.uuids_ or 'url' in self.uuids_, \
-            'Package name or url must be provided.'
+            'Npm package guarantees not met; package name or ' \
+            'url must be provided.'
 
     def get_name(self) -> str:
         """Returns the project's name."""
@@ -20,8 +21,9 @@ class NpmPackage(Project):
         self.check_guarantees()
 
         if not self.versions:
-            raise Exception('Npm package must contain at least one '
-                            'version before exporting to an input set.')
+            raise Exception('Npm package %s must contain at least one '
+                            'version before it can be exported to an '
+                            'input set.' % self.get_name())
 
         return[{
             'input_type': 'PackageVersion',

@@ -48,8 +48,12 @@ class Github(Api):
                     '%s' % (
                         status,
                         'Please try again in an hour.' if self.github_pat else
-                        'Provide a github personal access token to obtain '
-                        'a higher request rate limit.'
+                        'You can provide a github personal access token'
+                        "(using the command 'api --github_pat TOKEN') to "
+                        'obtain a significantly higher request rate limit. '
+                        'See instructions at https://help.github.com/en/'
+                        'articles/creating-a-personal-access-token-for-'
+                        'the-command-line.'
                     ))
 
         return status, data

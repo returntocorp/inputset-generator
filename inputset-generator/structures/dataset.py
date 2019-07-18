@@ -30,8 +30,8 @@ class Dataset(object):
 
         # validate registry name (if provided) and set
         if registry and registry not in registry_map:
-            raise Exception('Invalid registry type. Valid types are: '
-                            '%s' % list(registry_map))
+            raise Exception('Invalid registry type name. Valid types '
+                            'are: %s' % list(registry_map))
         self.registry = registry
 
         # set up the api
@@ -69,7 +69,7 @@ class Dataset(object):
         extension = Path(filepath).suffix
         loader = fileloader_map.get(extension, None)
         if not loader:
-            raise Exception("Invalid input file type '%s'. Valid types"
+            raise Exception("Invalid input file type '%s'. Valid file types "
                             'are: %s.' % (extension, list(fileloader_map)))
 
         # load initial data from the file
@@ -90,8 +90,8 @@ class Dataset(object):
         # check if the name is valid
         loader = weblistloader_map.get(registry, None)
         if not loader:
-            raise Exception('Invalid weblist for %s. Valid weblists are: '
-                            '%s' % (registry, str(weblistloader_map)))
+            raise Exception('Invalid weblist name for %s. Valid weblists '
+                            'are: %s' % (registry, str(weblistloader_map)))
 
         # load initial data from the weblist
         ds = loader.load(weblist, registry=registry, **kwargs)
@@ -162,15 +162,16 @@ class Dataset(object):
         # save to disk
         with open(filepath, 'w') as file:
             json.dump(inputset, file, indent=4)
-        print('    Exported input set to %s' % filepath)
+        print('    Exported input set to %s.' % filepath)
 
     def to_inputset(self) -> dict:
         """Converts a dataset to an input set json."""
 
         # name and version are mandatory
         if not (self.name and self.version):
-            raise Exception('Dataset name and/or version are missing. '
-                            "Set them using the 'meta' command.")
+            raise Exception('The dataset must have a name and version. '
+                            "Set them using the 'meta -n NAME -v VERSION'"
+                            ' command.')
 
         # jsonify the dataset's metadata
         d = dict()

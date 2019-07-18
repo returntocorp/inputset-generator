@@ -5,7 +5,8 @@ class PypiProject(Project):
     def check_guarantees(self) -> None:
         """Guarantees a name or a url."""
         assert 'name' in self.uuids_ or 'url' in self.uuids_, \
-            'Project name or url must be provided.'
+            'Pypi project guarantees not met; project name or ' \
+            'url must be provided.'
 
     def get_name(self) -> str:
         """Returns the project's name."""
@@ -20,8 +21,9 @@ class PypiProject(Project):
         self.check_guarantees()
 
         if not self.versions:
-            raise Exception('Pypi project must contain at least one '
-                            'version before exporting to an input set.')
+            raise Exception('Pypi project %s must contain at least one '
+                            'version before it can be exported to an '
+                            'input set.' % self.get_name())
 
         return [{
             'input_type': 'PackageVersion',

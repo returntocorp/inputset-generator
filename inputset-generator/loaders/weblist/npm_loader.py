@@ -41,7 +41,7 @@ class NpmLoader(Loader):
         # select the correct weblist loader/parser
         weblists = cls.weblists()
         if weblist not in weblists:
-            raise Exception('Unrecognized npm weblist. Valid '
+            raise Exception('Unrecognized npm weblist name. Valid '
                             'options are: %s' % list(weblists))
 
         # load the data
@@ -58,7 +58,8 @@ class NpmLoader(Loader):
 
         status, data = api.request(url, **kwargs)
         if status != 200:
-            raise Exception('Error downloading %s; is the url accessible?' % url)
+            raise Exception('Error downloading %s; '
+                            'is the url accessible?' % url)
 
         return data
 

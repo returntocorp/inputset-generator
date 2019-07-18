@@ -33,7 +33,8 @@ def get_dataset(ctx) -> Dataset:
     ds = ctx.obj.get('dataset', None)
 
     if not ds:
-        raise Exception('You must load a dataset before using this command.')
+        raise Exception('You must load a dataset before using this command. '
+                        "Use the 'load', 'import', or 'restore' commands.")
 
     return ds
 

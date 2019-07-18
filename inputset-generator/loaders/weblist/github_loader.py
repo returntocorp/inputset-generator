@@ -26,8 +26,8 @@ class GithubLoader(Loader):
         # select the correct weblist loader/parser
         weblists = cls.weblists()
         if weblist not in weblists:
-            raise Exception('Unrecognized github weblist. Valid '
-                            'options are: %s' % list(weblists))
+            raise Exception('Unrecognized github weblist name. '
+                            'Valid options are: %s' % list(weblists))
 
         # load the data
         data = weblists[weblist]['getter'](api=ds.api, **kwargs)
@@ -52,7 +52,8 @@ class GithubLoader(Loader):
             # request the data via the github api
             status, data = api.request(url, **kwargs)
             if status != 200:
-                raise Exception('Error downloading %s; is the url accessible?' % url)
+                raise Exception('Error downloading %s; '
+                                'is the url accessible?' % url)
 
             projects.extend(data['items'])
 
@@ -73,7 +74,8 @@ class GithubLoader(Loader):
             # request the data via the github api
             status, data = api.request(url, **kwargs)
             if status != 200:
-                raise Exception('Error downloading %s; is the url accessible?' % url)
+                raise Exception('Error downloading %s; '
+                                'is the url accessible?' % url)
 
             projects.extend(data['items'])
 
