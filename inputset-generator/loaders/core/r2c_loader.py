@@ -1,4 +1,5 @@
 import json
+from tqdm import tqdm
 
 from structures import Dataset, DefaultProject, DefaultVersion
 from structures.projects import project_map
@@ -31,7 +32,8 @@ class R2cLoader(Loader):
         ds.email = ds.email or data.get('email', None)
 
         # generate the projects and versions
-        for input_ in data['inputs']:
+        for input_ in tqdm(data['inputs'], desc='    Importing',
+                           unit=' inputs', leave=False):
             # split out project- vs. version-level information
             p_data, v_data = {}, {}
             p_keys = ['repo_url', 'url', 'package_name']

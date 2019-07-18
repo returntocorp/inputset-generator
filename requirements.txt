@@ -4,3 +4,4 @@ python-dotenv
 requests
 dill
 urllib3
+tqdm

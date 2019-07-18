@@ -1,10 +1,12 @@
+from tqdm import tqdm
+
 from structures import Dataset
 from loaders import Loader
 
 
 class GithubLoader(Loader):
     @classmethod
-    def weblists(cls):
+    def weblists(cls) -> dict:
         return {
             'top1kstarred': {
                 'getter': GithubLoader._get_top1kstarred,
@@ -21,11 +23,17 @@ class GithubLoader(Loader):
         # initialize a registry
         ds = Dataset(**kwargs)
 
+        # select the correct weblist loader/parser
+        weblists = cls.weblists()
+        if weblist not in weblists:
+            raise Exception('Unrecognized github weblist. Valid '
+                            'options are: %s' % list(weblists))
+
         # load the data
-        data = cls.weblists()[weblist]['getter'](api=ds.api, **kwargs)
+        data = weblists[weblist]['getter'](api=ds.api, **kwargs)
 
         # parse the data
-        cls.weblists()[weblist]['parser'](ds, data)
+        weblists[weblist]['parser'](ds, data)
 
         return ds
 
@@ -38,7 +46,9 @@ class GithubLoader(Loader):
 
         # github limits results to the top 1k at 100 per page
         projects = []
-        for url in [(url_format % d) for d in range(1, 11)]:
+        for url in [(url_format % d) for d in tqdm(range(1, 11), unit=' pages',
+                                                   desc='    Downloading',
+                                                   leave=False)]:
             # request the data via the github api
             status, data = api.request(url, **kwargs)
             assert status == 200, 'Error downloading %s; is the url accessible?'
@@ -56,7 +66,9 @@ class GithubLoader(Loader):
 
         # github limits results to the top 1k at 100 per page
         projects = []
-        for url in [(url_format % d) for d in range(1, 11)]:
+        for url in [(url_format % d) for d in tqdm(range(1, 11), unit=' pages',
+                                                   desc='    Downloading',
+                                                   leave=False)]:
             # request the data via the github api
             status, data = api.request(url, **kwargs)
             assert status == 200, 'Error downloading %s; is the url accessible?'
@@ -79,4 +91,6 @@ class GithubLoader(Loader):
         }
 
         # create the projects
-        ds.projects = [GithubRepo(uuids_=uuids, meta_=meta, **d) for d in data]
+        ds.projects = [GithubRepo(uuids_=uuids, meta_=meta, **d)
+                       for d in tqdm(data, desc='    Loading',
+                                     unit=' projects', leave=False)]

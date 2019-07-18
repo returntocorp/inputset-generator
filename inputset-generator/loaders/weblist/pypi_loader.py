@@ -1,10 +1,12 @@
+from tqdm import tqdm
+
 from structures import Dataset
 from loaders import Loader
 
 
 class PypiLoader(Loader):
     @classmethod
-    def weblists(cls):
+    def weblists(cls) -> dict:
         return {
             'top5kmonth': {
                 'getter': PypiLoader._get_top5kmonth,
@@ -21,11 +23,17 @@ class PypiLoader(Loader):
         # initialize a registry
         ds = Dataset(**kwargs)
 
+        # select the correct weblist loader/parser
+        weblists = cls.weblists()
+        if weblist not in weblists:
+            raise Exception('Unrecognized pypi weblist. Valid '
+                            'options are: %s' % list(weblists))
+
         # load the data
-        data = cls.weblists()[weblist]['getter'](api=ds.api, **kwargs)
+        data = weblists[weblist]['getter'](api=ds.api, **kwargs)
 
         # parse the data
-        cls.weblists()[weblist]['parser'](ds, data)
+        weblists[weblist]['parser'](ds, data)
 
         return ds
 
@@ -59,6 +67,8 @@ class PypiLoader(Loader):
         }
 
         # create the projects
-        ds.projects = [PypiProject(uuids_=uuids, **d) for d in data]
+        ds.projects = [PypiProject(uuids_=uuids, **d)
+                       for d in tqdm(data, desc='    Loading',
+                                     unit=' projects', leave=False)]
 
 

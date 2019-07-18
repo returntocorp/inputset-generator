@@ -19,8 +19,9 @@ class PypiProject(Project):
         """Converts pypi projects/releases to PackageVersion dict."""
         self.check_guarantees()
 
-        assert self.versions, ('Pypi project must contain at least one '
-                               'release before exporting to an input set.')
+        if not self.versions:
+            raise Exception('Pypi project must contain at least one '
+                            'version before exporting to an input set.')
 
         return [{
             'input_type': 'PackageVersion',

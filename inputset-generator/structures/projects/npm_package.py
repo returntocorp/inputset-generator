@@ -19,8 +19,9 @@ class NpmPackage(Project):
         """Converts npm packages/versions to PackageVersion dict."""
         self.check_guarantees()
 
-        assert self.versions, ('Npm package must contain at least one '
-                               'version before exporting to an input set.')
+        if not self.versions:
+            raise Exception('Npm package must contain at least one '
+                            'version before exporting to an input set.')
 
         return[{
             'input_type': 'PackageVersion',

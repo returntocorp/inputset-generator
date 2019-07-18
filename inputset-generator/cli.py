@@ -8,7 +8,7 @@ from click_shell import shell
 
 import visualizations
 from structures import Dataset
-from util import get_name, get_email, get_dataset, handle_error
+from util import get_dataset, handle_error
 
 
 DEBUG = False
@@ -140,34 +140,25 @@ def export(ctx, filepath):
 @option('-v', '--version', help='Dataset version.')
 @option('-d', '--description', help='Description string.')
 @option('-r', '--readme', help='Readme string.')
-@option('-a', '--author', default=get_name,
+@option('-a', '--author',
         help='Author name. Defaults to git user.name.')
-@option('-e', '--email', default=get_email,
+@option('-e', '--email',
         help='Author email. Defaults to git user.email.')
 @click.pass_context
 def meta(ctx, name, version, description, readme, author, email):
     """Sets dataset metadata."""
-    backup_ds = None
-
     try:
         ds = get_dataset(ctx)
-        backup_ds = deepcopy(ds)
 
-        assert name or version or description or readme or author or email, \
-            'Error setting metadata. You must provide a metadata value to set.'
+        if not (name or version or description or readme or author or email):
+            raise Exception('Error setting metadata. You must '
+                            'provide a metadata value to set.')
 
-        # override existing dataset metadata
-        ds.name = name or ds.name
-        ds.version = version or ds.version
-        ds.description = description or ds.description
-        ds.readme = readme or ds.readme
-        ds.author = author or ds.author
-        ds.email = email or ds.email
+        # update dataset's metadata
+        ds.update(name=name, version=version, description=description,
+                  readme=readme, author=author, email=email)
 
-    except AssertionError as e:
-        handle_error(ctx, e, backup_ds, debug=DEBUG)
-
-    except Exception as e:
+    except:
         # other exceptions are assumed to be related to a non=loaded ds;
         # save the settings to TEMP_SETTINGS to pass on to the ds once
         # it's been loaded
@@ -179,6 +170,17 @@ def meta(ctx, name, version, description, readme, author, email):
         if author: TEMP_SETTINGS['author'] = author
         if email: TEMP_SETTINGS['email'] = email
 
+    # print the outcome
+    settings = []
+    if name: settings.append('name')
+    if version: settings.append('version')
+    if description: settings.append('description')
+    if readme: settings.append('readme')
+    if author: settings.append('author')
+    if email: settings.append('email')
+    set_str = ', '.join([s for s in settings if s])
+    print("    Set the dataset's %s." % set_str)
+
 
 @cli.command('api')
 @option('-d', '--cache_dir')
@@ -188,7 +190,6 @@ def meta(ctx, name, version, description, readme, author, email):
 @click.pass_context
 def api(ctx, cache_dir, cache_timeout, nocache, github_pat):
     """Sets API settings."""
-    backup_ds = None
 
     # convert cache timeout string to timedelta
     if cache_timeout:
@@ -196,19 +197,16 @@ def api(ctx, cache_dir, cache_timeout, nocache, github_pat):
 
     try:
         ds = get_dataset(ctx)
-        backup_ds = deepcopy(ds)
 
-        assert ds.api, 'Api has not been set for %s.' % ds.registry
+        if not ds.api:
+            raise Exception('Api has not been set for %s.' % ds.registry)
 
         ds.api.update(cache_dir=cache_dir,
                       cache_timeout=cache_timeout,
                       nocache=nocache,
                       github_pat=github_pat)
 
-    except AssertionError as e:
-        handle_error(ctx, e, backup_ds, debug=DEBUG)
-
-    except Exception as e:
+    except:
         # other exceptions are assumed to be related to a non=loaded ds;
         # save the settings to TEMP_SETTINGS to pass on to the ds once
         # it's been loaded
@@ -217,6 +215,15 @@ def api(ctx, cache_dir, cache_timeout, nocache, github_pat):
         if cache_timeout: TEMP_SETTINGS['cache_timeout'] = cache_timeout
         if nocache: TEMP_SETTINGS['nocache'] = nocache
         if github_pat: TEMP_SETTINGS['github_pat'] = github_pat
+
+    # print the outcome
+    settings = []
+    if cache_dir: settings.append('cache_dir')
+    if cache_timeout: settings.append('cache_timeout')
+    if nocache: settings.append('nocache')
+    if github_pat: settings.append('github_pat')
+    set_str = ', '.join([s for s in settings if s])
+    print("    Set the api's %s." % set_str)
 
 
 @cli.command('get')
@@ -232,7 +239,7 @@ def get(ctx, metadata, versions):
     try:
         ds = get_dataset(ctx)
     except Exception as e:
-        handle_error(ctx, e, None, debug=DEBUG)
+        handle_error(ctx, e, None, DEBUG)
         return
 
     # load project metadata
@@ -242,7 +249,7 @@ def get(ctx, metadata, versions):
             ds.get_projects_meta()
 
         except Exception as e:
-            handle_error(ctx, e, backup_ds, debug=DEBUG)
+            handle_error(ctx, e, backup_ds, DEBUG)
 
     # load project versions
     if versions:
@@ -251,7 +258,7 @@ def get(ctx, metadata, versions):
             ds.get_project_versions(historical=versions)
 
         except Exception as e:
-            handle_error(ctx, e, backup_ds, debug=DEBUG)
+            handle_error(ctx, e, backup_ds, DEBUG)
 
 
 @cli.command('trim')
@@ -269,7 +276,7 @@ def trim(ctx, n, on_projects):
         ds.trim(n, on_projects)
 
     except Exception as e:
-        handle_error(ctx, e, backup_ds, debug=DEBUG)
+        handle_error(ctx, e, backup_ds, DEBUG)
 
 
 @cli.command('sort')
@@ -286,7 +293,7 @@ def sort(ctx, params):
         ds.sort(params.split())
 
     except Exception as e:
-        handle_error(ctx, e, backup_ds, debug=DEBUG)
+        handle_error(ctx, e, backup_ds, DEBUG)
 
 
 @cli.command('sample')
@@ -305,7 +312,7 @@ def sample(ctx, n, on_projects, seed):
         ds.sample(n, on_projects, seed)
 
     except Exception as e:
-        handle_error(ctx, e, backup_ds, debug=DEBUG)
+        handle_error(ctx, e, backup_ds, DEBUG)
 
 
 @cli.command('show')
@@ -319,7 +326,7 @@ def show(ctx, n, details):
         visualizations.show(ds, n, details)
 
     except Exception as e:
-        handle_error(ctx, e, None, debug=DEBUG)
+        handle_error(ctx, e, None, DEBUG)
 
 
 @cli.command('describe')
@@ -332,7 +339,7 @@ def describe(ctx, scope):
         visualizations.describe(ds, scope)
 
     except Exception as e:
-        handle_error(ctx, e, None, debug=DEBUG)
+        handle_error(ctx, e, None, DEBUG)
 
 
 if __name__ == '__main__':

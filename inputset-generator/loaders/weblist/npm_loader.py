@@ -1,10 +1,12 @@
+from tqdm import tqdm
+
 from structures import Dataset
 from loaders import Loader
 
 
 class NpmLoader(Loader):
     @classmethod
-    def weblists(cls):
+    def weblists(cls) -> dict:
         """
         Other possible sources/useful links:
         - Realtime list of the top 108 most depended-upon packages:
@@ -36,11 +38,17 @@ class NpmLoader(Loader):
         # initialize a registry
         ds = Dataset(**kwargs)
 
+        # select the correct weblist loader/parser
+        weblists = cls.weblists()
+        if weblist not in weblists:
+            raise Exception('Unrecognized npm weblist. Valid '
+                            'options are: %s' % list(weblists))
+
         # load the data
-        data = cls.weblists()[weblist]['getter'](api=ds.api, **kwargs)
+        data = weblists[weblist]['getter'](api=ds.api, **kwargs)
 
         # parse the data
-        cls.weblists()[weblist]['parser'](ds, data)
+        weblists[weblist]['parser'](ds, data)
 
         return ds
 
@@ -62,15 +70,13 @@ class NpmLoader(Loader):
             'name': lambda p: p.name
         }
 
-        # turn a list of names ordered from most to least dependents
-        # into a list of dicts containing name and dependents rank
-        parsed = [{
+        # create the projects
+        # Note: data list is ordered from most dependents to fewest
+        ds.projects = [NpmPackage(uuids_=uuids, **{
             'name': d,
             'dependents_rank': i  # package with rank 1 has the most dependents
-        } for i, d in enumerate(data)]
-
-        # create the projects
-        ds.projects = [NpmPackage(uuids_=uuids, **p) for p in parsed]
+        }) for i, d in enumerate(tqdm(data, desc='    Loading',
+                                      unit=' projects', leave=False))]
 
     '''
     @staticmethod

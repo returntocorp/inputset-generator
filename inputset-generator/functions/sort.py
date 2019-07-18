@@ -71,3 +71,7 @@ def sort(ds: Dataset, params: List[str]) -> None:
                 # sort on version
                 for project in ds.projects:
                     project.versions.sort(key=sort_func, reverse=reverse)
+
+    total_versions = sum([len(p.versions) for p in ds.projects])
+    print('    Sorted {:,} projects and {:,} versions by {}.'
+          .format(len(ds.projects), total_versions, str(params)))

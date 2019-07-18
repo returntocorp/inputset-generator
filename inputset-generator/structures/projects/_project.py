@@ -64,7 +64,8 @@ class Project(object):
         # Dataset.find_project(), which never calls to_inputset(). As such,
         # this function should never be called. Instead, it's effectively
         # an abstract method that child classes must implement.
-        raise Exception('Project class has no associated R2C input set type.')
+        raise Exception('    Project class has no associated '
+                        'R2C input set type.')
 
     def __eq__(self, other):
         # the two projects are equal if one of the uuids matches

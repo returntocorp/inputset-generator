@@ -1,10 +1,9 @@
-import os
 import json
+from tqdm import tqdm
 import dill as pickle
 from typing import List, Optional
 from types import MethodType
 from pathlib import Path
-from dill.source import getsource
 
 from structures.projects import Project
 
@@ -20,19 +19,19 @@ class Dataset(object):
         # a dataset contains projects
         self.projects: List[Project] = []
 
-        # set default dataset metadata
-        self.name = kwargs.pop('name', None)
-        self.version = kwargs.pop('version', None)
-        self.description = kwargs.pop('description', None)
-        self.readme = kwargs.pop('readme', None)
-        self.author = kwargs.pop('author', None) or get_name()
-        self.email = kwargs.pop('email', None) or get_email()
+        # set project metadata
+        self.name = None
+        self.version = None
+        self.description = None
+        self.readme = None
+        self.author = get_name()
+        self.email = get_email()
+        self.update(**kwargs)
 
         # validate registry name (if provided) and set
-        if registry:
-            assert registry in registry_map, (
-                    'Invalid registry type. Valid types are: '
-                    '%s' % list(registry_map))
+        if registry and registry not in registry_map:
+            raise Exception('Invalid registry type. Valid types are: '
+                            '%s' % list(registry_map))
         self.registry = registry
 
         # set up the api
@@ -44,6 +43,17 @@ class Dataset(object):
         # register the various transformation functions
         for name, function in function_map.items():
             setattr(self, name, MethodType(function, self))
+
+    def update(self, **kwargs):
+        """Updates a dataset's metadata."""
+
+        # set default dataset metadata
+        self.name = kwargs.pop('name', self.name)
+        self.version = kwargs.pop('version', self.version)
+        self.description = kwargs.pop('description', self.description)
+        self.readme = kwargs.pop('readme', self.readme)
+        self.author = kwargs.pop('author', self.author)
+        self.email = kwargs.pop('email', self.email)
 
     @classmethod
     def load_file(cls, filepath: str,
@@ -61,8 +71,13 @@ class Dataset(object):
                         'are: %s.' % (extension, list(fileloader_map)))
 
         # load initial data from the file
-        print('Loading %s' % filepath)
-        return loader.load(filepath, registry=registry, **kwargs)
+        ds = loader.load(filepath, registry=registry, **kwargs)
+
+        print('    Loaded {:,} projects containing {:,} total versions.'
+              .format(len(ds.projects),
+                      sum([len(p.versions) for p in ds.projects])))
+
+        return ds
 
     @classmethod
     def load_weblist(cls, weblist: str,
@@ -76,8 +91,13 @@ class Dataset(object):
                         '%s' % (registry, str(weblistloader_map)))
 
         # load initial data from the weblist
-        print('Loading %s %s' % (registry, name))
-        return loader.load(name, registry=registry, **kwargs)
+        ds = loader.load(weblist, registry=registry, **kwargs)
+
+        print('    Loaded {:,} projects containing {:,} total versions.'
+              .format(len(ds.projects),
+                      sum([len(p.versions) for p in ds.projects])))
+
+        return ds
 
     @classmethod
     def restore(cls, filepath: str) -> 'Dataset':
@@ -88,7 +108,13 @@ class Dataset(object):
         assert Path(filepath).is_file(), 'Invalid path; file does not exist.'
 
         # load the pickled dataset
-        return DatasetLoader.load(filepath)
+        ds = DatasetLoader.load(filepath)
+
+        print('    Restored {:,} projects containing {:,} total versions.'
+              .format(len(ds.projects),
+                      sum([len(p.versions) for p in ds.projects])))
+
+        return ds
 
     def backup(self, filepath: str = None) -> None:
         """Pickles a dataset."""
@@ -97,9 +123,10 @@ class Dataset(object):
         filepath = filepath or (self.name + '.p')
 
         # save to disk
-        print('Saving dataset to %s' % filepath)
         with open(filepath, 'wb') as file:
             pickle.dump(self, file)
+
+        print('    Backed up dataset to %s.' % filepath)
 
     @classmethod
     def import_inputset(cls, filepath: str,
@@ -111,8 +138,12 @@ class Dataset(object):
         assert Path(filepath).is_file(), 'Invalid path; file does not exist.'
 
         # load the input set
-        print('Loading %s input set from %s' % (registry, filepath))
-        return R2cLoader.load(filepath, registry=registry, **kwargs)
+        ds = R2cLoader.load(filepath, registry=registry, **kwargs)
+        print('    Loaded {:,} projects containing {:,} total versions.'.format(
+            len(ds.projects),
+            sum([len(p.versions) for p in ds.projects])
+        ))
+        return ds
 
     def export_inputset(self, filepath: str = None) -> None:
         """Exports a dataset to an r2c input set json file."""
@@ -124,17 +155,17 @@ class Dataset(object):
         inputset = self.to_inputset()
 
         # save to disk
-        print('Exporting input set to %s' % filepath)
         with open(filepath, 'w') as file:
             json.dump(inputset, file, indent=4)
+        print('    Exported input set to %s' % filepath)
 
     def to_inputset(self) -> dict:
         """Converts a dataset to an input set json."""
 
         # name and version are mandatory
-        assert self.name and self.version, (
-            'Dataset name and/or version are missing. Set them using '
-            "the 'meta' command.")
+        if not (self.name and self.version):
+            raise Exception('Dataset name and/or version are missing. '
+                            "Set them using the 'meta' command.")
 
         # jsonify the dataset's metadata
         d = dict()
@@ -147,20 +178,33 @@ class Dataset(object):
 
         # jsonify the projects & versions
         d['inputs'] = []
-        for p in self.projects:
+        for p in tqdm(self.projects, desc='    Exporting',
+                      unit=' projects', leave=False):
             d['inputs'].extend(p.to_inputset())
 
         return d
 
     def get_projects_meta(self, **kwargs) -> None:
         """Gets the metadata for all projects."""
-        for p in self.projects:
+
+        for p in tqdm(self.projects, desc='    Getting project metadata:',
+                      unit=' projects', leave=False):
             self.api.get_project(p, **kwargs)
+
+        print('    Retrieved metadata for {:,} projects.'
+              .format(len(self.projects)))
 
     def get_project_versions(self, **kwargs) -> None:
         """Gets the historical versions for all projects."""
-        for p in self.projects:
+
+        for p in tqdm(self.projects, unit=' projects', leave=False,
+                      desc='    Getting %s versions'
+                           % kwargs.get('historical', 'all')):
             self.api.get_versions(p, **kwargs)
+
+        print('    Retrieved {:,} total versions of {:,} projects.'
+              .format(sum([len(p.versions) for p in self.projects]),
+                      len(self.projects)))
 
     def find_project(self, **kwargs) -> Optional[Project]:
         """Gets the first project with attributes matching all kwargs."""

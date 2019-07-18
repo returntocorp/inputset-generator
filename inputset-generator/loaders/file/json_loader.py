@@ -18,11 +18,13 @@ class JsonLoader(Loader):
 
         # ensure the user specified which parser to use
         parser = kwargs.pop('parser', None)
-        assert parser, ('Missing json parser. Valid options are: %s'
-                        % list(cls.parsers()))
+        if not parser:
+            raise Exception('Missing json parser. Valid options are: %s'
+                            % list(cls.parsers()))
 
         # check if the parsing schema exists
-        assert parser in cls.parsers, 'Unrecognized json parser.'
+        if not parser in cls.parsers():
+            raise Exception('Unrecognized json parser.')
 
         # initialize a dataset
         ds = Dataset(**kwargs)
