@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import click
-import traceback
 from copy import deepcopy
 from datetime import timedelta
 from click import argument, option, Choice
@@ -149,38 +148,35 @@ def export(ctx, filepath):
 def meta(ctx, name, version, description, readme, author, email):
     """Sets dataset metadata."""
     try:
-        ds = get_dataset(ctx)
+        ds = ctx.obj.get('dataset', None)
 
-        if not (name or version or description or readme or author or email):
-            raise Exception('Error setting metadata. You must '
-                            'provide a metadata value to set.')
+        if ds:
+            # update dataset's metadata
+            ds.update(name=name, version=version, description=description,
+                      readme=readme, author=author, email=email)
 
-        # update dataset's metadata
-        ds.update(name=name, version=version, description=description,
-                  readme=readme, author=author, email=email)
+        else:
+            global TEMP_SETTINGS
+            if name: TEMP_SETTINGS['name'] = name
+            if version: TEMP_SETTINGS['version'] = version
+            if description: TEMP_SETTINGS['description'] = description
+            if readme: TEMP_SETTINGS['readme'] = readme
+            if author: TEMP_SETTINGS['author'] = author
+            if email: TEMP_SETTINGS['email'] = email
 
-    except:
-        # other exceptions are assumed to be related to a non=loaded ds;
-        # save the settings to TEMP_SETTINGS to pass on to the ds once
-        # it's been loaded
-        global TEMP_SETTINGS
-        if name: TEMP_SETTINGS['name'] = name
-        if version: TEMP_SETTINGS['version'] = version
-        if description: TEMP_SETTINGS['description'] = description
-        if readme: TEMP_SETTINGS['readme'] = readme
-        if author: TEMP_SETTINGS['author'] = author
-        if email: TEMP_SETTINGS['email'] = email
+        # print the outcome
+        settings = []
+        if name: settings.append('name')
+        if version: settings.append('version')
+        if description: settings.append('description')
+        if readme: settings.append('readme')
+        if author: settings.append('author')
+        if email: settings.append('email')
+        set_str = ', '.join([s for s in settings if s])
+        print("    Set the dataset's %s." % set_str)
 
-    # print the outcome
-    settings = []
-    if name: settings.append('name')
-    if version: settings.append('version')
-    if description: settings.append('description')
-    if readme: settings.append('readme')
-    if author: settings.append('author')
-    if email: settings.append('email')
-    set_str = ', '.join([s for s in settings if s])
-    print("    Set the dataset's %s." % set_str)
+    except Exception as e:
+        print_error(e, DEBUG)
 
 
 @cli.command('api')
@@ -197,34 +193,33 @@ def api(ctx, cache_dir, cache_timeout, nocache, github_pat):
         cache_timeout = timedelta(days=cache_timeout)
 
     try:
-        ds = get_dataset(ctx)
+        ds = ctx.obj.get('dataset', None)
+        if ds and ds.api:
+            # update the api
+            ds.api.update(cache_dir=cache_dir,
+                          cache_timeout=cache_timeout,
+                          nocache=nocache,
+                          github_pat=github_pat)
 
-        if not ds.api:
-            raise Exception('Api has not been set for %s.' % ds.registry)
+        else:
+            # no ds/api; save the settings for when there is one
+            global TEMP_SETTINGS
+            if cache_dir: TEMP_SETTINGS['cache_dir'] = cache_dir
+            if cache_timeout: TEMP_SETTINGS['cache_timeout'] = cache_timeout
+            if nocache: TEMP_SETTINGS['nocache'] = nocache
+            if github_pat: TEMP_SETTINGS['github_pat'] = github_pat
 
-        ds.api.update(cache_dir=cache_dir,
-                      cache_timeout=cache_timeout,
-                      nocache=nocache,
-                      github_pat=github_pat)
+        # print the outcome
+        settings = []
+        if cache_dir: settings.append('cache_dir')
+        if cache_timeout: settings.append('cache_timeout')
+        if nocache: settings.append('nocache')
+        if github_pat: settings.append('github_pat')
+        set_str = ', '.join([s for s in settings if s])
+        print("    Set the api's %s." % set_str)
 
-    except:
-        # other exceptions are assumed to be related to a non=loaded ds;
-        # save the settings to TEMP_SETTINGS to pass on to the ds once
-        # it's been loaded
-        global TEMP_SETTINGS
-        if cache_dir: TEMP_SETTINGS['cache_dir'] = cache_dir
-        if cache_timeout: TEMP_SETTINGS['cache_timeout'] = cache_timeout
-        if nocache: TEMP_SETTINGS['nocache'] = nocache
-        if github_pat: TEMP_SETTINGS['github_pat'] = github_pat
-
-    # print the outcome
-    settings = []
-    if cache_dir: settings.append('cache_dir')
-    if cache_timeout: settings.append('cache_timeout')
-    if nocache: settings.append('nocache')
-    if github_pat: settings.append('github_pat')
-    set_str = ', '.join([s for s in settings if s])
-    print("    Set the api's %s." % set_str)
+    except Exception as e:
+        print_error(e, DEBUG)
 
 
 @cli.command('get')

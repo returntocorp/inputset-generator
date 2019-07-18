@@ -1,6 +1,5 @@
 import subprocess
 import traceback
-from typing import Union
 
 from structures import Dataset
 
