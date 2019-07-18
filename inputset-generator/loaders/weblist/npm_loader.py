@@ -57,7 +57,8 @@ class NpmLoader(Loader):
         url = 'https://github.com/nice-registry/all-the-package-names/raw/master/names.json'
 
         status, data = api.request(url, **kwargs)
-        assert status == 200, 'Error downloading %s; is the url accessible?'
+        if status != 200:
+            raise Exception('Error downloading %s; is the url accessible?' % url)
 
         return data
 

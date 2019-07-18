@@ -51,7 +51,8 @@ class GithubLoader(Loader):
                                                    leave=False)]:
             # request the data via the github api
             status, data = api.request(url, **kwargs)
-            assert status == 200, 'Error downloading %s; is the url accessible?'
+            if status != 200:
+                raise Exception('Error downloading %s; is the url accessible?' % url)
 
             projects.extend(data['items'])
 
@@ -71,7 +72,8 @@ class GithubLoader(Loader):
                                                    leave=False)]:
             # request the data via the github api
             status, data = api.request(url, **kwargs)
-            assert status == 200, 'Error downloading %s; is the url accessible?'
+            if status != 200:
+                raise Exception('Error downloading %s; is the url accessible?' % url)
 
             projects.extend(data['items'])
 

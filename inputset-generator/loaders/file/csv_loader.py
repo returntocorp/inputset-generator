@@ -36,8 +36,9 @@ class CsvLoader(Loader):
                         headers = [h[1:] for h in row]
                 else:
                     # ensure we have as many headers as cells in the row
-                    assert len(headers) >= len(row), \
-                        'A column is missing a header. Review your headers.'
+                    if len(row) > len(headers):
+                        raise Exception('A column is missing a header. Review '
+                                        "the input file's column headers.")
 
                     # read in a data row
                     p_data, v_data = {}, {}

@@ -39,18 +39,12 @@ def get_dataset(ctx) -> Dataset:
     return ds
 
 
-def handle_error(ctx, err: Exception,
-                 backup_ds: Union[Dataset, None], debug: bool = False) -> None:
-    """Handles all CLI errors."""
+def print_error(err: Exception, debug: bool = False) -> None:
+    """Prints all CLI errors."""
 
-    # print the exception stack trace
+    # print the exception stack trace & error message
     if debug:
         traceback.print_tb(err.__traceback__)
 
     # print the error message
     print('    %s: %s' % (type(err).__name__, err))
-
-    # roll back the dataset, if applicable
-    if isinstance(err, AssertionError):
-        ctx.obj['dataset'] = backup_ds
-        print('    The dataset is unchanged.')

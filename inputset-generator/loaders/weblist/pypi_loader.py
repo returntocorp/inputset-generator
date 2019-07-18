@@ -43,7 +43,8 @@ class PypiLoader(Loader):
               'top-pypi-packages-30-days.json'
 
         status, data = api.request(url, **kwargs)
-        assert status == 200, 'Error downloading %s; is the url accessible?'
+        if status != 200:
+            raise Exception('Error downloading %s; is the url accessible?', url)
 
         return data['rows']
 
@@ -53,7 +54,8 @@ class PypiLoader(Loader):
               'top-pypi-packages-365-days.json'
 
         status, data = api.request(url, **kwargs)
-        assert status == 200, 'Error downloading %s; is the url accessible?'
+        if status != 200:
+            raise Exception('Error downloading %s; is the url accessible?' % url)
 
         return data['rows']
 

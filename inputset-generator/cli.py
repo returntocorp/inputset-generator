@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import click
+import traceback
 from copy import deepcopy
 from datetime import timedelta
 from click import argument, option, Choice
@@ -8,7 +9,7 @@ from click_shell import shell
 
 import visualizations
 from structures import Dataset
-from util import get_dataset, handle_error
+from util import get_dataset, print_error
 
 
 DEBUG = False
@@ -67,7 +68,7 @@ def load(ctx, registry, handle, fileargs):
         TEMP_SETTINGS = dict()
 
     except Exception as e:
-        handle_error(ctx, e, None, DEBUG)
+        print_error(e, DEBUG)
 
 
 @cli.command('restore')
@@ -84,7 +85,7 @@ def restore(ctx, filepath):
         TEMP_SETTINGS = dict()
 
     except Exception as e:
-        handle_error(ctx, e, None, DEBUG)
+        print_error(e, DEBUG)
 
 
 @cli.command('backup')
@@ -97,7 +98,7 @@ def backup(ctx, filepath):
         ds.backup(filepath)
 
     except Exception as e:
-        handle_error(ctx, e, None, DEBUG)
+        print_error(e, DEBUG)
 
 
 @cli.command('import')
@@ -119,7 +120,7 @@ def import_(ctx, registry, filepath):
         TEMP_SETTINGS = dict()
 
     except Exception as e:
-        handle_error(ctx, e, None, DEBUG)
+        print_error(e, DEBUG)
 
 
 @cli.command('export')
@@ -132,7 +133,7 @@ def export(ctx, filepath):
         ds.export_inputset(filepath)
 
     except Exception as e:
-        handle_error(ctx, e, None, DEBUG)
+        print_error(e, DEBUG)
 
 
 @cli.command('meta')
@@ -234,31 +235,35 @@ def api(ctx, cache_dir, cache_timeout, nocache, github_pat):
 @click.pass_context
 def get(ctx, metadata, versions):
     """Downloads project and version information."""
-
-    # get the dataset
-    try:
-        ds = get_dataset(ctx)
-    except Exception as e:
-        handle_error(ctx, e, None, DEBUG)
-        return
+    backup_ds = None
 
     # load project metadata
     if metadata:
-        backup_ds = deepcopy(ds)
         try:
+            ds = get_dataset(ctx)
             ds.get_projects_meta()
+            backup_ds = deepcopy(ds)
 
         except Exception as e:
-            handle_error(ctx, e, backup_ds, DEBUG)
+            print_error(e, DEBUG)
+
+            # roll back the db
+            ctx.obj['dataset'] = backup_ds
+            print('    The dataset is unchanged.')
 
     # load project versions
     if versions:
-        backup_ds = deepcopy(ds)
         try:
+            ds = get_dataset(ctx)
             ds.get_project_versions(historical=versions)
+            backup_ds = deepcopy(ds)
 
         except Exception as e:
-            handle_error(ctx, e, backup_ds, DEBUG)
+            print_error(e, DEBUG)
+
+            # roll back the db
+            ctx.obj['dataset'] = backup_ds
+            print('    The dataset is unchanged.')
 
 
 @cli.command('trim')
@@ -276,7 +281,11 @@ def trim(ctx, n, on_projects):
         ds.trim(n, on_projects)
 
     except Exception as e:
-        handle_error(ctx, e, backup_ds, DEBUG)
+        print_error(e, DEBUG)
+
+        # roll back the db
+        ctx.obj['dataset'] = backup_ds
+        print('    The dataset is unchanged.')
 
 
 @cli.command('sort')
@@ -293,7 +302,11 @@ def sort(ctx, params):
         ds.sort(params.split())
 
     except Exception as e:
-        handle_error(ctx, e, backup_ds, DEBUG)
+        print_error(e, DEBUG)
+
+        # roll back the db
+        ctx.obj['dataset'] = backup_ds
+        print('    The dataset is unchanged.')
 
 
 @cli.command('sample')
@@ -312,7 +325,11 @@ def sample(ctx, n, on_projects, seed):
         ds.sample(n, on_projects, seed)
 
     except Exception as e:
-        handle_error(ctx, e, backup_ds, DEBUG)
+        print_error(e, DEBUG)
+
+        # roll back the db
+        ctx.obj['dataset'] = backup_ds
+        print('    The dataset is unchanged.')
 
 
 @cli.command('show')
@@ -326,7 +343,7 @@ def show(ctx, n, details):
         visualizations.show(ds, n, details)
 
     except Exception as e:
-        handle_error(ctx, e, None, DEBUG)
+        print_error(e, DEBUG)
 
 
 @cli.command('describe')
@@ -339,7 +356,7 @@ def describe(ctx, scope):
         visualizations.describe(ds, scope)
 
     except Exception as e:
-        handle_error(ctx, e, None, DEBUG)
+        print_error(e, DEBUG)
 
 
 if __name__ == '__main__':

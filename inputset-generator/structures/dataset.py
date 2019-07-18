@@ -62,13 +62,15 @@ class Dataset(object):
         from loaders.file import fileloader_map
 
         # check if the path is valid
-        assert Path(filepath).is_file(), 'Invalid path; file does not exist.'
+        if not Path(filepath).is_file():
+            raise Exception('Invalid path; file does not exist.')
 
         # check if the filetype is valid
         extension = Path(filepath).suffix
         loader = fileloader_map.get(extension, None)
-        assert loader, ("Invalid input file type '%s'. Valid types"
-                        'are: %s.' % (extension, list(fileloader_map)))
+        if not loader:
+            raise Exception("Invalid input file type '%s'. Valid types"
+                            'are: %s.' % (extension, list(fileloader_map)))
 
         # load initial data from the file
         ds = loader.load(filepath, registry=registry, **kwargs)
@@ -87,8 +89,9 @@ class Dataset(object):
 
         # check if the name is valid
         loader = weblistloader_map.get(registry, None)
-        assert loader, ('Invalid weblist for %s. Valid weblists are: '
-                        '%s' % (registry, str(weblistloader_map)))
+        if not loader:
+            raise Exception('Invalid weblist for %s. Valid weblists are: '
+                            '%s' % (registry, str(weblistloader_map)))
 
         # load initial data from the weblist
         ds = loader.load(weblist, registry=registry, **kwargs)
@@ -105,7 +108,8 @@ class Dataset(object):
         from loaders.core import DatasetLoader
 
         # check if the path is valid
-        assert Path(filepath).is_file(), 'Invalid path; file does not exist.'
+        if not Path(filepath).is_file():
+            raise Exception('Invalid path; file does not exist.')
 
         # load the pickled dataset
         ds = DatasetLoader.load(filepath)
@@ -135,7 +139,8 @@ class Dataset(object):
         from loaders.core import R2cLoader
 
         # check if the path is valid
-        assert Path(filepath).is_file(), 'Invalid path; file does not exist.'
+        if not Path(filepath).is_file():
+            raise Exception('Invalid path; file does not exist.')
 
         # load the input set
         ds = R2cLoader.load(filepath, registry=registry, **kwargs)
