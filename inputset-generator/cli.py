@@ -2,6 +2,7 @@
 
 import click
 from copy import deepcopy
+from datetime import timedelta
 from click import argument, option, Choice
 from click_shell import shell
 
@@ -152,7 +153,7 @@ def meta(ctx, name, version, description, readme, author, email):
 
 @cli.command('api')
 @option('-d', '--cache_dir')
-@option('-t', '--cache_timeout')
+@option('-t', '--cache_timeout', type=int)
 @option('-n', '--nocache', is_flag=True)
 @option('-g', '--github_pat')
 @click.pass_context
@@ -165,6 +166,9 @@ def api(ctx, cache_dir, cache_timeout, nocache, github_pat):
         backup_ds = deepcopy(ds)
 
         assert ds.api, 'Api has not been set for %s.' % ds.registry
+
+        # convert cache timeout string to timedelta
+        cache_timeout = timedelta(days=cache_timeout)
 
         ds.api.update(cache_dir=cache_dir,
                       cache_timeout=cache_timeout,
