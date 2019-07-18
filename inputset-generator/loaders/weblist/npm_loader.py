@@ -32,15 +32,15 @@ class NpmLoader(Loader):
         }
 
     @classmethod
-    def load(cls, name: str, **kwargs) -> Dataset:
+    def load(cls, weblist: str, **kwargs) -> Dataset:
         # initialize a registry
         ds = Dataset(**kwargs)
 
         # load the data
-        data = cls.weblists()[name]['getter'](api=ds.api, **kwargs)
+        data = cls.weblists()[weblist]['getter'](api=ds.api, **kwargs)
 
         # parse the data
-        cls.weblists()[name]['parser'](ds, data)
+        cls.weblists()[weblist]['parser'](ds, data)
 
         return ds
 

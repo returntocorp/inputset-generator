@@ -12,7 +12,8 @@ from util import get_name, get_email, get_dataset, handle_error
 
 
 DEBUG = False
-META_DICT, API_DICT = dict(), dict()
+# store meta/api settings if a dataset hasn't yet been loaded
+TEMP_SETTINGS = dict()
 
 
 @shell(chain=True, prompt='r2c-isg> ')
@@ -48,15 +49,22 @@ def load(ctx, registry, handle, fileargs):
         if registry == 'noreg':
             registry = None
 
+        global TEMP_SETTINGS
+
         if '.' in handle:
             # read in a file (fileargs is either a header string for csv
             # or a parser handle for json)
-            ds = Dataset.load_file(handle, registry, fileargs=fileargs)
+            ds = Dataset.load_file(handle, registry,
+                                   fileargs=fileargs, **TEMP_SETTINGS)
+
         else:
             # download a weblist
-            ds = Dataset.load_weblist(handle, registry)
+            ds = Dataset.load_weblist(handle, registry, **TEMP_SETTINGS)
 
         ctx.obj['dataset'] = ds
+
+        # reset the temporary api/metadata dict
+        TEMP_SETTINGS = dict()
 
     except Exception as e:
         handle_error(ctx, e, None, DEBUG)
@@ -70,6 +78,10 @@ def restore(ctx, filepath):
     try:
         ds = Dataset.restore(filepath)
         ctx.obj['dataset'] = ds
+
+        # reset the temporary api/metadata dict
+        global TEMP_SETTINGS
+        TEMP_SETTINGS = dict()
 
     except Exception as e:
         handle_error(ctx, e, None, DEBUG)
@@ -98,8 +110,13 @@ def import_(ctx, registry, filepath):
         if registry == 'noreg':
             registry = None
 
-        ds = Dataset.import_inputset(filepath, registry)
+        global TEMP_SETTINGS
+
+        ds = Dataset.import_inputset(filepath, registry, **TEMP_SETTINGS)
         ctx.obj['dataset'] = ds
+
+        # reset the temporary api/metadata dict
+        TEMP_SETTINGS = dict()
 
     except Exception as e:
         handle_error(ctx, e, None, DEBUG)
@@ -147,8 +164,20 @@ def meta(ctx, name, version, description, readme, author, email):
         ds.author = author or ds.author
         ds.email = email or ds.email
 
-    except Exception as e:
+    except AssertionError as e:
         handle_error(ctx, e, backup_ds, debug=DEBUG)
+
+    except Exception as e:
+        # other exceptions are assumed to be related to a non=loaded ds;
+        # save the settings to TEMP_SETTINGS to pass on to the ds once
+        # it's been loaded
+        global TEMP_SETTINGS
+        if name: TEMP_SETTINGS['name'] = name
+        if version: TEMP_SETTINGS['version'] = version
+        if description: TEMP_SETTINGS['description'] = description
+        if readme: TEMP_SETTINGS['readme'] = readme
+        if author: TEMP_SETTINGS['author'] = author
+        if email: TEMP_SETTINGS['email'] = email
 
 
 @cli.command('api')
@@ -161,22 +190,33 @@ def api(ctx, cache_dir, cache_timeout, nocache, github_pat):
     """Sets API settings."""
     backup_ds = None
 
+    # convert cache timeout string to timedelta
+    if cache_timeout:
+        cache_timeout = timedelta(days=cache_timeout)
+
     try:
         ds = get_dataset(ctx)
         backup_ds = deepcopy(ds)
 
         assert ds.api, 'Api has not been set for %s.' % ds.registry
 
-        # convert cache timeout string to timedelta
-        cache_timeout = timedelta(days=cache_timeout)
-
         ds.api.update(cache_dir=cache_dir,
                       cache_timeout=cache_timeout,
                       nocache=nocache,
                       github_pat=github_pat)
 
-    except Exception as e:
+    except AssertionError as e:
         handle_error(ctx, e, backup_ds, debug=DEBUG)
+
+    except Exception as e:
+        # other exceptions are assumed to be related to a non=loaded ds;
+        # save the settings to TEMP_SETTINGS to pass on to the ds once
+        # it's been loaded
+        global TEMP_SETTINGS
+        if cache_dir: TEMP_SETTINGS['cache_dir'] = cache_dir
+        if cache_timeout: TEMP_SETTINGS['cache_timeout'] = cache_timeout
+        if nocache: TEMP_SETTINGS['nocache'] = nocache
+        if github_pat: TEMP_SETTINGS['github_pat'] = github_pat
 
 
 @cli.command('get')

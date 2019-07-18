@@ -65,7 +65,7 @@ class Dataset(object):
         return loader.load(filepath, registry=registry, **kwargs)
 
     @classmethod
-    def load_weblist(cls, name: str,
+    def load_weblist(cls, weblist: str,
                      registry: str = None, **kwargs) -> 'Dataset':
         """Factory method that builds a dataset from a weblist."""
         from loaders.weblist import weblistloader_map
