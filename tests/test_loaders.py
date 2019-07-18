@@ -14,7 +14,8 @@ def test_import_inputset():
         debug=True,
         github_pat=os.getenv('GITHUB_PAT')
     )
-    ds.set_meta('test', '1.0')
+    ds.name = 'test'
+    ds.version = '1.0'
     ds.backup('../test.p')
     ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
@@ -26,7 +27,8 @@ def test_import_inputset():
         debug=True,
         github_pat=os.getenv('GITHUB_PAT')
     )
-    ds.set_meta('test', '1.0')
+    ds.name = 'test'
+    ds.version = '1.0'
     ds.backup('../test.p')
     ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
@@ -38,7 +40,8 @@ def test_import_inputset():
         cache_dir='../cache',
         debug=True
     )
-    ds.set_meta('test', '1.0')
+    ds.name = 'test'
+    ds.version = '1.0'
     ds.backup('../test.p')
     ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
@@ -50,7 +53,8 @@ def test_import_inputset():
         cache_dir='../cache',
         debug=True
     )
-    ds.set_meta('test', '1.0')
+    ds.name = 'test'
+    ds.version = '1.0'
     ds.backup('../test.p')
     ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
@@ -61,7 +65,8 @@ def test_import_inputset():
         cache_dir='../cache',
         debug=True
     )
-    ds.set_meta('test', '1.0')
+    ds.name = 'test'
+    ds.version = '1.0'
     ds.backup('../test.p')
     ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
@@ -78,7 +83,8 @@ def test_load_file():
         debug=True,
         github_pat=os.getenv('GITHUB_PAT')
     )
-    ds.set_meta('test', '1.0')
+    ds.name = 'test'
+    ds.version = '1.0'
     ds.backup('../test.p')
     ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
@@ -90,7 +96,8 @@ def test_load_file():
         cache_dir='../cache',
         debug=True
     )
-    ds.set_meta('test', '1.0')
+    ds.name = 'test'
+    ds.version = '1.0'
     ds.backup('../test.p')
     ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
@@ -102,7 +109,8 @@ def test_load_file():
         cache_dir='../cache',
         debug=True
     )
-    ds.set_meta('test', '1.0')
+    ds.name = 'test'
+    ds.version = '1.0'
     ds.backup('../test.p')
     ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
@@ -113,7 +121,8 @@ def test_load_file():
         cache_dir='../cache',
         debug=True
     )
-    ds.set_meta('test', '1.0')
+    ds.name = 'test'
+    ds.version = '1.0'
     ds.backup('../test.p')
     ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
@@ -132,7 +141,8 @@ def test_load_weblist():
     )
     ds.trim(10)
     ds.get_project_versions(historical='latest')
-    ds.set_meta('test', '1.0')
+    ds.name = 'test'
+    ds.version = '1.0'
     ds.backup('../test.p')
     ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
@@ -146,7 +156,8 @@ def test_load_weblist():
     )
     ds.trim(10)
     ds.get_project_versions(historical='latest')
-    ds.set_meta('test', '1.0')
+    ds.name = 'test'
+    ds.version = '1.0'
     ds.backup('../test.p')
     ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
@@ -160,7 +171,8 @@ def test_load_weblist():
     )
     ds.trim(10)
     ds.get_project_versions(historical='latest')
-    ds.set_meta('test', '1.0')
+    ds.name = 'test'
+    ds.version = '1.0'
     ds.backup('../test.p')
     ds = Dataset.restore('../test.p')
     ds.export_inputset('../test.json')
