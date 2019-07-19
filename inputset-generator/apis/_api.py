@@ -14,7 +14,7 @@ from structures import Project
 
 class Api(ABC):
     def __init__(self, **kwargs):
-        self.cache_dir = 'cache'
+        self.cache_dir = '.requests_cache'
         self.cache_timeout = timedelta(weeks=1)
         self.nocache = False
 
@@ -97,8 +97,9 @@ class Api(ABC):
         # save the response json to cache (only 2xx response codes are cached)
         with open(filepath, 'w') as json_file:
             cached = {
-                'timestamp': datetime.utcnow(),
+                'url': url,
                 'status': r.status_code,
+                'timestamp': datetime.utcnow(),
                 'json': data
             }
             json.dump(cached, json_file, indent=4, default=str)

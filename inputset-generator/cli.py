@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import os
+import shutil
 import click
 import json
-import tempfile
+import atexit
 import webbrowser
 from copy import deepcopy
 from datetime import timedelta
@@ -17,6 +18,7 @@ from util import get_dataset, print_error
 DEBUG = False
 # store meta/api settings if a dataset hasn't yet been loaded
 TEMP_SETTINGS = dict()
+TEMP_DIR = '.tmp/'
 
 
 @shell(chain=True, prompt='r2c-isg> ')
@@ -372,15 +374,31 @@ def jsonify(ctx):
         data_dict = ds.to_json()
 
         # save & open temp file
-        tmp = '.tmp.json'
-        with open(tmp, 'w') as file:
+        filepath = TEMP_DIR + 'jsonify.json'
+        with open(filepath, 'w') as file:
             json.dump(data_dict, file, indent=4)
-            fullpath = os.path.realpath(tmp)
+            fullpath = os.path.realpath(filepath)
             webbrowser.open_new('file://' + fullpath)
 
     except Exception as e:
         print_error(e, DEBUG)
 
 
+def cleanup():
+    """Cleanup on exit."""
+
+    # delete the tem dir
+    if os.path.isdir(TEMP_DIR):
+        shutil.rmtree(TEMP_DIR)
+
+
 if __name__ == '__main__':
+    # create the temp dir
+    if not os.path.isdir(TEMP_DIR):
+        os.mkdir(TEMP_DIR)
+
+    # register the cleanup callback on exit
+    atexit.register(cleanup)
+
+    # enter the cli
     cli()

@@ -108,4 +108,4 @@ venv.bak/
 .idea
 _ignore
 notes
-cache
+.requests_cache
