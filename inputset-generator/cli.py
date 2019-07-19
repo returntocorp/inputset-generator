@@ -46,7 +46,11 @@ def spacer():
 @click.pass_context
 def load(ctx, registry, handle, fileargs):
     """Generates a dataset from a weblist or file."""
+    backup_ds = None
+    
     try:
+        backup_ds = deepcopy(ctx.obj.get('dataset', None))
+        
         if registry == 'noreg':
             registry = None
 
@@ -69,6 +73,9 @@ def load(ctx, registry, handle, fileargs):
 
     except Exception as e:
         print_error(e, DEBUG)
+        
+        # silently restore the dataset
+        ctx.obj['dataset'] = backup_ds
 
 
 @cli.command('restore')
@@ -76,7 +83,11 @@ def load(ctx, registry, handle, fileargs):
 @click.pass_context
 def restore(ctx, filepath):
     """Restores a pickled dataset file."""
+    backup_ds = None
+
     try:
+        backup_ds = deepcopy(ctx.obj.get('dataset', None))
+
         ds = Dataset.restore(filepath)
         ctx.obj['dataset'] = ds
 
@@ -86,6 +97,9 @@ def restore(ctx, filepath):
 
     except Exception as e:
         print_error(e, DEBUG)
+
+        # silently restore the dataset
+        ctx.obj['dataset'] = backup_ds
 
 
 @cli.command('backup')
@@ -107,7 +121,11 @@ def backup(ctx, filepath):
 @click.pass_context
 def import_(ctx, registry, filepath):
     """Imports an input set json file."""
+    backup_ds = None
+
     try:
+        backup_ds = deepcopy(ctx.obj.get('dataset', None))
+
         if registry == 'noreg':
             registry = None
 
@@ -121,6 +139,9 @@ def import_(ctx, registry, filepath):
 
     except Exception as e:
         print_error(e, DEBUG)
+
+        # silently restore the dataset
+        ctx.obj['dataset'] = backup_ds
 
 
 @cli.command('export')
@@ -136,7 +157,7 @@ def export(ctx, filepath):
         print_error(e, DEBUG)
 
 
-@cli.command('meta')
+@cli.command('set-meta')
 @option('-n', '--name', help='Dataset name.')
 @option('-v', '--version', help='Dataset version.')
 @option('-d', '--description', help='Description string.')
@@ -146,10 +167,13 @@ def export(ctx, filepath):
 @option('-e', '--email',
         help='Author email. Defaults to git user.email.')
 @click.pass_context
-def meta(ctx, name, version, description, readme, author, email):
+def set_meta(ctx, name, version, description, readme, author, email):
     """Sets dataset metadata."""
+    backup_ds = None
+
     try:
         ds = ctx.obj.get('dataset', None)
+        backup_ds = deepcopy(ds)
 
         if ds:
             # update dataset's metadata
@@ -179,22 +203,28 @@ def meta(ctx, name, version, description, readme, author, email):
     except Exception as e:
         print_error(e, DEBUG)
 
+        # silently restore the dataset
+        ctx.obj['dataset'] = backup_ds
 
-@cli.command('api')
+
+@cli.command('set-api')
 @option('-d', '--cache_dir')
 @option('-t', '--cache_timeout', type=int)
 @option('-n', '--nocache', is_flag=True)
 @option('-g', '--github_pat')
 @click.pass_context
-def api(ctx, cache_dir, cache_timeout, nocache, github_pat):
+def set_api(ctx, cache_dir, cache_timeout, nocache, github_pat):
     """Sets API settings."""
-
-    # convert cache timeout string to timedelta
-    if cache_timeout:
-        cache_timeout = timedelta(days=cache_timeout)
+    backup_ds = None
 
     try:
         ds = ctx.obj.get('dataset', None)
+        backup_ds = deepcopy(ds)
+
+        # convert cache timeout string to timedelta
+        if cache_timeout:
+            cache_timeout = timedelta(days=cache_timeout)
+
         if ds and ds.api:
             # update the api
             ds.api.update(cache_dir=cache_dir,
@@ -221,6 +251,9 @@ def api(ctx, cache_dir, cache_timeout, nocache, github_pat):
 
     except Exception as e:
         print_error(e, DEBUG)
+
+        # silently restore the dataset
+        ctx.obj['dataset'] = backup_ds
 
 
 @cli.command('get')
@@ -330,20 +363,20 @@ def sample(ctx, n, on_projects, seed):
 
 @cli.command('show')
 @argument('n', type=int, default=5)
-@option('-d', '--details', is_flag=True, default=False)
 @click.pass_context
-def show(ctx, n, details):
+def show(ctx, n):
     """Shows the details of the first n projects."""
     try:
         ds = get_dataset(ctx)
-        visualizations.show(ds, n, details)
+        visualizations.show(ds, n)
 
     except Exception as e:
         print_error(e, DEBUG)
 
 
 @cli.command('describe')
-@argument('scope', type=Choice(['dataset', 'project', 'version']))
+@argument('scope', type=Choice(['dataset', 'project', 'version']),
+          default='dataset')
 @click.pass_context
 def describe(ctx, scope):
     """Describes the structure of the dataset/project/version."""
@@ -370,7 +403,7 @@ def jsonify(ctx, filepath):
         # save to disk
         with open(filepath, 'w') as file:
             json.dump(data_dict, file, indent=4)
-        print('    Dumped dataset json to %s.' % filepath)
+        print('    Dumped jsonified dataset to %s.' % filepath)
 
     except Exception as e:
         print_error(e, DEBUG)

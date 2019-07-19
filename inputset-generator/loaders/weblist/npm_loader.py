@@ -78,7 +78,7 @@ class NpmLoader(Loader):
             'name': d,
             'dependents_rank': i  # package with rank 1 has the most dependents
         }) for i, d in enumerate(tqdm(data, desc='    Loading',
-                                      unit=' projects', leave=False))]
+                                      unit='project', leave=False))]
 
     '''
     @staticmethod

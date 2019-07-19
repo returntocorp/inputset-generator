@@ -1,4 +1,6 @@
 from typing import Optional, Union
+from itertools import count
+from tqdm import tqdm
 
 from apis import Api
 from structures.projects import GithubRepo
@@ -48,7 +50,7 @@ class Github(Api):
                     '%s' % (
                         status,
                         'Please try again in an hour.' if self.github_pat else
-                        'You can provide a github personal access token'
+                        'You can provide a github personal access token '
                         "(using the command 'api --github_pat TOKEN') to "
                         'obtain a significantly higher request rate limit. '
                         'See instructions at https://help.github.com/en/'
@@ -97,11 +99,13 @@ class Github(Api):
 
         # github commit json is paginated--30 commits per page
         api_url = self._make_api_url(project)
-        end_page = 1 if historical == 'latest' else 999999
-        for i in range(1, end_page + 1):
+        desc = '        %s' % project.get_name()
+        iterator = tqdm(count(start=1), leave=False, unit='page', desc=desc)
+        for i in iterator:
             # load the url from cache or from the web
             url = '%s/commits?page=%d' % (api_url, i)
             status, data = self.request(url, **kwargs)
+            i += 1
 
             # skip this page if non-200 response
             if status != 200:
@@ -112,6 +116,7 @@ class Github(Api):
 
             if not data:
                 # no more pages; break
+                iterator.close()
                 break
 
             if historical == 'latest':

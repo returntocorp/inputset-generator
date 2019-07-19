@@ -1,10 +1,13 @@
 from dill.source import getsource
 
-from structures import Dataset
+from structures import Dataset, DefaultProject, DefaultVersion
+from structures.projects import project_map
+from structures.versions import version_map
 
 
-def show(ds: Dataset, n: int = 5, details: bool = False):
+def show(ds: Dataset, n: int = 5):
     """Summarizes the key data of the first n projects."""
+
     for p in ds.projects[:n]:
         project_type = str(type(p).__name__)
         attr_indent = len(project_type) + 5
@@ -30,15 +33,20 @@ def show(ds: Dataset, n: int = 5, details: bool = False):
         ))
 
         # print project attributes
-        print('%s' % (
-            ('\n' + ' ' * attr_indent).join([
-                '%s = %s' % (
-                    a.ljust(attr_indent + val_indent - 3),
-                    val
-                ) for a, val in vars(p).items()
-                if a not in ['uuids_', 'meta_']
-            ])
-        ))
+        for attr, val in vars(p).items():
+            if attr in ['uuids_', 'meta_']:
+                continue
+
+            # format the value string
+            val_str = str(val).replace('\n', ' ')
+            if isinstance(val, str):
+                val_str = val_str[:20]
+
+            # print the attribute/value string
+            print('    %s = %s' % (
+                attr.ljust(attr_indent + val_indent - 7),
+                val_str
+            ))
 
         # print versions
         print('%s = [%s])' % (
@@ -51,20 +59,6 @@ def show(ds: Dataset, n: int = 5, details: bool = False):
 
 def describe(ds: Dataset, scope: str = 'dataset'):
     """Describes the dataset/project/version structures."""
-    from structures import DefaultProject, DefaultVersion
-    from structures.projects import project_map
-    from structures.versions import version_map
-
-    '''
-    https://stackoverflow.com/questions/9989334/create-nice-column-output-in-python        
-    table_data = [
-        ['a', 'b', 'c'],
-        ['aaaaaaaaaa', 'b', 'c'],
-        ['a', 'bbbbbbbbmsk', 'c']
-    ]
-    for row in table_data:
-        print("{: <20} {: <20} {: <20}".format(*row))
-    '''
 
     if scope == 'dataset':
         # describe the dataset
@@ -79,8 +73,7 @@ def describe(ds: Dataset, scope: str = 'dataset'):
 
         # print projects summary info
         print('    projects')
-        project_type = project_map.get(ds.registry,
-                                       DefaultProject).__name__
+        project_type = project_map.get(ds.registry, DefaultProject).__name__
         print('    %s%s' % ('    type'.ljust(col_width),
                             'list(%s)' % project_type))
         print('    {:}{:,}'.format(

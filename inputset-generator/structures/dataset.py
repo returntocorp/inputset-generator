@@ -171,8 +171,8 @@ class Dataset(object):
         # name and version are mandatory
         if not (self.name and self.version):
             raise Exception('The dataset must have a name and version. '
-                            "Set them using the 'meta -n NAME -v VERSION'"
-                            ' command.')
+                            "Set them using the 'set meta -n NAME -v "
+                            "VERSION' command.")
 
         # jsonify the dataset's metadata
         d = dict()
@@ -186,7 +186,7 @@ class Dataset(object):
         # jsonify the projects & versions
         d['inputs'] = []
         for p in tqdm(self.projects, desc='    Exporting',
-                      unit=' projects', leave=False):
+                      unit='project', leave=False):
             d['inputs'].extend(p.to_inputset())
 
         return d
@@ -221,7 +221,7 @@ class Dataset(object):
 
         # convert all projects to vars dicts
         for project in tqdm(self.projects, desc='    Jsonifying',
-                            unit=' projects', leave=False):
+                            unit='project', leave=False):
             p_dict = extract_vars(project)
             p_dict['versions'] = []
             data_dict['projects'].append(p_dict)
@@ -236,8 +236,8 @@ class Dataset(object):
     def get_projects_meta(self, **kwargs) -> None:
         """Gets the metadata for all projects."""
 
-        for p in tqdm(self.projects, desc='    Getting project metadata:',
-                      unit=' projects', leave=False):
+        for p in tqdm(self.projects, desc='    Getting project metadata',
+                      unit='project', leave=False):
             self.api.get_project(p, **kwargs)
 
         print('    Retrieved metadata for {:,} projects.'
@@ -246,7 +246,7 @@ class Dataset(object):
     def get_project_versions(self, **kwargs) -> None:
         """Gets the historical versions for all projects."""
 
-        for p in tqdm(self.projects, unit=' projects', leave=False,
+        for p in tqdm(self.projects, unit='project', leave=False,
                       desc='    Getting %s versions'
                            % kwargs.get('historical', 'all')):
             self.api.get_versions(p, **kwargs)

@@ -72,6 +72,6 @@ class PypiLoader(Loader):
         # create the projects
         ds.projects = [PypiProject(uuids_=uuids, **d)
                        for d in tqdm(data, desc='    Loading',
-                                     unit=' projects', leave=False)]
+                                     unit='project', leave=False)]
 
 

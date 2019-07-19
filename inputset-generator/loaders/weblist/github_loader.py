@@ -97,4 +97,4 @@ class GithubLoader(Loader):
         # create the projects
         ds.projects = [GithubRepo(uuids_=uuids, meta_=meta, **d)
                        for d in tqdm(data, desc='    Loading',
-                                     unit=' projects', leave=False)]
+                                     unit='project', leave=False)]
