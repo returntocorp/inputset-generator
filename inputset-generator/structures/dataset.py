@@ -1,6 +1,7 @@
 import json
-from tqdm import tqdm
 import dill as pickle
+from dill.source import getsource
+from tqdm import tqdm
 from typing import List, Optional
 from types import MethodType
 from pathlib import Path
@@ -189,6 +190,48 @@ class Dataset(object):
             d['inputs'].extend(p.to_inputset())
 
         return d
+
+    def to_json(self) -> dict:
+        """Converts a dataset into json and saves to disk."""
+
+        def extract_vars(obj: object) -> dict:
+            """Extracts attributes from a dataset/project/version."""
+            vars_dict = {}
+            for attr, val in vars(obj).items():
+                if callable(val):
+                    # function; skip
+                    pass
+
+                elif attr in ['uuids_', 'meta_']:
+                    # convert lambda functions to strings
+                    vars_dict[attr] = {
+                        key: getsource(func).split(': ', 1)[1].strip()
+                        for key, func in val.items()
+                    }
+
+                elif attr not in ['api', 'projects', 'versions']:
+                    # regular attr, add to dict
+                    vars_dict[attr] = val
+
+            return vars_dict
+
+        # convert the entire dataset into a vars dict
+        data_dict = extract_vars(self)
+        data_dict['projects'] = []
+
+        # convert all projects to vars dicts
+        for project in tqdm(self.projects, desc='    Jsonifying',
+                            unit=' projects', leave=False):
+            p_dict = extract_vars(project)
+            p_dict['versions'] = []
+            data_dict['projects'].append(p_dict)
+
+            # convert all versions to vars dicts
+            for version in project.versions:
+                v_dict = extract_vars(version)
+                p_dict['versions'].append(v_dict)
+
+        return data_dict
 
     def get_projects_meta(self, **kwargs) -> None:
         """Gets the metadata for all projects."""

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import click
+import json
 from copy import deepcopy
 from datetime import timedelta
 from click import argument, option, Choice
@@ -349,6 +350,27 @@ def describe(ctx, scope):
     try:
         ds = get_dataset(ctx)
         visualizations.describe(ds, scope)
+
+    except Exception as e:
+        print_error(e, DEBUG)
+
+
+@cli.command('jsonify')
+@argument('filepath', default=None)
+@click.pass_context
+def jsonify(ctx, filepath):
+    """Prints the complete dataset to json for easier review."""
+    try:
+        ds = get_dataset(ctx)
+        data_dict = ds.to_json()
+
+        # file name is dataset name, if not provided by user
+        filepath = filepath or (ds.name + '_tmp.json')
+
+        # save to disk
+        with open(filepath, 'w') as file:
+            json.dump(data_dict, file, indent=4)
+        print('    Dumped dataset json to %s.' % filepath)
 
     except Exception as e:
         print_error(e, DEBUG)
