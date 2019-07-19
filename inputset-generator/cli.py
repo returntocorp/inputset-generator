@@ -278,7 +278,7 @@ def get(ctx, metadata, versions):
 
             # roll back the db
             ctx.obj['dataset'] = backup_ds
-            print('    The dataset is unchanged.')
+            print('         The dataset is unchanged.')
 
     # load project versions
     if versions:
@@ -292,7 +292,7 @@ def get(ctx, metadata, versions):
 
             # roll back the db
             ctx.obj['dataset'] = backup_ds
-            print('    The dataset is unchanged.')
+            print('         The dataset is unchanged.')
 
 
 @cli.command('trim')
@@ -314,7 +314,7 @@ def trim(ctx, n, on_projects):
 
         # roll back the db
         ctx.obj['dataset'] = backup_ds
-        print('    The dataset is unchanged.')
+        print('         The dataset is unchanged.')
 
 
 @cli.command('sort')
@@ -335,7 +335,7 @@ def sort(ctx, params):
 
         # roll back the db
         ctx.obj['dataset'] = backup_ds
-        print('    The dataset is unchanged.')
+        print('         The dataset is unchanged.')
 
 
 @cli.command('sample')
@@ -358,7 +358,7 @@ def sample(ctx, n, on_projects, seed):
 
         # roll back the db
         ctx.obj['dataset'] = backup_ds
-        print('    The dataset is unchanged.')
+        print('         The dataset is unchanged.')
 
 
 @cli.command('show')
@@ -403,7 +403,7 @@ def jsonify(ctx, filepath):
         # save to disk
         with open(filepath, 'w') as file:
             json.dump(data_dict, file, indent=4)
-        print('    Dumped jsonified dataset to %s.' % filepath)
+        print('         Dumped jsonified dataset to %s.' % filepath)
 
     except Exception as e:
         print_error(e, DEBUG)

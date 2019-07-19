@@ -76,7 +76,7 @@ class Dataset(object):
         # load initial data from the file
         ds = loader.load(filepath, registry=registry, **kwargs)
 
-        print('    Loaded {:,} projects containing {:,} total versions.'
+        print('         Loaded {:,} projects containing {:,} total versions.'
               .format(len(ds.projects),
                       sum([len(p.versions) for p in ds.projects])))
 
@@ -97,7 +97,7 @@ class Dataset(object):
         # load initial data from the weblist
         ds = loader.load(weblist, registry=registry, **kwargs)
 
-        print('    Loaded {:,} projects containing {:,} total versions.'
+        print('         Loaded {:,} projects containing {:,} total versions.'
               .format(len(ds.projects),
                       sum([len(p.versions) for p in ds.projects])))
 
@@ -115,7 +115,7 @@ class Dataset(object):
         # load the pickled dataset
         ds = DatasetLoader.load(filepath)
 
-        print('    Restored {:,} projects containing {:,} total versions.'
+        print('         Restored {:,} projects containing {:,} total versions.'
               .format(len(ds.projects),
                       sum([len(p.versions) for p in ds.projects])))
 
@@ -131,7 +131,7 @@ class Dataset(object):
         with open(filepath, 'wb') as file:
             pickle.dump(self, file)
 
-        print('    Backed up dataset to %s.' % filepath)
+        print('         Backed up dataset to %s.' % filepath)
 
     @classmethod
     def import_inputset(cls, filepath: str,
@@ -145,7 +145,7 @@ class Dataset(object):
 
         # load the input set
         ds = R2cLoader.load(filepath, registry=registry, **kwargs)
-        print('    Loaded {:,} projects containing {:,} total versions.'.format(
+        print('         Loaded {:,} projects containing {:,} total versions.'.format(
             len(ds.projects),
             sum([len(p.versions) for p in ds.projects])
         ))
@@ -163,7 +163,7 @@ class Dataset(object):
         # save to disk
         with open(filepath, 'w') as file:
             json.dump(inputset, file, indent=4)
-        print('    Exported input set to %s.' % filepath)
+        print('         Exported input set to %s.' % filepath)
 
     def to_inputset(self) -> dict:
         """Converts a dataset to an input set json."""
@@ -185,7 +185,7 @@ class Dataset(object):
 
         # jsonify the projects & versions
         d['inputs'] = []
-        for p in tqdm(self.projects, desc='    Exporting',
+        for p in tqdm(self.projects, desc='         Exporting',
                       unit='project', leave=False):
             d['inputs'].extend(p.to_inputset())
 
@@ -220,7 +220,7 @@ class Dataset(object):
         data_dict['projects'] = []
 
         # convert all projects to vars dicts
-        for project in tqdm(self.projects, desc='    Jsonifying',
+        for project in tqdm(self.projects, desc='         Jsonifying',
                             unit='project', leave=False):
             p_dict = extract_vars(project)
             p_dict['versions'] = []
@@ -236,22 +236,22 @@ class Dataset(object):
     def get_projects_meta(self, **kwargs) -> None:
         """Gets the metadata for all projects."""
 
-        for p in tqdm(self.projects, desc='    Getting project metadata',
+        for p in tqdm(self.projects, desc='         Getting project metadata',
                       unit='project', leave=False):
             self.api.get_project(p, **kwargs)
 
-        print('    Retrieved metadata for {:,} projects.'
+        print('         Retrieved metadata for {:,} projects.'
               .format(len(self.projects)))
 
     def get_project_versions(self, **kwargs) -> None:
         """Gets the historical versions for all projects."""
 
         for p in tqdm(self.projects, unit='project', leave=False,
-                      desc='    Getting %s versions'
+                      desc='         Getting %s versions'
                            % kwargs.get('historical', 'all')):
             self.api.get_versions(p, **kwargs)
 
-        print('    Retrieved {:,} total versions of {:,} projects.'
+        print('         Retrieved {:,} total versions of {:,} projects.'
               .format(sum([len(p.versions) for p in self.projects]),
                       len(self.projects)))
 
@@ -279,7 +279,7 @@ class Dataset(object):
             '%s=%s' % (a, repr(getattr(self, a)))
             for a in dir(self)
             if getattr(self, a, None)
-               and a is not 'projects'             # ignore projects list
+               and a is not 'projects'                  # ignore projects list
                and not a.startswith('__')          # ignore dunders
                and not callable(getattr(self, a))  # ignore functions
         ]) + ', projects=[%s])' % ('...' if self.projects else '')

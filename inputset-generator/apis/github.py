@@ -99,7 +99,7 @@ class Github(Api):
 
         # github commit json is paginated--30 commits per page
         api_url = self._make_api_url(project)
-        desc = '        %s' % project.get_name()
+        desc = '             %s' % project.get_name()
         iterator = tqdm(count(start=1), leave=False, unit='page', desc=desc)
         for i in iterator:
             # load the url from cache or from the web

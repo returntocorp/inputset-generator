@@ -32,7 +32,7 @@ class R2cLoader(Loader):
         ds.email = ds.email or data.get('email', None)
 
         # generate the projects and versions
-        for input_ in tqdm(data['inputs'], desc='    Importing',
+        for input_ in tqdm(data['inputs'], desc='         Importing',
                            unit=' inputs', leave=False):
             # split out project- vs. version-level information
             p_data, v_data = {}, {}

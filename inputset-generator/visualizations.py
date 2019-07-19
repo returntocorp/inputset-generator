@@ -43,7 +43,7 @@ def show(ds: Dataset, n: int = 5):
                 val_str = val_str[:20]
 
             # print the attribute/value string
-            print('    %s = %s' % (
+            print('         %s = %s' % (
                 attr.ljust(attr_indent + val_indent - 7),
                 val_str
             ))
@@ -69,15 +69,15 @@ def describe(ds: Dataset, scope: str = 'dataset'):
                  'description', 'readme', 'author', 'email']
         for a in attrs:
             val = getattr(ds, a, None)
-            print('    %s%s' % (a.ljust(col_width), val))
+            print('         %s%s' % (a.ljust(col_width), val))
 
         # print projects summary info
-        print('    projects')
+        print('         projects')
         project_type = project_map.get(ds.registry, DefaultProject).__name__
-        print('    %s%s' % ('    type'.ljust(col_width),
+        print('         %s%s' % ('         type'.ljust(col_width),
                             'list(%s)' % project_type))
-        print('    {:}{:,}'.format(
-            '    len'.ljust(col_width),
+        print('         {:}{:,}'.format(
+            '         len'.ljust(col_width),
             len(ds.projects)
         ))
 
@@ -92,15 +92,15 @@ def describe(ds: Dataset, scope: str = 'dataset'):
 
         # print uuids & meta vars
         for key in ['uuids', 'meta']:
-            print('    %s' % key)
+            print('         %s' % key)
             key_dict = getattr(obj, key + '_')
             if len(key_dict) == 0:
-                print('        none')
+                print('             none')
             for a, func in key_dict.items():
                 # convert the lambda function code to a string
                 func_str = getsource(func).split(': ', 1)[1].strip()
-                print('    %s%s' % (
-                    ('    ' + a).ljust(col_width),
+                print('         %s%s' % (
+                    ('         ' + a).ljust(col_width),
                     func_str
                 ))
 
@@ -110,21 +110,21 @@ def describe(ds: Dataset, scope: str = 'dataset'):
             if a in special_attrs:
                 continue
 
-            print('    %s%s' % (
+            print('         %s%s' % (
                 a.ljust(col_width),
                 type(getattr(obj, a)).__name__
             ))
 
         if scope == 'project':
             # print versions summary info, if applicable
-            print('    versions')
+            print('         versions')
             version_type = version_map.get(ds.registry,
                                            DefaultVersion).__name__
-            print('    %s%s' % (
-                '    type'.ljust(col_width),
+            print('         %s%s' % (
+                '         type'.ljust(col_width),
                 'list(%s)' % version_type
             ))
-            print('    {:}{:,}'.format(
-                '    len'.ljust(col_width),
+            print('         {:}{:,}'.format(
+                '         len'.ljust(col_width),
                 len(obj.versions)
             ))

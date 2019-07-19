@@ -37,12 +37,12 @@ def sort(ds: Dataset, params: List[str]) -> None:
         else:
             # sort on this parameter
             # Note: Parameter strings can follow these formats:
-            #   'attr'          sort on project attribute
-            #   'uuids.key'     sort on project uuid
-            #   'meta.key'      sort on project meta
-            #   'v.attr'        sort on version attribute
+            #   'attr'               sort on project attribute
+            #   'uuids.key'          sort on project uuid
+            #   'meta.key'           sort on project meta
+            #   'v.attr'             sort on version attribute
             #   'v.uuids.key'   sort on version uuid
-            #   'v.meta.key'    sort on version meta
+            #   'v.meta.key'         sort on version meta
 
             p_list = param.split('.')
 
@@ -73,5 +73,5 @@ def sort(ds: Dataset, params: List[str]) -> None:
                     project.versions.sort(key=sort_func, reverse=reverse)
 
     total_versions = sum([len(p.versions) for p in ds.projects])
-    print('    Sorted {:,} projects and {:,} versions by {}.'
+    print('         Sorted {:,} projects and {:,} versions by {}.'
           .format(len(ds.projects), total_versions, str(params)))

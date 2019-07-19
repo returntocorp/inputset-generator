@@ -47,7 +47,7 @@ class GithubLoader(Loader):
         # github limits results to the top 1k at 100 per page
         projects = []
         for url in [(url_format % d) for d in tqdm(range(1, 11), unit=' pages',
-                                                   desc='    Downloading',
+                                                   desc='         Downloading',
                                                    leave=False)]:
             # request the data via the github api
             status, data = api.request(url, **kwargs)
@@ -69,7 +69,7 @@ class GithubLoader(Loader):
         # github limits results to the top 1k at 100 per page
         projects = []
         for url in [(url_format % d) for d in tqdm(range(1, 11), unit=' pages',
-                                                   desc='    Downloading',
+                                                   desc='         Downloading',
                                                    leave=False)]:
             # request the data via the github api
             status, data = api.request(url, **kwargs)
@@ -96,5 +96,5 @@ class GithubLoader(Loader):
 
         # create the projects
         ds.projects = [GithubRepo(uuids_=uuids, meta_=meta, **d)
-                       for d in tqdm(data, desc='    Loading',
+                       for d in tqdm(data, desc='         Loading',
                                      unit='project', leave=False)]
