@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 
+import os
 import click
 import json
+import tempfile
+import webbrowser
 from copy import deepcopy
 from datetime import timedelta
 from click import argument, option, Choice
 from click_shell import shell
 
-import visualizations
 from structures import Dataset
 from util import get_dataset, print_error
 
@@ -362,48 +364,19 @@ def sample(ctx, n, on_projects, seed):
 
 
 @cli.command('show')
-@argument('n', type=int, default=5)
 @click.pass_context
-def show(ctx, n):
-    """Shows the details of the first n projects."""
-    try:
-        ds = get_dataset(ctx)
-        visualizations.show(ds, n)
-
-    except Exception as e:
-        print_error(e, DEBUG)
-
-
-@cli.command('describe')
-@argument('scope', type=Choice(['dataset', 'project', 'version']),
-          default='dataset')
-@click.pass_context
-def describe(ctx, scope):
-    """Describes the structure of the dataset/project/version."""
-    try:
-        ds = get_dataset(ctx)
-        visualizations.describe(ds, scope)
-
-    except Exception as e:
-        print_error(e, DEBUG)
-
-
-@cli.command('jsonify')
-@argument('filepath', default=None)
-@click.pass_context
-def jsonify(ctx, filepath):
-    """Prints the complete dataset to json for easier review."""
+def jsonify(ctx):
+    """Opens the complete dataset as a json for easier review."""
     try:
         ds = get_dataset(ctx)
         data_dict = ds.to_json()
 
-        # file name is dataset name, if not provided by user
-        filepath = filepath or (ds.name + '_tmp.json')
-
-        # save to disk
-        with open(filepath, 'w') as file:
+        # save & open temp file
+        tmp = '.tmp.json'
+        with open(tmp, 'w') as file:
             json.dump(data_dict, file, indent=4)
-        print('         Dumped jsonified dataset to %s.' % filepath)
+            fullpath = os.path.realpath(tmp)
+            webbrowser.open_new('file://' + fullpath)
 
     except Exception as e:
         print_error(e, DEBUG)
