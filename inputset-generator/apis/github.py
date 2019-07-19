@@ -140,3 +140,8 @@ class Github(Api):
                     }
                     commit = GithubCommit(uuids_=uuids, **v_data)
                     project.versions.append(commit)
+
+            if historical == 'latest':
+                # stop after the first page of results
+                iterator.close()
+                break
