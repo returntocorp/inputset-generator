@@ -15,7 +15,7 @@ class GithubRepo(Project):
             return self.uuids_['name']()
 
         # pull the name from the url
-        name = self.uuids_['url']().strip('/').split('/')[-1]
+        return self.uuids_['url']().strip('/').split('/')[-1]
 
     def to_inputset(self) -> list:
         """Converts github repos/commits to GitRepo/GitRepoCommit dict."""
