@@ -59,6 +59,9 @@ def sort(ds: Dataset, params: List[str]) -> None:
             else:
                 # sort on a regular attribute
                 def sort_attr(o: object):
+                    if not hasattr(o, attr):
+                        raise Exception('Nonexistent sort key.')
+
                     # clean up the attribute
                     if isinstance(attr, str):
                         return attr.lower()
