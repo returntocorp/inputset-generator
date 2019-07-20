@@ -109,3 +109,4 @@ venv.bak/
 _ignore
 notes
 .requests_cache
+.tmp
