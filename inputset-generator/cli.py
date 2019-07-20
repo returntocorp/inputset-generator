@@ -28,9 +28,10 @@ TEMP_DIR = '.tmp/'
 @option('-d', '--debug', is_flag=True, default=False)
 @click.pass_context
 def cli(ctx, debug):
-    print('================================================================================')
-    print('Welcome to the R2C input set generator!\n\nWe currently support '
-          'the following registries: %s.\n\nFor a quick start, try the '
+    print('===================================================================='
+          '================================')
+    print('Welcome to the R2C input set generator! We currently support '
+          'the following registries: %s. For a quick start, try the '
           'following command sequences:\n\n'
           ''
           'Load the top 5,000 pypi projects by downloads in the last 365 days, '
@@ -55,7 +56,8 @@ def cli(ctx, debug):
           '    get -mv latest\n    set-meta -n test -v 1.0\n'
           '    export inputset_1.json\n    trim -v 0\n    export inputset_2.json'
           '' % ', '.join(list(project_map)))
-    print('================================================================================')
+    print('===================================================================='
+          '================================')
 
     # set debug settings
     global DEBUG
