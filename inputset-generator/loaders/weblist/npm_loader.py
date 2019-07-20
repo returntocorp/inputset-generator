@@ -76,7 +76,7 @@ class NpmLoader(Loader):
         # Note: data list is ordered from most dependents to fewest
         ds.projects = [NpmPackage(uuids_=uuids, **{
             'name': d,
-            'dependents_rank': i  # package with rank 1 has the most dependents
+            'dependents_rank': i + 1  # package with rank 1 has the most dependents
         }) for i, d in enumerate(tqdm(data, desc='         Loading',
                                       unit='project', leave=False))]
 

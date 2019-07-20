@@ -51,7 +51,7 @@ class Github(Api):
                         status,
                         'Please try again in an hour.' if self.github_pat else
                         'You can provide a github personal access token '
-                        "(using the command 'api --github_pat TOKEN') to "
+                        '(using the command "set-api --github_pat TOKEN") to '
                         'obtain a significantly higher request rate limit. '
                         'See instructions at https://help.github.com/en/'
                         'articles/creating-a-personal-access-token-for-'
@@ -109,9 +109,9 @@ class Github(Api):
 
             # skip this page if non-200 response
             if status != 200:
-                print('Warning: Unexpected response from pypi api (HTTP '
-                      '%d); failed to retrieve some of the versions of '
-                      '%s (%s).' % (status, project.get_name(), url))
+                print('Warning: Unexpected response from github api '
+                      '(HTTP %d); failed to retrieve some of the versions '
+                      'of %s (%s).' % (status, project.get_name(), url))
                 continue
 
             if not data:

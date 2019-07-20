@@ -171,7 +171,7 @@ class Dataset(object):
         # name and version are mandatory
         if not (self.name and self.version):
             raise Exception('The dataset must have a name and version. '
-                            "Set them using the 'set meta -n NAME -v "
+                            "Set them using the 'set-meta -n NAME -v "
                             "VERSION' command.")
 
         # jsonify the dataset's metadata
@@ -236,8 +236,13 @@ class Dataset(object):
     def get_projects_meta(self, **kwargs) -> None:
         """Gets the metadata for all projects."""
 
-        for p in tqdm(self.projects, desc='         Getting project metadata',
-                      unit='project', leave=False):
+        if not self.api:
+            raise Exception('No API is associated with this dataset; '
+                            'cannot get project metadata.')
+
+        for p in tqdm(self.projects, unit='project', leave=False,
+                      desc='         Getting project metadata',):
+
             self.api.get_project(p, **kwargs)
 
         print('         Retrieved metadata for {:,} projects.'
@@ -246,8 +251,12 @@ class Dataset(object):
     def get_project_versions(self, **kwargs) -> None:
         """Gets the historical versions for all projects."""
 
+        if not self.api:
+            raise Exception('No API is associated with this dataset; '
+                            'cannot get project versions.')
+
         for p in tqdm(self.projects, unit='project', leave=False,
-                      desc='         Getting %s versions'
+                      desc='         Getting %s version'
                            % kwargs.get('historical', 'all')):
             self.api.get_versions(p, **kwargs)
 

@@ -8,11 +8,14 @@ import atexit
 import webbrowser
 from copy import deepcopy
 from datetime import timedelta
-from click import argument, option, Choice
+from click import argument, option, Choice, Path
 from click_shell import shell
 
 from structures import Dataset
+from structures.projects import project_map
 from util import get_dataset, print_error
+from loaders.file import fileloader_map
+from loaders.weblist import weblistloader_map
 
 
 DEBUG = False
@@ -25,6 +28,35 @@ TEMP_DIR = '.tmp/'
 @option('-d', '--debug', is_flag=True, default=False)
 @click.pass_context
 def cli(ctx, debug):
+    print('================================================================================')
+    print('Welcome to the R2C input set generator!\n\nWe currently support '
+          'the following registries: %s.\n\nFor a quick start, try the '
+          'following command sequences:\n\n'
+          ''
+          'Load the top 5,000 pypi projects by downloads in the last 365 days, '
+          'sort by descending number of downloads, trim to the top 100 most '
+          'downloaded, download project metadata and all versions, and '
+          'generate an input set json.\n'
+          '    load pypi top5kyear\n    sort "desc download_count"\n'
+          '    trim 100\n    get -mv all\n    set-meta -n test -v 1.0\n'
+          '    export inputset.json\n\n'
+          ''
+          'Load all npm projects, sample 100, download the latest versions, '
+          'and generate an input set json.\n'
+          '    load npm allbydependents\n    sample 100\n'
+          '    get -v latest\n    set-meta -n test -v 1.0\n'
+          '    export inputset.json\n\n'
+          ''
+          'Load a csv containing github urls and commit hashes, get project '
+          'metadata and the latest versions, generate an input set json of type'
+          'GitRepoCommit, remove all versions, and generate an input set json '
+          'of type GitRepo.\n\n'
+          '    load --columns "url v.commit" github list_of_github_urls_and_commits.csv\n'
+          '    get -mv latest\n    set-meta -n test -v 1.0\n'
+          '    export inputset_1.json\n    trim -v 0\n    export inputset_2.json'
+          '' % ', '.join(list(project_map)))
+    print('================================================================================')
+
     # set debug settings
     global DEBUG
     DEBUG = debug
@@ -40,16 +72,31 @@ def spacer():
     pass
 
 
-@cli.command('load')
-@argument('registry')
-@argument('handle')
-@option('-h', '--header', 'fileargs',
-        help='Header string for csv file.')
-@option('-p', '--parser', 'fileargs',
-        help="Handle for a custom-build json parser.")
+weblist_options = '; '.join(['%s: %s' % (
+    name,
+    ', '.join(list(cls.weblists()))
+) for name, cls in weblistloader_map.items()])
+
+
+@cli.command('load', help='Generates a dataset from a weblist name or file '
+                          'path.\n\nSupported file types are: %s. Note: there '
+                          'are no default json parsers; you must write your '
+                          'own.\n\nValid weblist names are %s.' %
+                          (', '.join(list(fileloader_map)), weblist_options))
+@argument('registry', type=Choice(list(project_map) + ['noreg']))
+@argument('name_or_path')
+@option('-c', '--columns', 'fileargs', type=str,
+        help='Space-separated list of column names in a csv. Overrides default '
+             'headers (name and version), as well as any headers listed in the '
+             "file (headers in  files begin with a '!'). Recognized keywords: "
+             'name, url, org, v.commit, v.version. Example usage: --headers '
+             '"name v.version".')
+@option('-p', '--parser', 'fileargs', type=str,
+        help='Handle for a custom-build json parser. No json parsers '
+             'are implemented by default.')
 @click.pass_context
-def load(ctx, registry, handle, fileargs):
-    """Generates a dataset from a weblist or file."""
+def load(ctx, registry, name_or_path, fileargs):
+    """Generates a dataset from a weblist name or file path."""
     backup_ds = None
     
     try:
@@ -60,15 +107,15 @@ def load(ctx, registry, handle, fileargs):
 
         global TEMP_SETTINGS
 
-        if '.' in handle:
+        if '.' in name_or_path:
             # read in a file (fileargs is either a header string for csv
             # or a parser handle for json)
-            ds = Dataset.load_file(handle, registry,
+            ds = Dataset.load_file(name_or_path, registry,
                                    fileargs=fileargs, **TEMP_SETTINGS)
 
         else:
             # download a weblist
-            ds = Dataset.load_weblist(handle, registry, **TEMP_SETTINGS)
+            ds = Dataset.load_weblist(name_or_path, registry, **TEMP_SETTINGS)
 
         ctx.obj['dataset'] = ds
 
@@ -82,8 +129,9 @@ def load(ctx, registry, handle, fileargs):
         ctx.obj['dataset'] = backup_ds
 
 
-@cli.command('restore')
-@argument('filepath')
+@cli.command('restore', help='Restores a dataset from a pickle file. Use '
+                             'the "backup" command to pickle the dataset.')
+@argument('filepath', type=Path(exists=True))
 @click.pass_context
 def restore(ctx, filepath):
     """Restores a pickled dataset file."""
@@ -106,11 +154,12 @@ def restore(ctx, filepath):
         ctx.obj['dataset'] = backup_ds
 
 
-@cli.command('backup')
-@argument('filepath', default=None)
+@cli.command('backup', help='Backs up the full dataset to a pickle file. Use '
+                            'the "restore" command to restore the file.')
+@argument('filepath', type=Path(), default=None)
 @click.pass_context
 def backup(ctx, filepath):
-    """Backups up a pickled version of the dataset."""
+    """Pickles the complete dataset."""
     try:
         ds = get_dataset(ctx)
         ds.backup(filepath)
@@ -119,9 +168,10 @@ def backup(ctx, filepath):
         print_error(e, DEBUG)
 
 
-@cli.command('import')
-@argument('registry')
-@argument('filepath')
+@cli.command('import', help='Imports a dataset from an R2C input set json. '
+                            'Use the "export" command to export an input set.')
+@argument('registry', type=Choice(list(project_map) + ['noreg']))
+@argument('filepath', type=Path(exists=True))
 @click.pass_context
 def import_(ctx, registry, filepath):
     """Imports an input set json file."""
@@ -148,8 +198,9 @@ def import_(ctx, registry, filepath):
         ctx.obj['dataset'] = backup_ds
 
 
-@cli.command('export')
-@argument('filepath', default=None)
+@cli.command('export', help='Exports a dataset to an R2C input set json. '
+                            'Use the "import" command to import an input set.')
+@argument('filepath', type=Path(), default=None)
 @click.pass_context
 def export(ctx, filepath):
     """Export a dataset to an input set json."""
@@ -161,14 +212,16 @@ def export(ctx, filepath):
         print_error(e, DEBUG)
 
 
-@cli.command('set-meta')
-@option('-n', '--name', help='Dataset name.')
-@option('-v', '--version', help='Dataset version.')
-@option('-d', '--description', help='Description string.')
-@option('-r', '--readme', help='Readme string.')
-@option('-a', '--author',
+@cli.command('set-meta', help="Sets the dataset's metadata")
+@option('-n', '--name', type=str,
+        help='Dataset name. Must be set before the dataset can be exported.')
+@option('-v', '--version', type=str,
+        help='Dataset version. Must be set before the dataset can be exported.')
+@option('-d', '--description', type=str, help='Description string.')
+@option('-r', '--readme', type=str, help='Markdown-formatted readme string.')
+@option('-a', '--author', type=str,
         help='Author name. Defaults to git user.name.')
-@option('-e', '--email',
+@option('-e', '--email', type=str,
         help='Author email. Defaults to git user.email.')
 @click.pass_context
 def set_meta(ctx, name, version, description, readme, author, email):
@@ -202,7 +255,7 @@ def set_meta(ctx, name, version, description, readme, author, email):
         if author: settings.append('author')
         if email: settings.append('email')
         set_str = ', '.join([s for s in settings if s])
-        print("    Set the dataset's %s." % set_str)
+        print("         Set the dataset's %s." % set_str)
 
     except Exception as e:
         print_error(e, DEBUG)
@@ -211,11 +264,19 @@ def set_meta(ctx, name, version, description, readme, author, email):
         ctx.obj['dataset'] = backup_ds
 
 
-@cli.command('set-api')
-@option('-d', '--cache_dir')
-@option('-t', '--cache_timeout', type=int)
-@option('-n', '--nocache', is_flag=True)
-@option('-g', '--github_pat')
+@cli.command('set-api', help='Sets API-specific settings.')
+@option('-d', '--cache_dir', type=Path(),
+        help='The path to the requests cache. Defaults to ./.requests_cache.')
+@option('-t', '--cache_timeout', type=int,
+        help='The number of days before a cached request goes stale.')
+@option('-n', '--nocache', is_flag=True,
+        help='Disables request caching for this dataset.')
+@option('-g', '--github_pat', type=str,
+        help='A github personal access token, used to increase the max '
+             'allowed hourly request rate from 60/hr to 5,000/hr. For '
+             'instructions on how to obtain a token, see: https://help.'
+             'github.com/en/articles/creating-a-personal-access-token-'
+             'for-the-command-line.')
 @click.pass_context
 def set_api(ctx, cache_dir, cache_timeout, nocache, github_pat):
     """Sets API settings."""
@@ -262,48 +323,56 @@ def set_api(ctx, cache_dir, cache_timeout, nocache, github_pat):
 
 @cli.command('get')
 @option('-m', '--metadata', is_flag=True,
-        help='Download project metadata.')
+        help='Downloads project metadata.')
 @option('-v', '--versions', type=Choice(['all', 'latest']),
-        help='Filter versions by historical order.')
+        help='Downloads project versions.')
 @click.pass_context
 def get(ctx, metadata, versions):
     """Downloads project and version information."""
     backup_ds = None
+    rolled_back = False
 
     # load project metadata
     if metadata:
         try:
             ds = get_dataset(ctx)
-            ds.get_projects_meta()
             backup_ds = deepcopy(ds)
+
+            ds.get_projects_meta()
 
         except Exception as e:
             print_error(e, DEBUG)
 
             # roll back the db
             ctx.obj['dataset'] = backup_ds
-            print('         The dataset is unchanged.')
+            rolled_back = True
 
     # load project versions
     if versions:
         try:
             ds = get_dataset(ctx)
-            ds.get_project_versions(historical=versions)
             backup_ds = deepcopy(ds)
+
+            ds.get_project_versions(historical=versions)
 
         except Exception as e:
             print_error(e, DEBUG)
 
             # roll back the db
             ctx.obj['dataset'] = backup_ds
-            print('         The dataset is unchanged.')
+            rolled_back = True
+
+    if rolled_back:
+        print('         The dataset was not modified.')
 
 
-@cli.command('trim')
+@cli.command('trim', help='Trims to the first N projects (default) or '
+                          'the first N versions per project.')
 @argument('n', type=int)
-@option('-p/-v', '--projects/--versions', 'on_projects', default=True)
+@option('-v', '--versions', 'on_versions', is_flag=True, default=False,
+        help='Trim to N versions per project.')
 @click.pass_context
-def trim(ctx, n, on_projects):
+def trim(ctx, n, on_versions):
     """Trims projects or versions from a dataset."""
     backup_ds = None
 
@@ -311,20 +380,36 @@ def trim(ctx, n, on_projects):
         ds = get_dataset(ctx)
         backup_ds = deepcopy(ds)
 
-        ds.trim(n, on_projects)
+        ds.trim(n, on_versions)
 
     except Exception as e:
         print_error(e, DEBUG)
 
         # roll back the db
         ctx.obj['dataset'] = backup_ds
-        print('         The dataset is unchanged.')
+        print('         The dataset was not modified.')
 
 
-@cli.command('sort')
-@argument('params', type=str)
+@cli.command('sort',
+             help='Sorts the projects and versions based on a space-separated '
+                  'string of keywords. Valid keywords include:\n\n'
+                  '- Any project attributes\n\n'
+                  '- Any version attributes (prepend "v." to the attribute name)\n\n'
+                  '- Any uuids (prepend "uuids." to the uuid name\n\n'
+                  '- Any meta values (prepend "meta." to the meta name\n\n'
+                  '- The words "asc" and "desc"\n\n'
+                  'All values are sorted in ascending order by default. The '
+                  'first keyword in the string is the primary sort key, the next '
+                  'the secondary, and so on.\n\n'
+                  'Example: The string "uuids.name meta.url downloads desc '
+                  'v.version_str v.date" would sort the dataset by ascending '
+                  'project name, url, and download count; and descending '
+                  'version string and date--assuming those keys exist.\n\n'
+                  'To determine all sortable attributes, '
+                  'use the "show" command.')
+@argument('keywords_string', type=str)
 @click.pass_context
-def sort(ctx, params):
+def sort(ctx, keywords_string):
     """Sorts a dataset."""
     backup_ds = None
 
@@ -332,22 +417,24 @@ def sort(ctx, params):
         ds = get_dataset(ctx)
         backup_ds = deepcopy(ds)
 
-        ds.sort(params.split())
+        ds.sort(keywords_string.split())
 
     except Exception as e:
         print_error(e, DEBUG)
 
         # roll back the db
         ctx.obj['dataset'] = backup_ds
-        print('         The dataset is unchanged.')
+        print('         The dataset was not modified.')
 
 
-@cli.command('sample')
+@cli.command('sample', help='Samples N projects (default) '
+                            'or N versions per project.')
 @argument('n', type=int)
-@option('-p/-v', '--projects/--versions', 'on_projects', default=True)
-@option('-s', '--seed')
+@option('-v', '--versions', 'on_versions', is_flag=True, default=False,
+        help='Sample N versions per project.')
+@option('-s', '--seed', type=str, help='Sets the random seed.')
 @click.pass_context
-def sample(ctx, n, on_projects, seed):
+def sample(ctx, n, on_versions, seed):
     """Samples projects or versions from a dataset."""
     backup_ds = None
 
@@ -355,19 +442,20 @@ def sample(ctx, n, on_projects, seed):
         ds = get_dataset(ctx)
         backup_ds = deepcopy(ds)
 
-        ds.sample(n, on_projects, seed)
+        ds.sample(n, on_versions, seed)
 
     except Exception as e:
         print_error(e, DEBUG)
 
         # roll back the db
         ctx.obj['dataset'] = backup_ds
-        print('         The dataset is unchanged.')
+        print('         The dataset was not modified.')
 
 
-@cli.command('show')
+@cli.command('show', help='Jsonifies the dataset and opens it in the '
+                          'native json viewer.')
 @click.pass_context
-def jsonify(ctx):
+def show(ctx):
     """Opens the complete dataset as a json for easier review."""
     try:
         ds = get_dataset(ctx)

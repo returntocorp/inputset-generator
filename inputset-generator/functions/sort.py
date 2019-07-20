@@ -7,12 +7,6 @@ def sort(ds: Dataset, params: List[str]) -> None:
     """Sorts the projects/versions based on the given parameters."""
     # useful url: https://realpython.com/python-sort/
 
-    def clean(attr):
-        """Cleans up the attribute to allow better sorting."""
-        if isinstance(attr, str):
-            return attr.lower()
-        return attr
-
     # organize the params list--sort by last param first
     # default sort order is ascending
     if params[0] not in ['asc', 'desc']:
@@ -53,15 +47,25 @@ def sort(ds: Dataset, params: List[str]) -> None:
                 p_list.pop(0)
 
             # build a sort function
-            if p_list[0] == 'uuids':
+            attr = p_list[0]
+            if attr == 'uuids':
                 # sort on a uuid value
-                sort_func = lambda o: o.uuids_[p_list[1]]()
-            elif p_list[0] == 'meta':
+                key = p_list[1]
+                sort_func = lambda o: o.uuids_[key]()
+            elif attr == 'meta':
                 # sort on a meta value
-                sort_func = lambda o: o.meta_[p_list[1]]()
+                key = p_list[1]
+                sort_func = lambda o: o.meta_[key]()
             else:
                 # sort on a regular attribute
-                sort_func = lambda o: clean(getattr(o, p_list[0], ''))
+                def sort_attr(o: object):
+                    # clean up the attribute
+                    if isinstance(attr, str):
+                        return attr.lower()
+
+                    return attr
+
+                sort_func = lambda o: sort_attr(o)
 
             # perform the sort
             if on_project:
