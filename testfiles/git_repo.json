@@ -1,0 +1,23 @@
+{
+    "name": "testname",
+    "version": "0.1.0",
+    "inputs": [
+        {
+            "input_type": "GitRepo",
+            "repo_url": "https://github.com/agronholm/pythonfutures"
+        },
+        {
+            "input_type": "GitRepo",
+            "repo_url": "https://github.com/pallets/werkzeug"
+        },
+        {
+            "input_type": "GitRepo",
+            "repo_url": "https://github.com/docker/docker-py"
+        },
+        {
+            "input_type": "GitRepo",
+            "repo_url": "https://github.com/aio-libs/multidict"
+        }
+    ],
+    "author": "testperson"
+}

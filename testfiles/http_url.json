@@ -1,0 +1,23 @@
+{
+    "name": "testname",
+    "version": "0.1.0",
+    "inputs": [
+        {
+            "input_type": "HttpUrl",
+            "url": "https://dsklja.com/agronholm/pythonfutures"
+        },
+        {
+            "input_type": "HttpUrl",
+            "url": "https://errg.com/pallets/werkzeug"
+        },
+        {
+            "input_type": "HttpUrl",
+            "url": "https://yrkfsdfs.com/docker/docker-py"
+        },
+        {
+            "input_type": "HttpUrl",
+            "url": "https://egklfsww.com/aio-libs/multidict"
+        }
+    ],
+    "author": "testperson"
+}

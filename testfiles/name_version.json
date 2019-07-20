@@ -1,0 +1,27 @@
+{
+    "name": "testname",
+    "version": "0.1.0",
+    "inputs": [
+        {
+            "input_type": "PackageVersion",
+            "package_name": "package1",
+            "version": "0.1.4"
+        },
+        {
+            "input_type": "PackageVersion",
+            "package_name": "package2",
+            "version": "10.2.1"
+        },
+        {
+            "input_type": "PackageVersion",
+            "package_name": "package3",
+            "version": "2012-11"
+        },
+        {
+            "input_type": "PackageVersion",
+            "package_name": "package4",
+            "version": "1.5"
+        }
+    ],
+    "author": "testperson"
+}

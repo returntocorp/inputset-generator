@@ -1,0 +1,4 @@
+click
+click_shell
+requests
+pydriller
