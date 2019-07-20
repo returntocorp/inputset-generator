@@ -26,38 +26,40 @@ TEMP_DIR = '.tmp/'
 
 @shell(chain=True, prompt='r2c-isg> ')
 @option('-d', '--debug', is_flag=True, default=False)
+@option('-q', '--quiet', is_flag=True, default=False)
 @click.pass_context
-def cli(ctx, debug):
-    print('===================================================================='
-          '================================')
-    print('Welcome to the R2C input set generator! We currently support '
-          'the following registries: %s. For a quick start, try the '
-          'following command sequences:\n\n'
-          ''
-          'Load the top 5,000 pypi projects by downloads in the last 365 days, '
-          'sort by descending number of downloads, trim to the top 100 most '
-          'downloaded, download project metadata and all versions, and '
-          'generate an input set json.\n'
-          '    load pypi top5kyear\n    sort "desc download_count"\n'
-          '    trim 100\n    get -mv all\n    set-meta -n test -v 1.0\n'
-          '    export inputset.json\n\n'
-          ''
-          'Load all npm projects, sample 100, download the latest versions, '
-          'and generate an input set json.\n'
-          '    load npm allbydependents\n    sample 100\n'
-          '    get -v latest\n    set-meta -n test -v 1.0\n'
-          '    export inputset.json\n\n'
-          ''
-          'Load a csv containing github urls and commit hashes, get project '
-          'metadata and the latest versions, generate an input set json of type'
-          'GitRepoCommit, remove all versions, and generate an input set json '
-          'of type GitRepo.\n\n'
-          '    load --columns "url v.commit" github list_of_github_urls_and_commits.csv\n'
-          '    get -mv latest\n    set-meta -n test -v 1.0\n'
-          '    export inputset_1.json\n    trim -v 0\n    export inputset_2.json'
-          '' % ', '.join(list(project_map)))
-    print('===================================================================='
-          '================================')
+def cli(ctx, debug, quiet):
+    if not quiet:
+        print('===================================================================='
+              '================================')
+        print('Welcome to the R2C input set generator! We currently support '
+              'the following registries: %s. For a quick start, try the '
+              'following command sequences:\n\n'
+              ''
+              'Load the top 5,000 pypi projects by downloads in the last 365 days, '
+              'sort by descending number of downloads, trim to the top 100 most '
+              'downloaded, download project metadata and all versions, and '
+              'generate an input set json.\n'
+              '    load pypi top5kyear\n    sort "desc download_count"\n'
+              '    trim 100\n    get -mv all\n    set-meta -n test -v 1.0\n'
+              '    export inputset.json\n\n'
+              ''
+              'Load all npm projects, sample 100, download the latest versions, '
+              'and generate an input set json.\n'
+              '    load npm allbydependents\n    sample 100\n'
+              '    get -v latest\n    set-meta -n test -v 1.0\n'
+              '    export inputset.json\n\n'
+              ''
+              'Load a csv containing github urls and commit hashes, get project '
+              'metadata and the latest versions, generate an input set json of type'
+              'GitRepoCommit, remove all versions, and generate an input set json '
+              'of type GitRepo.\n\n'
+              '    load --columns "url v.commit" github list_of_github_urls_and_commits.csv\n'
+              '    get -mv latest\n    set-meta -n test -v 1.0\n'
+              '    export inputset_1.json\n    trim -v 0\n    export inputset_2.json'
+              '' % ', '.join(list(project_map)))
+        print('===================================================================='
+              '================================')
 
     # set debug settings
     global DEBUG
