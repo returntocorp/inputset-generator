@@ -29,6 +29,21 @@ TEMP_DIR = '.tmp/'
 @option('-q', '--quiet', is_flag=True, default=False)
 @click.pass_context
 def cli(ctx, debug, quiet):
+    # set debug settings
+    global DEBUG
+    DEBUG = debug
+
+    # create the ctx.obj dictionary
+    ctx.ensure_object(dict)
+
+    # create the temp dir
+    if not os.path.isdir(TEMP_DIR):
+        os.mkdir(TEMP_DIR)
+
+    # register the cleanup callback on exit
+    atexit.register(cleanup)
+
+    # print the welcome screen
     if not quiet:
         print('=' * 100)
         print('Welcome to the R2C input set generator! We currently support '
@@ -60,13 +75,6 @@ def cli(ctx, debug, quiet):
               '    export inputset_2.json'
               '' % ', '.join(list(project_map)))
         print('=' * 100)
-
-    # set debug settings
-    global DEBUG
-    DEBUG = debug
-
-    # create the ctx.obj dictionary
-    ctx.ensure_object(dict)
 
 
 @cli.command('and')
@@ -398,13 +406,14 @@ def trim(ctx, n, on_versions):
              help='Sorts the projects and versions based on a space-separated '
                   'string of keywords. Valid keywords include:\n\n'
                   '- Any project attributes\n\n'
-                  '- Any version attributes (prepend "v." to the attribute name)\n\n'
+                  '- Any version attributes (prepend "v." to the attribute '
+                  'name)\n\n'
                   '- Any uuids (prepend "uuids." to the uuid name\n\n'
                   '- Any meta values (prepend "meta." to the meta name\n\n'
                   '- The words "asc" and "desc"\n\n'
                   'All values are sorted in ascending order by default. The '
-                  'first keyword in the string is the primary sort key, the next '
-                  'the secondary, and so on.\n\n'
+                  'first keyword in the string is the primary sort key, the '
+                  'next the secondary, and so on.\n\n'
                   'Example: The string "uuids.name meta.url downloads desc '
                   'v.version_str v.date" would sort the dataset by ascending '
                   'project name, url, and download count; and descending '
@@ -485,12 +494,4 @@ def cleanup():
 
 
 if __name__ == '__main__':
-    # create the temp dir
-    if not os.path.isdir(TEMP_DIR):
-        os.mkdir(TEMP_DIR)
-
-    # register the cleanup callback on exit
-    atexit.register(cleanup)
-
-    # enter the cli
     cli()
