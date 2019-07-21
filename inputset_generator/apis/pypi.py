@@ -40,9 +40,9 @@ class Pypi(Api):
 
         # skip this project if non-200 response (just return now)
         if status != 200:
-            print('Warning: Unexpected response from pypi api (HTTP %d); '
-                  'failed to retrieve metadata for %s.' % (status,
-                                                           project.get_name()))
+            print(' ' * 9 + 'Warning: Unexpected response from pypi api '
+                            '(HTTP %d); failed to retrieve metadata for %s.'
+                  % (status, project.get_name()))
             return
 
         # ignore version-related data
@@ -64,9 +64,9 @@ class Pypi(Api):
 
         # skip this project if non-200 response (just return now)
         if status != 200:
-            print('Warning: Unexpected response from pypi api (HTTP %d); '
-                  'failed to retrieve versions for %s.' % (status,
-                                                           project.get_name()))
+            print(' ' * 9 + 'Warning: Unexpected response from pypi api '
+                            '(HTTP %d); failed to retrieve versions for %s.'
+                  % (status, project.get_name()))
             return
 
         # get the releases list from the data

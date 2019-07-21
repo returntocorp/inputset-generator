@@ -82,9 +82,9 @@ class Github(Api):
 
         # skip this project if non-200 response (just return now)
         if status != 200:
-            print('Warning: Unexpected response from github api (HTTP %d); '
-                  'failed to retrieve metadata for %s.' % (status,
-                                                           project.get_name()))
+            print(' ' * 9 + 'Warning: Unexpected response from github api '
+                            '(HTTP %d); failed to retrieve metadata for %s.'
+                  % (status, project.get_name()))
             return
 
         # the 'url' key actually relates to the api; indicate as much
@@ -109,8 +109,8 @@ class Github(Api):
 
             # skip this page if non-200 response
             if status != 200:
-                print('Warning: Unexpected response from github api '
-                      '(HTTP %d); failed to retrieve some of the versions '
+                print(' ' * 9 + 'Warning: Unexpected response from github '
+                      'api (HTTP %d); failed to retrieve some of the versions '
                       'of %s (%s).' % (status, project.get_name(), url))
                 continue
 

@@ -48,9 +48,9 @@ class Npm(Api):
 
         # skip this project if non-200 response (just return now)
         if status != 200:
-            print('Warning: Unexpected response from npm registry (HTTP %d); '
-                  'failed to retrieve metadata for %s.' % (status,
-                                                           project.get_name()))
+            print(' ' * 9 + 'Warning: Unexpected response from npm registry '
+                            '(HTTP %d); failed to retrieve metadata for %s.'
+                  % (status, project.get_name()))
             return
 
         # ignore version-related data
@@ -69,9 +69,9 @@ class Npm(Api):
 
         # skip this project if non-200 response (just return now)
         if status != 200:
-            print('Warning: Unexpected response from npm registry (HTTP %d); '
-                  'failed to retrieve versions for %s.' % (status,
-                                                           project.get_name()))
+            print(' ' * 9 + 'Warning: Unexpected response from npm registry '
+                            '(HTTP %d); failed to retrieve versions for %s.'
+                  % (status, project.get_name()))
             return
 
         # get the versions list from the data
