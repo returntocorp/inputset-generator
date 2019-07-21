@@ -95,14 +95,15 @@ class Api(ABC):
             return 0, None
 
         # save the response json to cache (only 2xx response codes are cached)
-        with open(filepath, 'w') as json_file:
-            cached = {
-                'url': url,
-                'status': r.status_code,
-                'timestamp': datetime.utcnow(),
-                'json': data
-            }
-            json.dump(cached, json_file, indent=4, default=str)
+        if r.status_code in range(200, 300):
+            with open(filepath, 'w') as json_file:
+                cached = {
+                    'url': url,
+                    'status': r.status_code,
+                    'timestamp': datetime.utcnow(),
+                    'json': data
+                }
+                json.dump(cached, json_file, indent=4, default=str)
 
         return r.status_code, data
 
