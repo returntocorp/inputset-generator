@@ -24,7 +24,7 @@ TEMP_SETTINGS = dict()
 TEMP_DIR = '.tmp/'
 
 
-@shell(chain=True, prompt='r2c-isg> ')
+@shell(chain=True, prompt='r2c_isg> ')
 @option('-d', '--debug', is_flag=True, default=False)
 @option('-q', '--quiet', is_flag=True, default=False)
 @click.pass_context
