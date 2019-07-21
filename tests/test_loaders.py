@@ -1,9 +1,10 @@
 import os
-from structures import Dataset
 from dotenv import load_dotenv
 
-load_dotenv()
+from structures import Dataset
 
+
+load_dotenv()
 
 CACHE_DIR = '../.requests_cache'
 
