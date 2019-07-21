@@ -2,9 +2,9 @@ from typing import Optional, Union
 from itertools import count
 from tqdm import tqdm
 
-from apis import Api
-from structures.projects import GithubRepo
-from structures.versions import GithubCommit
+from . import Api
+from ..structures.projects import GithubRepo
+from ..structures.versions import GithubCommit
 
 
 class Github(Api):

@@ -1,8 +1,8 @@
 from typing import Optional, Union
 
-from apis import Api
-from structures.projects import PypiProject
-from structures.versions import PypiRelease
+from . import Api
+from ..structures.projects import PypiProject
+from ..structures.versions import PypiRelease
 
 
 class Pypi(Api):

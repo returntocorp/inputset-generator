@@ -1,4 +1,4 @@
-from structures import Dataset
+from ..structures import Dataset
 
 
 def trim(ds: Dataset, n: int, on_versions: bool = False) -> None:

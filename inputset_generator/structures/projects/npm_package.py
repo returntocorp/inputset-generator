@@ -1,4 +1,4 @@
-from structures.projects import Project
+from ..projects import Project
 
 
 class NpmPackage(Project):

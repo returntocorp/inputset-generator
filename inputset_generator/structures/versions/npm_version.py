@@ -1,4 +1,4 @@
-from structures.versions import Version
+from ..versions import Version
 
 
 class NpmVersion(Version):

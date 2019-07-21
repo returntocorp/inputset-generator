@@ -11,11 +11,11 @@ from datetime import timedelta
 from click import argument, option, Choice, Path
 from click_shell import shell
 
-from structures import Dataset
-from structures.projects import project_map
-from util import get_dataset, print_error
-from loaders.file import fileloader_map
-from loaders.weblist import weblistloader_map
+from .structures import Dataset
+from .structures.projects import project_map
+from .util import get_dataset, print_error
+from .loaders.file import fileloader_map
+from .loaders.weblist import weblistloader_map
 
 
 DEBUG = False

@@ -1,8 +1,8 @@
 from typing import Optional, Union
 
-from apis import Api
-from structures.projects import NpmPackage
-from structures.versions import NpmVersion
+from . import Api
+from ..structures.projects import NpmPackage
+from ..structures.versions import NpmVersion
 
 
 class Npm(Api):

@@ -1,7 +1,7 @@
 from typing import List, Optional
 from types import MethodType
 
-from structures.versions import Version
+from ..versions import Version
 
 
 class Project(object):

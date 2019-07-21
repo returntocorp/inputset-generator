@@ -1,7 +1,7 @@
 import dill as pickle
 
-from loaders import Loader
-from structures import Dataset
+from .. import Loader
+from ...structures import Dataset
 
 
 class DatasetLoader(Loader):
