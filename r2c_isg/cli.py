@@ -224,11 +224,11 @@ def export(ctx, filepath):
         print_error(e, DEBUG)
 
 
-@cli.command('set-meta', help="Sets the dataset's metadata")
+@cli.command('set-meta', help="Sets the dataset's metadata.")
 @option('-n', '--name', type=str,
-        help='Dataset name. Must be set before the dataset can be exported.')
+        help='Input set name. Must be set before the dataset can be exported.')
 @option('-v', '--version', type=str,
-        help='Dataset version. Must be set before the dataset can be exported.')
+        help='Input set version. Must be set before the dataset can be exported.')
 @option('-d', '--description', type=str, help='Description string.')
 @option('-r', '--readme', type=str, help='Markdown-formatted readme string.')
 @option('-a', '--author', type=str,
