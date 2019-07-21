@@ -2,7 +2,7 @@
 
 Welcome to Return2Corp's input set generator!
 
-### Installation
+## Installation
 To install (pre-official release), download the project's requirements.txt into a folder and navigate to that folder in the terminal. Then:
 ```
 pip install virtualenv
@@ -17,7 +17,7 @@ Then, to run:
 r2c-isg
 ```
 
-### Quick Start
+## Quick Start
 Try the following command sequences:
 
 1. Load the top 5,000 pypi projects by downloads in the last 365 days, sort by descending number of downloads, trim to the top 100 most downloaded, download project metadata and all versions, and generate an input set json.
@@ -46,9 +46,9 @@ Try the following command sequences:
     	trim -v 0
 	    export inputset_2.json
 
-### Shell Usage
+## Shell Usage
 
-##### Input/Output
+#### Input/Output
 
 - **load** (OPTIONS) [noreg | github | npm | pypi] [WEBLIST_NAME | FILEPATH.csv]<br>
 	Generates a dataset from a weblist or a local file. The following weblists are available:
@@ -72,7 +72,7 @@ Try the following command sequences:
 - **export** (FILEPATH.json)<br>
 	Exports a dataset to an R2C input set (defaults to ./dataset_name.json).
 
-##### Data Acquisition
+#### Data Acquisition
 
 - **get** (OPTIONS)<br>
 	Downloads project and version metadata from Github/NPM/Pypi.
@@ -81,7 +81,7 @@ Try the following command sequences:
     **-m --metadata**: Gets metadata for all projects.<br>
     **-v --versions** [all | latest]: Gets historical versions for all projects.
 
-##### Transformation
+#### Transformation
 
 - **trim** (OPTIONS) N<br>
 	Trims the dataset to *n* projects or *n* versions per project.
@@ -108,7 +108,7 @@ Try the following command sequences:
     Example: The string "uuids.name meta.url downloads desc v.version_str v.date" would sort the dataset by ascending project name, url, and download count; and descending version string and date (assuming those keys exist).
 
 
-##### Settings
+#### Settings
 
 - **set-meta** (OPTIONS)<br>
 	Sets the dataset's metadata.
@@ -127,12 +127,12 @@ Try the following command sequences:
     **--nocache**: Binary flag; disables request caching for this dataset.<br>
     **--github_pat** GITHUB_PAT: A github personal access token, used to increase the max allowed hourly request rate from 60/hr to 5,000/hr. For instructions on how to obtain a token, see: [https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line](https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line). 
 
-##### Visualization
+#### Visualization
 
 - **show**<br>
 	Converts the dataset to a json file and loads it in the system's native json viewer.
 
-### Python Project
+## Python Project
 
 You can also import the package into your own project. Just import the Dataset structure, initialize it, and go to town!
 
