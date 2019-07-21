@@ -153,12 +153,12 @@ ds.get_projects_meta()
 ds.get_project_versions(historical='all' ~or~ 'latest')
 
 ds.trim(
-	n,
+    n,
     on_versions=True	# optional; defaults to False
 )
 
 ds.sample(
-	n,
+    n,
     on_versions=True	# optional; defaults to False
 )
 
