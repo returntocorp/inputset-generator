@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-from ..structures import Project
+from r2c_isg.structures import Project
 
 
 class Api(ABC):

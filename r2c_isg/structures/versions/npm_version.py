@@ -1,4 +1,4 @@
-from ..versions import Version
+from r2c_isg.structures.versions import Version
 
 
 class NpmVersion(Version):

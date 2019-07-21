@@ -6,16 +6,16 @@ from typing import List, Optional
 from types import MethodType
 from pathlib import Path
 
-from .projects import Project
+from r2c_isg.structures.projects import Project
 
 
 class Dataset(object):
     def __init__(self, registry: str = None, **kwargs):
-        from ..apis import api_map
-        from .projects import project_map as registry_map
-        from . import Project
-        from ..functions import function_map
-        from ..util import get_name, get_email
+        from r2c_isg.apis import api_map
+        from r2c_isg.structures.projects import project_map as registry_map
+        from r2c_isg.structures import Project
+        from r2c_isg.functions import function_map
+        from r2c_isg.util import get_name, get_email
 
         # a dataset contains projects
         self.projects: List[Project] = []
@@ -60,7 +60,7 @@ class Dataset(object):
     def load_file(cls, filepath: str,
                   registry: str = None, **kwargs) -> 'Dataset':
         """Factory method that builds a dataset from a file."""
-        from ..loaders.file import fileloader_map
+        from r2c_isg.loaders.file import fileloader_map
 
         # check if the path is valid
         if not Path(filepath).is_file():
@@ -86,7 +86,7 @@ class Dataset(object):
     def load_weblist(cls, weblist: str,
                      registry: str = None, **kwargs) -> 'Dataset':
         """Factory method that builds a dataset from a weblist."""
-        from ..loaders.weblist import weblistloader_map
+        from r2c_isg.loaders.weblist import weblistloader_map
 
         # check if the name is valid
         loader = weblistloader_map.get(registry, None)
@@ -106,7 +106,7 @@ class Dataset(object):
     @classmethod
     def restore(cls, filepath: str) -> 'Dataset':
         """Factory method that restores a pickled dataset."""
-        from ..loaders.core import DatasetLoader
+        from r2c_isg.loaders.core import DatasetLoader
 
         # check if the path is valid
         if not Path(filepath).is_file():
@@ -137,7 +137,7 @@ class Dataset(object):
     def import_inputset(cls, filepath: str,
                         registry: str = None, **kwargs) -> 'Dataset':
         """Factory method that builds a dataset from an R2C input set json."""
-        from ..loaders.core import R2cLoader
+        from r2c_isg.loaders.core import R2cLoader
 
         # check if the path is valid
         if not Path(filepath).is_file():

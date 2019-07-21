@@ -1,4 +1,4 @@
-from ..projects import Project
+from r2c_isg.structures.projects import Project
 
 
 class DefaultProject(Project):

@@ -1,7 +1,7 @@
 from tqdm import tqdm
 
-from .. import Loader
-from ...structures import Dataset
+from r2c_isg.loaders import Loader
+from r2c_isg.structures import Dataset
 
 
 class NpmLoader(Loader):
@@ -65,7 +65,7 @@ class NpmLoader(Loader):
 
     @staticmethod
     def _parse_niceregistry(ds: Dataset, data: list):
-        from ...structures.projects import NpmPackage
+        from r2c_isg.structures.projects import NpmPackage
 
         # map data keys to package keywords
         uuids = {

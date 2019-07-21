@@ -1,7 +1,7 @@
 from tqdm import tqdm
 
-from .. import Loader
-from ...structures import Dataset
+from r2c_isg.loaders import Loader
+from r2c_isg.structures import Dataset
 
 
 class PypiLoader(Loader):
@@ -62,7 +62,7 @@ class PypiLoader(Loader):
 
     @staticmethod
     def _parse_hugovk(ds: Dataset, data: list) -> None:
-        from ...structures.projects import PypiProject
+        from r2c_isg.structures.projects import PypiProject
 
         # map data keys to project keywords
         uuids = {

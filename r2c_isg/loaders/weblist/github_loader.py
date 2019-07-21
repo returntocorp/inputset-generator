@@ -1,7 +1,7 @@
 from tqdm import tqdm
 
-from .. import Loader
-from ...structures import Dataset
+from r2c_isg.loaders import Loader
+from r2c_isg.structures import Dataset
 
 
 class GithubLoader(Loader):
@@ -83,7 +83,7 @@ class GithubLoader(Loader):
 
     @staticmethod
     def _parse_github(ds: Dataset, data: list) -> None:
-        from ...structures.projects import GithubRepo
+        from r2c_isg.structures.projects import GithubRepo
 
         # map data keys to project keywords
         uuids = {

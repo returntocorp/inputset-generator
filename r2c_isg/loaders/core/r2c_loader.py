@@ -1,10 +1,10 @@
 import json
 from tqdm import tqdm
 
-from .. import Loader
-from ...structures import Dataset, DefaultProject, DefaultVersion
-from ...structures.projects import project_map
-from ...structures.versions import version_map
+from r2c_isg.loaders import Loader
+from r2c_isg.structures import Dataset, DefaultProject, DefaultVersion
+from r2c_isg.structures.projects import project_map
+from r2c_isg.structures.versions import version_map
 
 
 class R2cLoader(Loader):

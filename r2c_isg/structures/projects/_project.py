@@ -1,7 +1,7 @@
 from typing import List, Optional
 from types import MethodType
 
-from ..versions import Version
+from r2c_isg.structures.versions import Version
 
 
 class Project(object):

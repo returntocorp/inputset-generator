@@ -1,6 +1,6 @@
 from typing import List
 
-from ..structures import Dataset
+from r2c_isg.structures import Dataset
 
 
 def sort(ds: Dataset, params: List[str]) -> None:

@@ -1,7 +1,7 @@
 import dill as pickle
 
-from .. import Loader
-from ...structures import Dataset
+from r2c_isg.loaders import Loader
+from r2c_isg.structures import Dataset
 
 
 class DatasetLoader(Loader):

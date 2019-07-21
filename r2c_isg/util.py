@@ -1,7 +1,7 @@
 import subprocess
 import traceback
 
-from .structures import Dataset
+from r2c_isg.structures import Dataset
 
 
 def get_name():

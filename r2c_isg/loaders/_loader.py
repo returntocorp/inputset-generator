@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from ..structures import Dataset
+from r2c_isg.structures import Dataset
 
 
 class Loader(ABC):
