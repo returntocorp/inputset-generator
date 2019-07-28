@@ -1,4 +1,3 @@
-
 # Input Set Generator
 
 Welcome to Return2Corp's input set generator!
@@ -23,81 +22,81 @@ Try the following command sequences:
 
 1. Load the top 5,000 pypi projects by downloads in the last 365 days, sort by descending number of downloads, trim to the top 100 most downloaded, download project metadata and all versions, and generate an input set json.
 
-        load pypi top5kyear
-        sort "desc download_count
-        trim 100
-        get -mv all
-        set-meta -n test -v 1.0
-        export inputset.json
+	    load pypi top5kyear
+    	sort "desc download_count
+	    trim 100
+	    get -mv all
+    	set-meta -n test -v 1.0
+	    export inputset.json
 
 2. Load all npm projects, sample 100, download the latest versions, and generate an input set json.
-        
+		
         load npm allbydependents
-        sample 100
-        get -v latest
-        set-meta -n test -v 1.0
-        export inputset.json
+		sample 100
+	    get -v latest
+    	set-meta -n test -v 1.0
+	    export inputset.json
 
 3. Load a csv containing github urls and commit hashes, get project metadata and the latest versions, generate an input set json of type GitRepoCommit, remove all versions, and generate an input set json of type GitRepo.
 
-        load --columns "url v.commit" github list_of_github_urls_and_commits.csv
-        get -mv latest
-        set-meta -n test -v 1.0
-        export inputset_1.json
-        trim -v 0
-        export inputset_2.json
+    	load --columns "url v.commit" github list_of_github_urls_and_commits.csv
+	    get -mv latest
+    	set-meta -n test -v 1.0
+	    export inputset_1.json
+    	trim -v 0
+	    export inputset_2.json
 
 ## Shell Usage
 
 #### Input/Output
 
-- **load** (OPTIONS) [noreg | github | npm | pypi] [WEBLIST_NAME | FILEPATH.csv]
-    Generates a dataset from a weblist or a local file. The following weblists are available:
-    - Github: top1kstarred, top1kforked; the top 1,000 most starred or forked repos
-    - NPM: allbydependents; **all** packages, sorted from most to fewest dependents count (caution: 1M+ projects... handle with care)
+- **load** (OPTIONS) [noreg | github | npm | pypi] [WEBLIST_NAME | FILEPATH.csv]<br>
+	Generates a dataset from a weblist or a local file. The following weblists are available:
+    - Github: top1kstarred, top1kforked; the top 1,000 most starred or forked repos<br>
+    - NPM: allbydependents; **all** packages, sorted from most to fewest dependents count (caution: 1M+ projects... handle with care)<br>
     - Pypi: top5kmonth and top5kyear; the top 5,000 most downloaded projects in the last 30/365 days
 
-    **Options:**
-    **-c --columns** "string of col names": A space-separated list of column names in a csv. Overrides default columns (name and version), as well as any headers listed in the file (headers in files begin with a '!'). The CSV reader recognizes the following column keywords: name, url, org, v.commit, v.version. All other columns are read in as project or version attributes.
+	**Options:**<br>
+    **-c --columns** "string of col names": A space-separated list of column names in a csv. Overrides default columns (name and version), as well as any headers listed in the file (headers in files begin with a '!'). The CSV reader recognizes the following column keywords: name, url, org, v.commit, v.version. All other columns are read in as project or version attributes.<br>
     Example usage: --headers "name url downloads v.commit v.date".
 
-- **backup** (FILEPATH.p)
-    Backs up the dataset to a pickle file (defaults to ./dataset_name.p).
+- **backup** (FILEPATH.p)<br>
+	Backs up the dataset to a pickle file (defaults to ./dataset_name.p).
 
-- **restore** FILEPATH.p
-    Restores a dataset from a pickle file.
+- **restore** FILEPATH.p<br>
+	Restores a dataset from a pickle file.
 
-- **import** [noreg | github | npm | pypi] FILEPATH.json
-    Builds a dataset from an R2C input set.
+- **import** [noreg | github | npm | pypi] FILEPATH.json<br>
+	Builds a dataset from an R2C input set.
 
-- **export** (FILEPATH.json)
-    Exports a dataset to an R2C input set (defaults to ./dataset_name.json).
+- **export** (FILEPATH.json)<br>
+	Exports a dataset to an R2C input set (defaults to ./dataset_name.json).
 
 #### Data Acquisition
 
-- **get** (OPTIONS)
-    Downloads project and version metadata from Github/NPM/Pypi.
+- **get** (OPTIONS)<br>
+	Downloads project and version metadata from Github/NPM/Pypi.
 
-    **Options:**
-    **-m --metadata**: Gets metadata for all projects.
+	**Options:**<br>
+    **-m --metadata**: Gets metadata for all projects.<br>
     **-v --versions** [all | latest]: Gets historical versions for all projects.
 
 #### Transformation
 
-- **trim** (OPTIONS) N
-    Trims the dataset to *n* projects or *n* versions per project.
+- **trim** (OPTIONS) N<br>
+	Trims the dataset to *n* projects or *n* versions per project.
     
-    **Options**
+    **Options**<br>
     **-v --versions**: Binary flag; trims on versions instead of projects.
 
-- **sample** (OPTIONS) N
-    Samples *n* projects or *n* versions per project.
+- **sample** (OPTIONS) N<br>
+	Samples *n* projects or *n* versions per project.
     
-    **Options**
+    **Options**<br>
     **-v --versions**: Binary flag; sample versions instead of projects.
 
-- **sort** "[asc, desc] attributes [...]"
-    Sorts the projects and versions based on a space-separated string of keywords. Valid keywords are:
+- **sort** "[asc, desc] attributes [...]"<br>
+	Sorts the projects and versions based on a space-separated string of keywords. Valid keywords are:
     - Any project attributes
     - Any version attributes (prepend "v." to the attribute name)
     - Any uuids (prepend "uuids." to the uuid name
@@ -111,27 +110,27 @@ Try the following command sequences:
 
 #### Settings
 
-- **set-meta** (OPTIONS)
-    Sets the dataset's metadata.
+- **set-meta** (OPTIONS)<br>
+	Sets the dataset's metadata.
 
-    **Options:**
-    **-n --name** NAME: Input set name. Must be set before the dataset can be exported.
-    **-v --version** VERSION: Input set version. Must be set before the dataset can be exported.
-    **-d --description** DESCRIPTION: Description string.
-    **-r --readme** README: Markdown-formatted readme string.
-    **-a --author** AUTHOR: Author name; defaults to git user.name.
-    **-e --email** EMAIL: Author email; defaults to git user.email.
+	**Options:**<br>
+	**-n --name** NAME: Input set name. Must be set before the dataset can be exported.<br>
+    **-v --version** VERSION: Input set version. Must be set before the dataset can be exported.<br>
+    **-d --description** DESCRIPTION: Description string.<br>
+    **-r --readme** README: Markdown-formatted readme string.<br>
+    **-a --author** AUTHOR: Author name; defaults to git user.name.<br>
+    **-e --email** EMAIL: Author email; defaults to git user.email.<br>
 
-- **set-api** (OPTIONS)
-    **--cache_dir** CACHE_DIR: The path to the requests cache; defaults to ./.requests_cache.
-    **--cache_timeout** DAYS: The number of days before a cached request goes stale.
-    **--nocache**: Binary flag; disables request caching for this dataset.
+- **set-api** (OPTIONS)<br>
+	**--cache_dir** CACHE_DIR: The path to the requests cache; defaults to ./.requests_cache.<br>
+    **--cache_timeout** DAYS: The number of days before a cached request goes stale.<br>
+    **--nocache**: Binary flag; disables request caching for this dataset.<br>
     **--github_pat** GITHUB_PAT: A github personal access token, used to increase the max allowed hourly request rate from 60/hr to 5,000/hr. For instructions on how to obtain a token, see: [https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line](https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line). 
 
 #### Visualization
 
-- **show**
-    Converts the dataset to a json file and loads it in the system's native json viewer.
+- **show**<br>
+	Converts the dataset to a json file and loads it in the system's native json viewer.
 
 ## Python Project
 
@@ -155,12 +154,12 @@ ds.get_project_versions(historical='all' ~or~ 'latest')
 
 ds.trim(
     n,
-    on_versions=True    # optional; defaults to False
+    on_versions=True	# optional; defaults to False
 )
 
 ds.sample(
     n,
-    on_versions=True    # optional; defaults to False
+    on_versions=True	# optional; defaults to False
 )
 
 ds.sort('string of sort parameters')
