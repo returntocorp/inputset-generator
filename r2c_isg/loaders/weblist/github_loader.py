@@ -68,9 +68,9 @@ class GithubLoader(Loader):
 
         # github limits results to the top 1k at 100 per page
         projects = []
-        for url in [(url_format % d) for d in tqdm(range(1, 11), unit=' pages',
-                                                   desc='         Downloading',
-                                                   leave=False)]:
+        urls = [(url_format % d) for d in range(1, 11)]
+        for url in tqdm(urls, unit=' pages', desc='         Downloading',
+                        leave=False):
             # request the data via the github api
             status, data = api.request(url, **kwargs)
             if status != 200:
