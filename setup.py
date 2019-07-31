@@ -9,14 +9,14 @@ with open('README.md', 'r') as file:
 with open('requirements.txt') as file:
     requirements = file.read().splitlines()
 
-version = '0.2.21'
+version = '0.2.0'
 
-setup(name='r2c-isg',
+setup(name='r2c-inputset-generator',
       version=version,
       description='Return2Corp input set generator.',
       long_description=long_description,
       long_description_content_type="text/markdown",
-      url='https://github.com/returntocorp/inputset-generator',
+      url='https://ret2.co/',
       author='Ben Fulton',
       author_email='fulton.benjamin@gmail.com',
       packages=find_packages(exclude=['tests*']),

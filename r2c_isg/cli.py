@@ -24,7 +24,7 @@ TEMP_SETTINGS = dict()
 TEMP_DIR = '.tmp/'
 
 
-@shell(chain=True, prompt='r2c_isg> ')
+@shell(chain=True, prompt='r2c-isg> ')
 @option('-d', '--debug', is_flag=True, default=False)
 @option('-q', '--quiet', is_flag=True, default=False)
 @click.pass_context
@@ -47,7 +47,8 @@ def cli(ctx, debug, quiet):
     if not quiet:
         print('=' * 100)
         print('Welcome to the R2C input set generator! We currently support '
-              'the following registries: %s. For a quick start, try the '
+              'the following registries: %s. For more info on specific '
+              'commands, type "help [COMMAND]". For a quick start, try the '
               'following command sequences:\n\n'
               ''
               'Load the top 5,000 pypi projects by downloads in the last 365 '
@@ -60,7 +61,7 @@ def cli(ctx, debug, quiet):
               ''
               'Load all npm projects, sample 100, download the latest '
               'versions, and generate an input set json.\n'
-              '    load npm allbydependents\n    sample 100\n'
+              '    load npm allbydependents\n    sample -s abc123 100\n'
               '    get -v latest\n    set-meta -n test -v 1.0\n'
               '    export inputset.json\n\n'
               ''

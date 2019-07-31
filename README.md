@@ -20,30 +20,32 @@ r2c-isg
 ## Quick Start
 Try the following command sequences:
 
-1. Load the top 5,000 pypi projects by downloads in the last 365 days, sort by descending number of downloads, trim to the top 100 most downloaded, download project metadata and all versions, and generate an input set json.
+- Load the top 5,000 pypi projects by downloads in the last 365 days, sort by descending number of downloads, trim to the top 100 most downloaded, download project metadata and all versions, and generate an input set json.
 
 	    load pypi top5kyear
-    	sort "desc download_count
+	    sort "desc download_count
 	    trim 100
 	    get -mv all
-    	set-meta -n test -v 1.0
+	    set-meta -n test -v 1.0
 	    export inputset.json
+<br>
 
-2. Load all npm projects, sample 100, download the latest versions, and generate an input set json.
-		
-        load npm allbydependents
-		sample 100
+- Load all npm projects, sample 100, download the latest versions, and generate an input set json.
+
+	    load npm allbydependents
+	    sample 100
 	    get -v latest
-    	set-meta -n test -v 1.0
+	    set-meta -n test -v 1.0
 	    export inputset.json
+<br>
 
-3. Load a csv containing github urls and commit hashes, get project metadata and the latest versions, generate an input set json of type GitRepoCommit, remove all versions, and generate an input set json of type GitRepo.
+- Load a csv containing github urls and commit hashes, get project metadata and the latest versions, generate an input set json of type GitRepoCommit, remove all versions, and generate an input set json of type GitRepo.
 
-    	load --columns "url v.commit" github list_of_github_urls_and_commits.csv
+	    load --columns "url v.commit" github list_of_github_urls_and_commits.csv
 	    get -mv latest
-    	set-meta -n test -v 1.0
+	    set-meta -n test -v 1.0
 	    export inputset_1.json
-    	trim -v 0
+	    trim -v 0
 	    export inputset_2.json
 
 ## Shell Usage
@@ -134,7 +136,7 @@ Try the following command sequences:
 
 ## Python Project
 
-You can also import the package into your own project. Just import the Dataset structure, initialize it, and go to town!
+You can also import the package into your own project. Just import the Dataset structure, initialize it, and you're good to go!
 
 ```
 from r2c_isg.structures import Dataset
@@ -142,10 +144,10 @@ from r2c_isg.structures import Dataset
 ds = Dataset.import_inputset(
     'file.csv' ~or~ 'weblist_name',
     registry='github' ~or~ 'npm' ~or~ 'pypi',
-    cache_dir=path/to/cache/dir,               # optional; overrides ./.requests_cache
-    cache_timeout=int(days_in_cache),          # optional; overrides 1 week cache timeout
-    nocache=True,                              # optional; disables caching
-    github_pat=your_github_pat                 # optional; personal access token for github api
+    cache_dir=path/to/cache/dir,      # optional; overrides ./.requests_cache
+    cache_timeout=int(days_in_cache), # optional; overrides 1 week cache timeout
+    nocache=True,                     # optional; disables caching
+    github_pat=your_github_pat        # optional; personal access token for github api
 )
 
 ds.get_projects_meta()
