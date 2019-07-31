@@ -13,7 +13,7 @@ version = '0.2.1'
 
 setup(name='r2c-inputset-generator',
       version=version,
-      description='Return2Corp input set generator.',
+      description='An input set generator for R2C',
       long_description=long_description,
       long_description_content_type="text/markdown",
       url='https://ret2.co/',

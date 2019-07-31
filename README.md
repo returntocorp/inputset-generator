@@ -1,6 +1,6 @@
 # Input Set Generator
 
-Welcome to Return2Corp's input set generator!
+This is the input set generator for the R2C platform.
 
 ## Installation
 To install, simply `pip install r2c-inputset-generator`. Then run `r2c-isg` to load the shell.
