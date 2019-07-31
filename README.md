@@ -3,19 +3,9 @@
 Welcome to Return2Corp's input set generator!
 
 ## Installation
-To install (pre-official release), download the project's requirements.txt into a folder and navigate to that folder in the terminal. Then:
-```
-pip install virtualenv
-virtualenv venv
-source venv/bin/activate (or activate.fish, if you’re using fish)
-pip install -r requirements.txt
-pip install --index-url https://test.pypi.org/simple/ r2c-isg
-```
+To install, simply `pip install r2c-inputset-generator`. Then run `r2c-isg` to load the shell.
 
-Then, to run:
-```
-r2c-isg
-```
+**Note:** This application caches HTTP requests to the various package registries in the terminal's current directory. Be sure to navigate to an appropriate directory before loading the shell, or use the command `set-api --nocache` inside the shell.
 
 ## Quick Start
 Try the following command sequences:
@@ -170,3 +160,9 @@ ds.update(**{'name': 'you_dataset_name', 'version': 'your_dataset_version'})
 
 ds.export_inputset('your_inputset.json')
 ```
+
+## Troubleshooting
+
+If you run into any issues, you can run the shell with the `--debug` flag enabled to get a full error message. Then reach out to `support@ret2.co` with the stack trace and the steps to reproduce the error.
+
+**Note:** If the issue is related to the "sample" command, be sure to seed the random number generator to ensure reproducibility.

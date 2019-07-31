@@ -73,7 +73,10 @@ def cli(ctx, debug, quiet):
               'github list_of_github_urls_and_commits.csv\n'
               '    get -mv latest\n    set-meta -n test -v 1.0\n'
               '    export inputset_1.json\n    trim -v 0\n'
-              '    export inputset_2.json'
+              '    export inputset_2.json\n\n'
+              ''
+              'To hide this message when loading the shell, add the quiet '
+              '("-q") flag.'
               '' % ', '.join(list(project_map)))
         print('=' * 100)
 
