@@ -9,7 +9,7 @@ with open('README.md', 'r') as file:
 with open('requirements.txt') as file:
     requirements = file.read().splitlines()
 
-version = '0.2.2'
+version = '0.2.3'
 
 setup(name='r2c-inputset-generator',
       version=version,
