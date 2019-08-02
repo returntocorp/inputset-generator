@@ -6,7 +6,7 @@ class GithubRepo(Project):
         """Guarantees a name/org or a url."""
         assert ('url' in self.uuids_ or (
                 'name' in self.uuids_ and 'org' in self.meta_)
-                ), 'Github pepo guarantees not met; name/org or ' \
+                ), 'Github repo guarantees not met; name/org or ' \
                    'url must be provided.'
 
     def get_name(self) -> str:
