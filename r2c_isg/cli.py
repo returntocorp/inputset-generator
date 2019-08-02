@@ -328,7 +328,7 @@ def set_api(ctx, cache_dir, cache_timeout, nocache, github_pat):
         if nocache: settings.append('nocache')
         if github_pat: settings.append('github_pat')
         set_str = ', '.join([s for s in settings if s])
-        print("    Set the api's %s." % set_str)
+        print("         Set the api's %s." % set_str)
 
     except Exception as e:
         print_error(e, DEBUG)
