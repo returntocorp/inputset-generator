@@ -73,16 +73,20 @@ def sort(ds: Dataset, params: List[str]) -> None:
             else:
                 # sort on a regular attribute
                 def sort_attr(o: object):
-                    if not hasattr(o, attr):
-                        raise Exception('Nonexistent sort key.')
+                    if not hasattr(o, attr) and not sort.keyerr_warning:
+                        print("         Warning: Sort key '%s' was not "
+                              'found in all projects/versions; assuming '
+                              "'' for those items." % attr)
+                        sort.keyerr_warning = True
 
                     # get & clean up the attribute
-                    val = getattr(o, attr)
+                    val = getattr(o, attr, '')
                     if isinstance(val, str):
                         val = val.lower()
 
                     return val
 
+                sort.keyerr_warning = False
                 sort_func = lambda o: sort_attr(o)
 
             # perform the sort
