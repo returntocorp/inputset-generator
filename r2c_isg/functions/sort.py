@@ -62,11 +62,12 @@ def sort(ds: Dataset, params: List[str]) -> None:
                     if not hasattr(o, attr):
                         raise Exception('Nonexistent sort key.')
 
-                    # clean up the attribute
-                    if isinstance(attr, str):
-                        return attr.lower()
+                    # get & clean up the attribute
+                    val = getattr(o, attr)
+                    if isinstance(val, str):
+                        val = val.lower()
 
-                    return attr
+                    return val
 
                 sort_func = lambda o: sort_attr(o)
 
