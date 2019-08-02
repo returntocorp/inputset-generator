@@ -478,12 +478,14 @@ def show(ctx):
         ds = get_dataset(ctx)
         data_dict = ds.to_json()
 
-        # save & open temp file
+        # save temp file
         filepath = TEMP_DIR + 'jsonify.json'
         with open(filepath, 'w') as file:
             json.dump(data_dict, file, indent=4)
             fullpath = os.path.realpath(filepath)
-            webbrowser.open_new('file://' + fullpath)
+
+        # open in system's default json viewer
+        webbrowser.open_new('file://' + fullpath)
 
     except Exception as e:
         print_error(e, DEBUG)
