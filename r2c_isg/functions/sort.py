@@ -50,12 +50,26 @@ def sort(ds: Dataset, params: List[str]) -> None:
             attr = p_list[0]
             if attr == 'uuids':
                 # sort on a uuid value
+                def sort_uuid(o: object):
+                    if not key in o.uuids_:
+                        raise Exception('Nonexistent sort key.')
+
+                    return o.uuids_[key]()
+
                 key = p_list[1]
-                sort_func = lambda o: o.uuids_[key]()
+                sort_func = lambda o: sort_uuid(o)
+
             elif attr == 'meta':
                 # sort on a meta value
+                def sort_meta(o: object):
+                    if not key in o.meta_:
+                        raise Exception('Nonexistent sort key.')
+
+                    return o.meta_[key]()
+
                 key = p_list[1]
-                sort_func = lambda o: o.meta_[key]()
+                sort_func = lambda o: sort_meta(o)
+
             else:
                 # sort on a regular attribute
                 def sort_attr(o: object):
