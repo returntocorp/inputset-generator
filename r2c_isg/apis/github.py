@@ -95,7 +95,7 @@ class Github(Api):
 
     def get_versions(self, project: GithubRepo,
                      historical: str = 'all', **kwargs) -> None:
-        """Gets a commit's historical releases."""
+        """Gets a repo's commits."""
 
         # github commit json is paginated--30 commits per page
         api_url = self._make_api_url(project)
@@ -108,11 +108,16 @@ class Github(Api):
             i += 1
 
             # skip this page if non-200 response
-            if status != 200:
+            if status == 404:
+                print(' ' * 9 + 'Warning: Github api returned 404 for url %s;'
+                      ' assuming malformed url for project %s.'
+                      % (url, project.get_name()))
+                return  # give up trying to load commits for this repo
+            elif status != 200:
                 print(' ' * 9 + 'Warning: Unexpected response from github '
                       'api (HTTP %d); failed to retrieve some of the versions '
                       'of %s (%s).' % (status, project.get_name(), url))
-                continue
+                continue  # keep trying to load commits; move on to next page
 
             if not data:
                 # no more pages; break
