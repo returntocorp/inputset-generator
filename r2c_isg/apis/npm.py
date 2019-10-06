@@ -54,7 +54,7 @@ class Npm(Api):
             return
 
         # ignore version-related data
-        data.pop('versions')
+        data.pop('versions', {})
 
         # update the project
         project.update(**data)
