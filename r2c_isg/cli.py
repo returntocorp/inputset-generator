@@ -217,17 +217,15 @@ def import_(ctx, registry, filepath):
 @cli.command('export', help='Exports a dataset to an R2C input set json. '
                             'Use the "import" command to import an input set.')
 @argument('filepath', type=Path(), default=None)
-@option('-i', '--ignore', is_flag=True,
-        help='Ignores invalid projects while exporting.')
 @option('-f', '--force', is_flag=True,
         help='Forces invalid projects to be exported anyway (this can result '
              'in invalid input sets).')
 @click.pass_context
-def export(ctx, filepath, ignore, force):
+def export(ctx, filepath, force):
     """Export a dataset to an input set json."""
     try:
         ds = get_dataset(ctx)
-        ds.export_inputset(filepath, ignore=ignore, force=force)
+        ds.export_inputset(filepath, force=force)
 
     except Exception as e:
         print_error(e, DEBUG)
