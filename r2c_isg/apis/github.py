@@ -88,7 +88,7 @@ class Github(Api):
             return
 
         # the 'url' key actually relates to the api; indicate as much
-        data['api_url'] = data.pop('url')
+        data['api_url'] = data.pop('url', '')
 
         # update the project
         project.update(**data)

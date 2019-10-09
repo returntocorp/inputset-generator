@@ -45,11 +45,11 @@ class Pypi(Api):
                   % (status, project.get_name()))
             return
 
-        # ignore version-related data
-        data.pop('releases')
+        # ignore version-related data--use get_versions() for that
+        data.pop('releases', None)
 
         # break out the contents of the 'info' dict
-        data.update(data.pop('info'))
+        data.update(data.pop('info'), {})
 
         # update the project
         project.update(**data)
