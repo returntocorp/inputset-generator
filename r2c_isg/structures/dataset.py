@@ -151,21 +151,21 @@ class Dataset(object):
         ))
         return ds
 
-    def export_inputset(self, filepath: str = None) -> None:
+    def export_inputset(self, filepath: str = None, **kwargs) -> None:
         """Exports a dataset to an r2c input set json file."""
 
         # file name is dataset name, if not provided by user
         filepath = filepath or (self.name + '.json')
 
         # convert the dataset to an input set json
-        inputset = self.to_inputset()
+        inputset = self.to_inputset(**kwargs)
 
         # save to disk
         with open(filepath, 'w') as file:
             json.dump(inputset, file, indent=4)
         print('         Exported input set to %s.' % filepath)
 
-    def to_inputset(self) -> dict:
+    def to_inputset(self, **kwargs) -> dict:
         """Converts a dataset to an input set json."""
 
         # name and version are mandatory
@@ -187,7 +187,7 @@ class Dataset(object):
         d['inputs'] = []
         for p in tqdm(self.projects, desc='         Exporting',
                       unit='project', leave=False):
-            d['inputs'].extend(p.to_inputset())
+            d['inputs'].extend(p.to_inputset(**kwargs))
 
         return d
 

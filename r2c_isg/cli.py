@@ -223,11 +223,11 @@ def import_(ctx, registry, filepath):
         help='Forces invalid projects to be exported anyway (this can result '
              'in invalid input sets).')
 @click.pass_context
-def export(ctx, filepath, **kwargs):
+def export(ctx, filepath, ignore, force):
     """Export a dataset to an input set json."""
     try:
         ds = get_dataset(ctx)
-        ds.export_inputset(filepath)
+        ds.export_inputset(filepath, ignore=ignore, force=force)
 
     except Exception as e:
         print_error(e, DEBUG)

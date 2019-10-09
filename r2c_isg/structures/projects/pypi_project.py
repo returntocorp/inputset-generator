@@ -16,7 +16,7 @@ class PypiProject(Project):
         # pull the name from the url
         return self.uuids_['url']().strip('/').split('/')[-1]
 
-    def to_inputset(self) -> list:
+    def to_inputset(self, **kwargs) -> list:
         """Converts pypi projects/releases to PackageVersion dict."""
         self.check_guarantees()
 

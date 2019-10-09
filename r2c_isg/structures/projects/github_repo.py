@@ -17,7 +17,7 @@ class GithubRepo(Project):
         # pull the name from the url
         return self.uuids_['url']().strip('/').split('/')[-1]
 
-    def to_inputset(self) -> list:
+    def to_inputset(self, **kwargs) -> list:
         """Converts github repos/commits to GitRepo/GitRepoCommit dict."""
         self.check_guarantees()
 

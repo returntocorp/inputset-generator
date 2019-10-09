@@ -58,7 +58,7 @@ class Project(object):
 
         return None
 
-    def to_inputset(self) -> list:
+    def to_inputset(self, **kwargs) -> list:
         """Vanilla project can't be converted to an r2c input set."""
         # Note: The only time a vanilla Project is used is in the function
         # Dataset.find_project(), which never calls to_inputset(). As such,

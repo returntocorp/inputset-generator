@@ -8,7 +8,7 @@ class DefaultProject(Project):
             'Default project guarantees not met; ' \
             'project url must be provided.'
 
-    def to_inputset(self) -> list:
+    def to_inputset(self, **kwargs) -> list:
         """Converts default project to HttpUrl dict."""
         self.check_guarantees()
         return [{
