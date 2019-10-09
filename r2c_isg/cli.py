@@ -276,7 +276,7 @@ def set_meta(ctx, name, version, description, readme, author, email):
         if author: settings.append('author')
         if email: settings.append('email')
         set_str = ', '.join([s for s in settings if s])
-        print("         Set the dataset's %s." % set_str)
+        print(' ' * 9 + "Set the dataset's %s." % set_str)
 
     except Exception as e:
         print_error(e, DEBUG)
@@ -333,7 +333,7 @@ def set_api(ctx, cache_dir, cache_timeout, nocache, github_pat):
         if nocache: settings.append('nocache')
         if github_pat: settings.append('github_pat')
         set_str = ', '.join([s for s in settings if s])
-        print("         Set the api's %s." % set_str)
+        print(' ' * 9 + "Set the api's %s." % set_str)
 
     except Exception as e:
         print_error(e, DEBUG)
@@ -384,7 +384,7 @@ def get(ctx, metadata, versions):
             rolled_back = True
 
     if rolled_back:
-        print('         The dataset was not modified.')
+        print(' ' * 9 + 'The dataset was not modified.')
 
 
 @cli.command('trim', help='Trims to the first N projects (default) or '
@@ -408,7 +408,7 @@ def trim(ctx, n, on_versions):
 
         # roll back the db
         ctx.obj['dataset'] = backup_ds
-        print('         The dataset was not modified.')
+        print(' ' * 9 + 'The dataset was not modified.')
 
 
 @cli.command('sort',
@@ -446,7 +446,7 @@ def sort(ctx, keywords_string):
 
         # roll back the db
         ctx.obj['dataset'] = backup_ds
-        print('         The dataset was not modified.')
+        print(' ' * 9 + 'The dataset was not modified.')
 
 
 @cli.command('sample', help='Samples N projects (default) '
@@ -471,7 +471,7 @@ def sample(ctx, n, on_versions, seed):
 
         # roll back the db
         ctx.obj['dataset'] = backup_ds
-        print('         The dataset was not modified.')
+        print(' ' * 9 + 'The dataset was not modified.')
 
 
 @cli.command('show', help='Jsonifies the dataset and opens it in the '

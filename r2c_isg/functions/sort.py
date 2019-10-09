@@ -74,7 +74,7 @@ def sort(ds: Dataset, params: List[str]) -> None:
                 # sort on a regular attribute
                 def sort_attr(o: object):
                     if not hasattr(o, attr) and not sort.keyerr_warning:
-                        print("         Warning: Sort key '%s' was not "
+                        print(' ' * 9 + "Warning: Sort key '%s' was not "
                               'found in all projects/versions; assuming '
                               "'' for those items." % attr)
                         sort.keyerr_warning = True
@@ -99,5 +99,5 @@ def sort(ds: Dataset, params: List[str]) -> None:
                     project.versions.sort(key=sort_func, reverse=reverse)
 
     total_versions = sum([len(p.versions) for p in ds.projects])
-    print('         Sorted {:,} projects and {:,} versions by {}.'
+    print(' ' * 9 + 'Sorted {:,} projects and {:,} versions by {}.'
           .format(len(ds.projects), total_versions, str(params)))

@@ -12,13 +12,13 @@ def trim(ds: Dataset, n: int, on_versions: bool = False) -> None:
             project.versions = project.versions[:n]
             dropped -= len(project.versions)
 
-        print('         Trimmed to first {:,} versions in each project '
+        print(' ' * 9 + 'Trimmed to first {:,} versions in each project '
               '({:,} total versions dropped).'.format(n, dropped))
 
     # select a sample of projects
     else:
         orig_count = len(ds.projects)
         ds.projects = ds.projects[:n]
-        print('         Trimmed to first {:,} projects ({:,} dropped).'
+        print(' ' * 9 + 'Trimmed to first {:,} projects ({:,} dropped).'
               .format(n, max(orig_count - n, 0)))
 

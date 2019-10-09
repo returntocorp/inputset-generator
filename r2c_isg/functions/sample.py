@@ -20,14 +20,14 @@ def sample(ds: Dataset, n: int,
                 project.versions = random.sample(project.versions, n)
             dropped -= len(project.versions)
 
-        print('         Sampled {:,} versions from each of {:,} projects ({:,} '
+        print(' ' * 9 + 'Sampled {:,} versions from each of {:,} projects ({:,} '
               'total versions dropped).'.format(n, len(ds.projects), dropped))
 
     # select a sample of projects
     elif len(ds.projects) > n:
         orig_count = len(ds.projects)
         ds.projects = random.sample(ds.projects, n)
-        print('         Sampled {:,} projects from {:,} (dropped {:,}).'
+        print(' ' * 9 + 'Sampled {:,} projects from {:,} (dropped {:,}).'
               .format(n, orig_count, max(orig_count - n, 0)))
 
     else:

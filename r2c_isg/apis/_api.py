@@ -82,7 +82,7 @@ class Api(ABC):
             # allow ctrl-c to cancel the request
             raise
         except:
-            print('Warning: Could not load %s.' % url)
+            print(' ' * 9 + 'Warning: Could not load %s.' % url)
             # 0 status code means error
             return 0, None
 
@@ -90,7 +90,7 @@ class Api(ABC):
         try:
             data = r.json()
         except json.JSONDecodeError as e:
-            print('Warning: Non-json response from %s.' % url)
+            print(' ' * 9 + 'Warning: Non-json response from %s.' % url)
             # 0 status code means error
             return 0, None
 

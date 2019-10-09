@@ -47,4 +47,4 @@ def print_error(err: Exception, debug: bool = False) -> None:
         traceback.print_tb(err.__traceback__)
 
     # print the error message
-    print('         %s: %s' % (type(err).__name__, err))
+    print(' ' * 9 + '%s: %s' % (type(err).__name__, err))
