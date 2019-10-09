@@ -53,8 +53,8 @@ class Npm(Api):
                   % (status, project.get_name()))
             return
 
-        # ignore version-related data
-        data.pop('versions')
+        # ignore version-related data--use get_versions() for that
+        data.pop('versions', None)
 
         # update the project
         project.update(**data)
