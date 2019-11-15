@@ -13,7 +13,7 @@ Try the following command sequences:
 - Load the top 5,000 pypi projects by downloads in the last 365 days, sort by descending number of downloads, trim to the top 100 most downloaded, download project metadata and all versions, and generate an input set json.
 
 	    load pypi top5kyear
-	    sort "desc download_count
+	    sort "desc download_count"
 	    trim 100
 	    get -mv all
 	    set-meta -n test -v 1.0
