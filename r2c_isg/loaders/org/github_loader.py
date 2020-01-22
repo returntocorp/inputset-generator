@@ -12,7 +12,7 @@ class GithubLoader(Loader):
         # initialize a dataset
         ds = Dataset(**kwargs)
 
-        def load_url(url, api) -> dict:
+        def load_url(url, api) -> list:
             status, data = api.request(url)
             if status != 200:
                 print('         Error downloading %s; is the url accessible?', url)
