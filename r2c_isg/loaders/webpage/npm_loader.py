@@ -35,6 +35,11 @@ class NpmLoader(Loader):
 
     @classmethod
     def load(cls, weblist: str, **kwargs) -> Dataset:
+        # get the request type (weblist vs. organization)
+        type = kwargs.pop('type')
+        if type == 'org':
+            raise Exception('NPM does not support loading package lists from org names.')
+
         # initialize a registry
         ds = Dataset(**kwargs)
 
