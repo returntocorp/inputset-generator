@@ -135,7 +135,7 @@ def test_load_file():
 
 def test_load_weblist():
     # test github
-    ds = Dataset.load_weblist(
+    ds = Dataset.load_webpage(
         'top1kstarred',
         registry='github',
         cache_dir=CACHE_DIR,
@@ -151,7 +151,7 @@ def test_load_weblist():
     ds.export_inputset('../test.json')
 
     # test npm
-    ds = Dataset.load_weblist(
+    ds = Dataset.load_webpage(
         'allbydependents',
         registry='npm',
         cache_dir=CACHE_DIR,
@@ -166,7 +166,7 @@ def test_load_weblist():
     ds.export_inputset('../test.json')
 
     # test pypi
-    ds = Dataset.load_weblist(
+    ds = Dataset.load_webpage(
         'top5kyear',
         registry='pypi',
         cache_dir=CACHE_DIR,

@@ -83,39 +83,19 @@ class Dataset(object):
         return ds
 
     @classmethod
-    def load_weblist(cls, weblist: str,
-                     registry: str = None, **kwargs) -> 'Dataset':
+    def load_webpage(cls, name: str, registry: str = None,
+                     **kwargs) -> 'Dataset':
         """Factory method that builds a dataset from a weblist."""
-        from r2c_isg.loaders.weblist import weblistloader_map
+        from r2c_isg.loaders.webpage import webpageloader_map
 
         # check if the name is valid
-        loader = weblistloader_map.get(registry, None)
+        loader = webpageloader_map.get(registry, None)
         if not loader:
             raise Exception('Invalid weblist name for %s. Valid weblists '
-                            'are: %s' % (registry, str(weblistloader_map)))
+                            'are: %s' % (registry, str(webpageloader_map)))
 
         # load initial data from the weblist
-        ds = loader.load(weblist, registry=registry, **kwargs)
-
-        print('         Loaded {:,} projects containing {:,} total versions.'
-              .format(len(ds.projects),
-                      sum([len(p.versions) for p in ds.projects])))
-
-        return ds
-
-    @classmethod
-    def load_org(cls, org_name: str,
-                 registry: str = None, **kwargs) -> 'Dataset':
-        """Factory method that builds a dataset from an org name."""
-        from r2c_isg.loaders.org import GithubLoader
-
-        # only github is supported right now
-        if registry != 'github':
-            raise Exception('Loading from organization name is not supported '
-                            'for %s.' % registry)
-
-        # load initial data from the weblist
-        ds = GithubLoader().load(org_name, registry=registry, **kwargs)
+        ds = loader.load(name, registry=registry, **kwargs)
 
         print('         Loaded {:,} projects containing {:,} total versions.'
               .format(len(ds.projects),
