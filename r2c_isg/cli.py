@@ -250,8 +250,8 @@ def set_meta(ctx, name, version, description, readme, author, email):
 
         if ds:
             # update dataset's metadata
-            ds.update(name=name, version=version, description=description,
-                      readme=readme, author=author, email=email)
+            ds.configure(name=name, version=version, description=description,
+                         readme=readme, author=author, email=email)
 
         else:
             global TEMP_SETTINGS
@@ -308,10 +308,10 @@ def set_api(ctx, cache_dir, cache_timeout, nocache, github_pat):
 
         if ds and ds.api:
             # update the api
-            ds.api.update(cache_dir=cache_dir,
-                          cache_timeout=cache_timeout,
-                          nocache=nocache,
-                          github_pat=github_pat)
+            ds.api.configure(cache_dir=cache_dir,
+                             cache_timeout=cache_timeout,
+                             nocache=nocache,
+                             github_pat=github_pat)
 
         else:
             # no ds/api; save the settings for when there is one
