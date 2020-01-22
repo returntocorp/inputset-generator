@@ -55,7 +55,7 @@ def cli(ctx, debug, quiet):
               'days, sort by descending number of downloads, trim to the top '
               '100 most downloaded, download project metadata and all '
               'versions, and generate an input set json.\n'
-              '    load pypi top5kyear\n    sort "desc download_count"\n'
+              '    load pypi top4kyear\n    sort "desc download_count"\n'
               '    trim 100\n    get -mv all\n    set-meta -n test -v 1.0\n'
               '    export inputset.json\n\n'
               ''

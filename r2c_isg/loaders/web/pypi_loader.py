@@ -8,12 +8,12 @@ class PypiLoader(Loader):
     @classmethod
     def weblists(cls) -> dict:
         return {
-            'top5kmonth': {
-                'getter': PypiLoader._get_top5kmonth,
+            'top4kmonth': {
+                'getter': PypiLoader._get_top4kmonth,
                 'parser': PypiLoader._parse_hugovk
             },
-            'top5kyear': {
-                'getter': PypiLoader._get_top5kyear,
+            'top4kyear': {
+                'getter': PypiLoader._get_top4kyear,
                 'parser': PypiLoader._parse_hugovk
             }
         }
@@ -43,7 +43,7 @@ class PypiLoader(Loader):
         return ds
 
     @staticmethod
-    def _get_top5kmonth(api, **kwargs) -> list:
+    def _get_top4kmonth(api, **kwargs) -> list:
         url = 'https://hugovk.github.io/top-pypi-packages/' \
               'top-pypi-packages-30-days.json'
 
@@ -54,7 +54,7 @@ class PypiLoader(Loader):
         return data['rows']
 
     @staticmethod
-    def _get_top5kyear(api, **kwargs) -> list:
+    def _get_top4kyear(api, **kwargs) -> list:
         url = 'https://hugovk.github.io/top-pypi-packages/' \
               'top-pypi-packages-365-days.json'
 
