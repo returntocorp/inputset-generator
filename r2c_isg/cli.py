@@ -117,7 +117,7 @@ def load(ctx, registry, name_or_path, fileargs):
     
     try:
         backup_ds = deepcopy(ctx.obj.get('dataset', None))
-        
+
         if registry == 'noreg':
             registry = None
 
