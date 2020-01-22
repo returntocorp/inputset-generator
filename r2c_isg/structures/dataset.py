@@ -205,7 +205,7 @@ class Dataset(object):
                 elif attr in ['uuids_', 'meta_']:
                     # convert lambda functions to strings
                     vars_dict[attr] = {
-                        key: getsource(func).split(': ', 1)[1].strip()
+                        key: getsource(func).split(': ', 1)[1].strip(',\n')
                         for key, func in val.items()
                     }
 
