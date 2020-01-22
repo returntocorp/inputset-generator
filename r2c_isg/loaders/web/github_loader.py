@@ -21,12 +21,12 @@ class GithubLoader(Loader):
     @classmethod
     def load(cls, name: str, **kwargs) -> Dataset:
         # get the request type (weblist vs. organization)
-        type = kwargs.pop('type')
+        from_type = kwargs.pop('from_type')
 
         # initialize a registry
         ds = Dataset(**kwargs)
 
-        if type == 'weblist':
+        if from_type == 'list':
             # select the correct weblist loader/parser
             weblists = cls.weblists()
             if name not in weblists:
@@ -39,7 +39,7 @@ class GithubLoader(Loader):
             # parse the data
             weblists[name]['parser'](ds, data)
 
-        elif type == 'org':
+        elif from_type == 'org':
             # load the data
             data = GithubLoader._get_org_repo_list(ds.api, name)
 

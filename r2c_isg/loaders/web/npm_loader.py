@@ -36,8 +36,8 @@ class NpmLoader(Loader):
     @classmethod
     def load(cls, name: str, **kwargs) -> Dataset:
         # get the request type (weblist vs. organization)
-        type = kwargs.pop('type')
-        if type == 'org':
+        from_type = kwargs.pop('from_type')
+        if from_type == 'org':
             raise Exception('NPM does not support loading package lists from org names.')
 
         # initialize a registry
@@ -79,11 +79,16 @@ class NpmLoader(Loader):
 
         # create the projects
         # Note: data list is ordered from most dependents to fewest
-        ds.projects = [NpmPackage(uuids_=uuids, **{
-            'name': d,
-            'dependents_rank': i + 1  # package with rank 1 has the most dependents
-        }) for i, d in enumerate(tqdm(data, desc='         Loading',
-                                      unit='project', leave=False))]
+        ds.projects = []
+        i = 1
+        for name in data:
+            package = NpmPackage(
+                uuids_=uuids,
+                name=name,
+                dependents_rank=i
+            )
+            ds.projects.append(package)
+            i += 1
 
     '''
     @staticmethod

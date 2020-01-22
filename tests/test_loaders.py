@@ -74,8 +74,6 @@ def test_import_inputset():
     os.remove('../test.p')
     os.remove('../test.json')
 
-    temp = 5
-
 
 def test_load_file():
     # test github
@@ -130,14 +128,13 @@ def test_load_file():
     os.remove('../test.p')
     os.remove('../test.json')
 
-    temp = 5
-
 
 def test_load_weblist():
     # test github
     ds = Dataset.load_web(
         'top1kstarred',
         registry='github',
+        from_type='list',
         cache_dir=CACHE_DIR,
         debug=True,
         github_pat=os.getenv('GITHUB_PAT')
@@ -154,6 +151,7 @@ def test_load_weblist():
     ds = Dataset.load_web(
         'allbydependents',
         registry='npm',
+        from_type='list',
         cache_dir=CACHE_DIR,
         debug=True
     )
@@ -167,8 +165,9 @@ def test_load_weblist():
 
     # test pypi
     ds = Dataset.load_web(
-        'top5kyear',
+        'top4kyear',
         registry='pypi',
+        from_type='list',
         cache_dir=CACHE_DIR,
         debug=True
     )
@@ -183,5 +182,3 @@ def test_load_weblist():
     # cleanup files
     os.remove('../test.p')
     os.remove('../test.json')
-
-    temp = 5

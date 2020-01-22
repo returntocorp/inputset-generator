@@ -101,7 +101,7 @@ weblist_options = '; '.join(['%s: %s' % (
                           'names are %s.' %
                           (', '.join(list(fileloader_map)), weblist_options))
 @argument('registry', type=Choice(list(project_map) + ['noreg']))
-@argument('type', type=Choice(['file', 'weblist', 'org']))
+@argument('from_type', type=Choice(['file', 'list', 'org']))
 @argument('name_or_path')
 @option('-c', '--columns', 'fileargs', type=str,
         help='Space-separated list of column names in a csv. Overrides default '
@@ -113,7 +113,7 @@ weblist_options = '; '.join(['%s: %s' % (
         help='Handle for a custom-build json parser. No json parsers '
              'are implemented by default.')
 @click.pass_context
-def load(ctx, registry, type, name_or_path, fileargs):
+def load(ctx, registry, from_type, name_or_path, fileargs):
     """Generates a dataset from a weblist name or file path."""
     backup_ds = None
     
@@ -125,7 +125,7 @@ def load(ctx, registry, type, name_or_path, fileargs):
 
         global TEMP_SETTINGS
 
-        if type == 'file':
+        if from_type == 'file':
             # read in a file (fileargs is either a header string for csv
             # or a parser handle for json)
             ds = Dataset.load_file(name_or_path, registry,
@@ -133,7 +133,8 @@ def load(ctx, registry, type, name_or_path, fileargs):
 
         else:
             # download a weblist or organization repo list
-            ds = Dataset.load_web(name_or_path, registry, type=type, **TEMP_SETTINGS)
+            ds = Dataset.load_web(name_or_path, registry,
+                                  from_type=from_type, **TEMP_SETTINGS)
 
         ctx.obj['dataset'] = ds
 
