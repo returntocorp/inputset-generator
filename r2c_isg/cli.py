@@ -94,12 +94,14 @@ weblist_options = '; '.join(['%s: %s' % (
 ) for name, cls in weblistloader_map.items()])
 
 
-@cli.command('load', help='Generates a dataset from a weblist name or file '
-                          'path.\n\nSupported file types are: %s. Note: there '
-                          'are no default json parsers; you must write your '
-                          'own.\n\nValid weblist names are %s.' %
+@cli.command('load', help='Generates a dataset from a file path, weblist name, '
+                          'or organization name (Github only). \n\nSupported '
+                          'file types are: %s. Note: there are no default json '
+                          'parsers; you must write your own.\n\nValid weblist '
+                          'names are %s.' %
                           (', '.join(list(fileloader_map)), weblist_options))
 @argument('registry', type=Choice(list(project_map) + ['noreg']))
+@argument('type', type=Choice(['file', 'weblist', 'org']))
 @argument('name_or_path')
 @option('-c', '--columns', 'fileargs', type=str,
         help='Space-separated list of column names in a csv. Overrides default '
@@ -111,7 +113,7 @@ weblist_options = '; '.join(['%s: %s' % (
         help='Handle for a custom-build json parser. No json parsers '
              'are implemented by default.')
 @click.pass_context
-def load(ctx, registry, name_or_path, fileargs):
+def load(ctx, registry, type, name_or_path, fileargs):
     """Generates a dataset from a weblist name or file path."""
     backup_ds = None
     
@@ -123,13 +125,17 @@ def load(ctx, registry, name_or_path, fileargs):
 
         global TEMP_SETTINGS
 
-        if '.' in name_or_path:
+        if type == 'file':
             # read in a file (fileargs is either a header string for csv
             # or a parser handle for json)
             ds = Dataset.load_file(name_or_path, registry,
                                    fileargs=fileargs, **TEMP_SETTINGS)
 
-        else:
+        elif type == 'org':
+            # load an org's repo list
+            ds = Dataset.load_org(name_or_path, registry, **TEMP_SETTINGS)
+
+        elif type == 'weblist':
             # download a weblist
             ds = Dataset.load_weblist(name_or_path, registry, **TEMP_SETTINGS)
 

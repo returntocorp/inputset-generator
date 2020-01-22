@@ -104,6 +104,27 @@ class Dataset(object):
         return ds
 
     @classmethod
+    def load_org(cls, org_name: str,
+                 registry: str = None, **kwargs) -> 'Dataset':
+        """Factory method that builds a dataset from an org name."""
+        from r2c_isg.loaders.org import GithubLoader
+
+        # only github is supported right now
+        if registry != 'github':
+            raise Exception('Loading from organization name is not supported '
+                            'for %s.' % registry)
+
+        # load initial data from the weblist
+        ds = GithubLoader().load(org_name, registry=registry, **kwargs)
+
+        print('         Loaded {:,} projects containing {:,} total versions.'
+              .format(len(ds.projects),
+                      sum([len(p.versions) for p in ds.projects])))
+
+        return ds
+
+
+    @classmethod
     def restore(cls, filepath: str) -> 'Dataset':
         """Factory method that restores a pickled dataset."""
         from r2c_isg.loaders.core import DatasetLoader
