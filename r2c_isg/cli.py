@@ -15,7 +15,7 @@ from r2c_isg.structures import Dataset
 from r2c_isg.structures.projects import project_map
 from r2c_isg.util import get_dataset, print_error
 from r2c_isg.loaders.file import fileloader_map
-from r2c_isg.loaders.webpage import webpageloader_map
+from r2c_isg.loaders.web import webloader_map
 
 
 DEBUG = False
@@ -91,7 +91,7 @@ def spacer():
 weblist_options = '; '.join(['%s: %s' % (
     name,
     ', '.join(list(cls.weblists()))
-) for name, cls in webpageloader_map.items()])
+) for name, cls in webloader_map.items()])
 
 
 @cli.command('load', help='Generates a dataset from a file path, weblist name, '
@@ -132,8 +132,8 @@ def load(ctx, registry, type, name_or_path, fileargs):
                                    fileargs=fileargs, **TEMP_SETTINGS)
 
         else:
-            # download a webpage (weblist or organization repo list)
-            ds = Dataset.load_webpage(name_or_path, registry, type=type, **TEMP_SETTINGS)
+            # download a weblist or organization repo list
+            ds = Dataset.load_web(name_or_path, registry, type=type, **TEMP_SETTINGS)
 
         ctx.obj['dataset'] = ds
 

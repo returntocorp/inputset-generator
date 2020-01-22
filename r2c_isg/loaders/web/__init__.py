@@ -3,7 +3,7 @@ from .npm_loader import NpmLoader
 from .pypi_loader import PypiLoader
 
 
-webpageloader_map = {
+webloader_map = {
     'github': GithubLoader,
     'npm': NpmLoader,
     'pypi': PypiLoader

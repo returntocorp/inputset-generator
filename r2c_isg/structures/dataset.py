@@ -83,16 +83,16 @@ class Dataset(object):
         return ds
 
     @classmethod
-    def load_webpage(cls, name: str,
-                     registry: str = None, **kwargs) -> 'Dataset':
+    def load_web(cls, name: str,
+                 registry: str = None, **kwargs) -> 'Dataset':
         """Factory method that builds a dataset from a weblist or org name (github only)."""
-        from r2c_isg.loaders.webpage import webpageloader_map
+        from r2c_isg.loaders.web import webloader_map
 
         # check if the registry is valid
-        loader = webpageloader_map.get(registry)
+        loader = webloader_map.get(registry)
         if not loader:
             raise Exception('Invalid registry name. Valid registries are %s'
-                            % str(webpageloader_map.keys()))
+                            % str(webloader_map.keys()))
 
         # load data from the weblist/org projects list
         ds = loader.load(name, registry=registry, **kwargs)

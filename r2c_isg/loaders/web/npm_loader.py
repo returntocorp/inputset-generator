@@ -34,7 +34,7 @@ class NpmLoader(Loader):
         }
 
     @classmethod
-    def load(cls, weblist: str, **kwargs) -> Dataset:
+    def load(cls, name: str, **kwargs) -> Dataset:
         # get the request type (weblist vs. organization)
         type = kwargs.pop('type')
         if type == 'org':
@@ -45,15 +45,15 @@ class NpmLoader(Loader):
 
         # select the correct weblist loader/parser
         weblists = cls.weblists()
-        if weblist not in weblists:
+        if name not in weblists:
             raise Exception('Unrecognized npm weblist name. Valid '
                             'options are: %s' % list(weblists))
 
         # load the data
-        data = weblists[weblist]['getter'](api=ds.api, **kwargs)
+        data = weblists[name]['getter'](api=ds.api, **kwargs)
 
         # parse the data
-        weblists[weblist]['parser'](ds, data)
+        weblists[name]['parser'](ds, data)
 
         return ds
 
