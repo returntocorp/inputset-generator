@@ -16,7 +16,7 @@ class GithubLoader(Loader):
             status, data = api.request(url)
             if status != 200:
                 print('         Error downloading %s; is the url accessible?', url)
-                return {}
+                return []
 
             return data
 
