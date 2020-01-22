@@ -83,18 +83,18 @@ class Dataset(object):
         return ds
 
     @classmethod
-    def load_webpage(cls, name: str, registry: str = None,
-                     **kwargs) -> 'Dataset':
-        """Factory method that builds a dataset from a weblist."""
+    def load_webpage(cls, name: str,
+                     registry: str = None, **kwargs) -> 'Dataset':
+        """Factory method that builds a dataset from a weblist or org name (github only)."""
         from r2c_isg.loaders.webpage import webpageloader_map
 
-        # check if the name is valid
-        loader = webpageloader_map.get(registry, None)
+        # check if the registry is valid
+        loader = webpageloader_map.get(registry)
         if not loader:
-            raise Exception('Invalid weblist name for %s. Valid weblists '
-                            'are: %s' % (registry, str(webpageloader_map)))
+            raise Exception('Invalid registry name. Valid registries are %s'
+                            % str(webpageloader_map.keys()))
 
-        # load initial data from the weblist
+        # load data from the weblist/org projects list
         ds = loader.load(name, registry=registry, **kwargs)
 
         print('         Loaded {:,} projects containing {:,} total versions.'
@@ -102,7 +102,6 @@ class Dataset(object):
                       sum([len(p.versions) for p in ds.projects])))
 
         return ds
-
 
     @classmethod
     def restore(cls, filepath: str) -> 'Dataset':
