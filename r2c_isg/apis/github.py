@@ -17,9 +17,9 @@ class Github(Api):
 
         super().__init__(**kwargs)
 
-    def update(self, **kwargs):
+    def configure(self, **kwargs):
         """Populates the github api with data from a dictionary."""
-        super().update(**kwargs)
+        super().configure(**kwargs)
 
         # set the personal access token
         self.github_pat = kwargs.pop('github_pat', None) or self.github_pat

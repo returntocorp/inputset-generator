@@ -19,23 +19,55 @@ class GithubLoader(Loader):
         }
 
     @classmethod
-    def load(cls, weblist: str, **kwargs) -> Dataset:
+    def load(cls, name: str, **kwargs) -> Dataset:
+        # get the request type (weblist vs. organization)
+        from_type = kwargs.pop('from_type')
+
         # initialize a registry
         ds = Dataset(**kwargs)
 
-        # select the correct weblist loader/parser
-        weblists = cls.weblists()
-        if weblist not in weblists:
-            raise Exception('Unrecognized github weblist name. '
-                            'Valid options are: %s' % list(weblists))
+        if from_type == 'list':
+            # select the correct weblist loader/parser
+            weblists = cls.weblists()
+            if name not in weblists:
+                raise Exception('Unrecognized github weblist name. '
+                                'Valid options are: %s' % list(weblists))
 
-        # load the data
-        data = weblists[weblist]['getter'](api=ds.api, **kwargs)
+            # load the data
+            data = weblists[name]['getter'](api=ds.api, **kwargs)
 
-        # parse the data
-        weblists[weblist]['parser'](ds, data)
+            # parse the data
+            weblists[name]['parser'](ds, data)
+
+        elif from_type == 'org':
+            # load the data
+            data = GithubLoader._get_org_repo_list(ds.api, name)
+
+            # parse the data
+            GithubLoader._parse_github(ds, data)
 
         return ds
+
+    @staticmethod
+    def _get_org_repo_list(api, org_name, **kwargs):
+        # load the (paginated) list of repos for this organization
+        all_data = []
+        url = 'https://api.github.com/users/%s/repos?page=' % org_name
+        page_num = 1
+
+        while True:
+            status, data = api.request(url + str(page_num))
+            if status != 200:
+                print('         Error downloading %s; is the url accessible?', url)
+                break
+
+            if len(data) == 0:
+                break
+
+            all_data.extend(data)
+            page_num += 1
+
+        return all_data
 
     @staticmethod
     def _get_top1kstarred(api, **kwargs) -> list:

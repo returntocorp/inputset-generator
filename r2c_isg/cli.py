@@ -15,7 +15,7 @@ from r2c_isg.structures import Dataset
 from r2c_isg.structures.projects import project_map
 from r2c_isg.util import get_dataset, print_error
 from r2c_isg.loaders.file import fileloader_map
-from r2c_isg.loaders.weblist import weblistloader_map
+from r2c_isg.loaders.web import webloader_map
 
 
 DEBUG = False
@@ -55,7 +55,7 @@ def cli(ctx, debug, quiet):
               'days, sort by descending number of downloads, trim to the top '
               '100 most downloaded, download project metadata and all '
               'versions, and generate an input set json.\n'
-              '    load pypi top5kyear\n    sort "desc download_count"\n'
+              '    load pypi top4kyear\n    sort "desc download_count"\n'
               '    trim 100\n    get -mv all\n    set-meta -n test -v 1.0\n'
               '    export inputset.json\n\n'
               ''
@@ -91,15 +91,17 @@ def spacer():
 weblist_options = '; '.join(['%s: %s' % (
     name,
     ', '.join(list(cls.weblists()))
-) for name, cls in weblistloader_map.items()])
+) for name, cls in webloader_map.items()])
 
 
-@cli.command('load', help='Generates a dataset from a weblist name or file '
-                          'path.\n\nSupported file types are: %s. Note: there '
-                          'are no default json parsers; you must write your '
-                          'own.\n\nValid weblist names are %s.' %
+@cli.command('load', help='Generates a dataset from a file path, weblist name, '
+                          'or organization name (Github only). \n\nSupported '
+                          'file types are: %s. Note: there are no default json '
+                          'parsers; you must write your own.\n\nValid weblist '
+                          'names are %s.' %
                           (', '.join(list(fileloader_map)), weblist_options))
 @argument('registry', type=Choice(list(project_map) + ['noreg']))
+@argument('from_type', type=Choice(['file', 'list', 'org']))
 @argument('name_or_path')
 @option('-c', '--columns', 'fileargs', type=str,
         help='Space-separated list of column names in a csv. Overrides default '
@@ -111,27 +113,28 @@ weblist_options = '; '.join(['%s: %s' % (
         help='Handle for a custom-build json parser. No json parsers '
              'are implemented by default.')
 @click.pass_context
-def load(ctx, registry, name_or_path, fileargs):
+def load(ctx, registry, from_type, name_or_path, fileargs):
     """Generates a dataset from a weblist name or file path."""
     backup_ds = None
     
     try:
         backup_ds = deepcopy(ctx.obj.get('dataset', None))
-        
+
         if registry == 'noreg':
             registry = None
 
         global TEMP_SETTINGS
 
-        if '.' in name_or_path:
+        if from_type == 'file':
             # read in a file (fileargs is either a header string for csv
             # or a parser handle for json)
             ds = Dataset.load_file(name_or_path, registry,
                                    fileargs=fileargs, **TEMP_SETTINGS)
 
         else:
-            # download a weblist
-            ds = Dataset.load_weblist(name_or_path, registry, **TEMP_SETTINGS)
+            # download a weblist or organization repo list
+            ds = Dataset.load_web(name_or_path, registry,
+                                  from_type=from_type, **TEMP_SETTINGS)
 
         ctx.obj['dataset'] = ds
 
@@ -250,8 +253,8 @@ def set_meta(ctx, name, version, description, readme, author, email):
 
         if ds:
             # update dataset's metadata
-            ds.update(name=name, version=version, description=description,
-                      readme=readme, author=author, email=email)
+            ds.configure(name=name, version=version, description=description,
+                         readme=readme, author=author, email=email)
 
         else:
             global TEMP_SETTINGS
@@ -308,10 +311,10 @@ def set_api(ctx, cache_dir, cache_timeout, nocache, github_pat):
 
         if ds and ds.api:
             # update the api
-            ds.api.update(cache_dir=cache_dir,
-                          cache_timeout=cache_timeout,
-                          nocache=nocache,
-                          github_pat=github_pat)
+            ds.api.configure(cache_dir=cache_dir,
+                             cache_timeout=cache_timeout,
+                             nocache=nocache,
+                             github_pat=github_pat)
 
         else:
             # no ds/api; save the settings for when there is one

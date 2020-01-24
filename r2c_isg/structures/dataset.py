@@ -83,19 +83,19 @@ class Dataset(object):
         return ds
 
     @classmethod
-    def load_weblist(cls, weblist: str,
-                     registry: str = None, **kwargs) -> 'Dataset':
-        """Factory method that builds a dataset from a weblist."""
-        from r2c_isg.loaders.weblist import weblistloader_map
+    def load_web(cls, name: str,
+                 registry: str = None, **kwargs) -> 'Dataset':
+        """Factory method that builds a dataset from a weblist or org name (github only)."""
+        from r2c_isg.loaders.web import webloader_map
 
-        # check if the name is valid
-        loader = weblistloader_map.get(registry, None)
+        # check if the registry is valid
+        loader = webloader_map.get(registry)
         if not loader:
-            raise Exception('Invalid weblist name for %s. Valid weblists '
-                            'are: %s' % (registry, str(weblistloader_map)))
+            raise Exception('Invalid registry name. Valid registries are %s'
+                            % str(webloader_map.keys()))
 
-        # load initial data from the weblist
-        ds = loader.load(weblist, registry=registry, **kwargs)
+        # load data from the weblist/org projects list
+        ds = loader.load(name, registry=registry, **kwargs)
 
         print('         Loaded {:,} projects containing {:,} total versions.'
               .format(len(ds.projects),
@@ -205,7 +205,7 @@ class Dataset(object):
                 elif attr in ['uuids_', 'meta_']:
                     # convert lambda functions to strings
                     vars_dict[attr] = {
-                        key: getsource(func).split(': ', 1)[1].strip()
+                        key: getsource(func).split(': ', 1)[1].strip(',\n')
                         for key, func in val.items()
                     }
 

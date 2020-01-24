@@ -19,9 +19,9 @@ class Api(ABC):
         self.nocache = False
 
         # call update to add any user-modifiable values
-        self.update(**kwargs)
+        self.configure(**kwargs)
 
-    def update(self, **kwargs):
+    def configure(self, **kwargs):
         """Populates the api with data from a dictionary."""
         # set/create the cache dir
         self.cache_dir = kwargs.pop('cache_dir', None) or self.cache_dir

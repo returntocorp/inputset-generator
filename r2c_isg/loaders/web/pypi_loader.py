@@ -8,37 +8,42 @@ class PypiLoader(Loader):
     @classmethod
     def weblists(cls) -> dict:
         return {
-            'top5kmonth': {
-                'getter': PypiLoader._get_top5kmonth,
+            'top4kmonth': {
+                'getter': PypiLoader._get_top4kmonth,
                 'parser': PypiLoader._parse_hugovk
             },
-            'top5kyear': {
-                'getter': PypiLoader._get_top5kyear,
+            'top4kyear': {
+                'getter': PypiLoader._get_top4kyear,
                 'parser': PypiLoader._parse_hugovk
             }
         }
 
     @classmethod
-    def load(cls, weblist: str, **kwargs) -> Dataset:
+    def load(cls, name: str, **kwargs) -> Dataset:
+        # get the request type (weblist vs. organization)
+        from_type = kwargs.pop('from_type')
+        if from_type == 'org':
+            raise Exception('Pypi does not support loading project lists from org names.')
+
         # initialize a registry
         ds = Dataset(**kwargs)
 
         # select the correct weblist loader/parser
         weblists = cls.weblists()
-        if weblist not in weblists:
+        if name not in weblists:
             raise Exception('Unrecognized pypi weblist name. Valid '
                             'options are: %s' % list(weblists))
 
         # load the data
-        data = weblists[weblist]['getter'](api=ds.api, **kwargs)
+        data = weblists[name]['getter'](api=ds.api, **kwargs)
 
         # parse the data
-        weblists[weblist]['parser'](ds, data)
+        weblists[name]['parser'](ds, data)
 
         return ds
 
     @staticmethod
-    def _get_top5kmonth(api, **kwargs) -> list:
+    def _get_top4kmonth(api, **kwargs) -> list:
         url = 'https://hugovk.github.io/top-pypi-packages/' \
               'top-pypi-packages-30-days.json'
 
@@ -49,7 +54,7 @@ class PypiLoader(Loader):
         return data['rows']
 
     @staticmethod
-    def _get_top5kyear(api, **kwargs) -> list:
+    def _get_top4kyear(api, **kwargs) -> list:
         url = 'https://hugovk.github.io/top-pypi-packages/' \
               'top-pypi-packages-365-days.json'
 

@@ -49,7 +49,8 @@ class Pypi(Api):
         data.pop('releases', None)
 
         # break out the contents of the 'info' dict
-        data.update(data.pop('info'), {})
+        for k, v in data.pop('info', {}).items():
+            data[k] = v
 
         # update the project
         project.update(**data)
