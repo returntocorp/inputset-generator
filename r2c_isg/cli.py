@@ -55,25 +55,28 @@ def cli(ctx, debug, quiet):
               'days, sort by descending number of downloads, trim to the top '
               '100 most downloaded, download project metadata and all '
               'versions, and generate an input set json.\n'
-              '    load pypi top4kyear\n    sort "desc download_count"\n'
+              '    load pypi list top4kyear\n    sort "desc download_count"\n'
               '    trim 100\n    get -mv all\n    set-meta -n test -v 1.0\n'
               '    export inputset.json\n\n'
               ''
               'Load all npm projects, sample 100, download the latest '
               'versions, and generate an input set json.\n'
-              '    load npm allbydependents\n    sample -s abc123 100\n'
+              '    load npm list allbydependents\n    sample -s abc123 100\n'
               '    get -v latest\n    set-meta -n test -v 1.0\n'
               '    export inputset.json\n\n'
               ''
               'Load a csv containing github urls and commit hashes, get '
               'project metadata and the latest versions, generate an input '
               'set json of type GitRepoCommit, remove all versions, and '
-              'generate an input set json of type GitRepo.\n\n'
+              'generate an input set json of type GitRepo.\n'
               '    load --columns "url v.commit" '
               'github list_of_github_urls_and_commits.csv\n'
               '    get -mv latest\n    set-meta -n test -v 1.0\n'
               '    export inputset_1.json\n    trim -v 0\n'
               '    export inputset_2.json\n\n'
+              ''
+              'Load a list of github repos from an organization name.\n'
+              '    load github org netflix\n\n'
               ''
               'To hide this message when loading the shell, add the quiet '
               '("-q") flag.'
@@ -101,7 +104,7 @@ weblist_options = '; '.join(['%s: %s' % (
                           'names are %s.' %
                           (', '.join(list(fileloader_map)), weblist_options))
 @argument('registry', type=Choice(list(project_map) + ['noreg']))
-@argument('from_type', type=Choice(['file', 'list', 'org']))
+@argument('from_type', type=Choice(['file', 'list', 'user', 'org']))
 @argument('name_or_path')
 @option('-c', '--columns', 'fileargs', type=str,
         help='Space-separated list of column names in a csv. Overrides default '

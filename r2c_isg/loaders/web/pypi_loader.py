@@ -22,8 +22,8 @@ class PypiLoader(Loader):
     def load(cls, name: str, **kwargs) -> Dataset:
         # get the request type (weblist vs. organization)
         from_type = kwargs.pop('from_type')
-        if from_type == 'org':
-            raise Exception('Pypi does not support loading project lists from org names.')
+        if from_type in ['user', 'org']:
+            raise Exception('Pypi does not support loading project lists from user/org names.')
 
         # initialize a registry
         ds = Dataset(**kwargs)

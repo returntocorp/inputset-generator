@@ -39,9 +39,9 @@ class GithubLoader(Loader):
             # parse the data
             weblists[name]['parser'](ds, data)
 
-        elif from_type == 'org':
+        elif from_type in ['user', 'org']:
             # load the data
-            data = GithubLoader._get_org_repo_list(ds.api, name)
+            data = GithubLoader._get_org_or_user_repos(ds.api, name, from_type, **kwargs)
 
             # parse the data
             GithubLoader._parse_github(ds, data)
@@ -49,19 +49,20 @@ class GithubLoader(Loader):
         return ds
 
     @staticmethod
-    def _get_org_repo_list(api, org_name, **kwargs):
+    def _get_org_or_user_repos(api, name, name_type, **kwargs):
         # load the (paginated) list of repos for this organization
         all_data = []
-        url = 'https://api.github.com/users/%s/repos?page=' % org_name
+        url = 'https://api.github.com/%ss/%s/repos?page=' % (name_type, name)
         page_num = 1
 
         while True:
-            status, data = api.request(url + str(page_num))
+            status, data = api.request(url + str(page_num), **kwargs)
             if status != 200:
                 print('         Error downloading %s; is the url accessible?', url)
                 break
 
             if len(data) == 0:
+                # we've reached the last page of the repos list; stop
                 break
 
             all_data.extend(data)
