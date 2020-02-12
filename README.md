@@ -12,31 +12,33 @@ Try the following command sequences:
 
 - Load the top 5,000 pypi projects by downloads in the last 365 days, sort by descending number of downloads, trim to the top 100 most downloaded, download project metadata and all versions, and generate an input set json.
 
-	    load pypi top5kyear
+	    load pypi list top5kyear
 	    sort "desc download_count"
 	    trim 100
 	    get -mv all
 	    set-meta -n test -v 1.0
 	    export inputset.json
-<br>
 
 - Load all npm projects, sample 100, download the latest versions, and generate an input set json.
 
-	    load npm allbydependents
+	    load npm list allbydependents
 	    sample 100
 	    get -v latest
 	    set-meta -n test -v 1.0
 	    export inputset.json
-<br>
 
 - Load a csv containing github urls and commit hashes, get project metadata and the latest versions, generate an input set json of type GitRepoCommit, remove all versions, and generate an input set json of type GitRepo.
 
-	    load --columns "url v.commit" github list_of_github_urls_and_commits.csv
+	    load --columns "url v.commit" github file list_of_github_urls_and_commits.csv
 	    get -mv latest
 	    set-meta -n test -v 1.0
 	    export inputset_1.json
 	    trim -v 0
 	    export inputset_2.json
+
+- Load a list of github repos from an organization name.
+
+	    load github org netflix
 
 ## Shell Usage
 
