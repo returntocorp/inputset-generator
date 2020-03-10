@@ -10,9 +10,9 @@ To install, simply `pip install r2c-inputset-generator`. Then run `r2c-isg` to l
 ## Quick Start
 Try the following command sequences:
 
-- Load the top 5,000 pypi projects by downloads in the last 365 days, sort by descending number of downloads, trim to the top 100 most downloaded, download project metadata and all versions, and generate an input set json.
+- Load the top 4,000 pypi projects by downloads in the last 365 days, sort by descending number of downloads, trim to the top 100 most downloaded, download project metadata and all versions, and generate an input set json.
 
-	    load pypi list top5kyear
+	    load pypi list top4kyear
 	    sort "desc download_count"
 	    trim 100
 	    get -mv all
@@ -48,7 +48,7 @@ Try the following command sequences:
 	Generates a dataset from a weblist or a local file. The following weblists are available:
     - Github: top1kstarred, top1kforked; the top 1,000 most starred or forked repos<br>
     - NPM: allbydependents; **all** packages, sorted from most to fewest dependents count (caution: 1M+ projects... handle with care)<br>
-    - Pypi: top5kmonth and top5kyear; the top 5,000 most downloaded projects in the last 30/365 days
+    - Pypi: top4kmonth and top4kyear; the top 4,000 most downloaded projects in the last 30/365 days
 
 	**Options:**<br>
     **-c --columns** "string of col names": A space-separated list of column names in a csv. Overrides default columns (name and version), as well as any headers listed in the file (headers in files begin with a '!'). The CSV reader recognizes the following column keywords: name, url, org, v.commit, v.version. All other columns are read in as project or version attributes.<br>
