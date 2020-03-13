@@ -116,7 +116,7 @@ class Github(Api):
                       % (status, url, project.get_name()))
                 return  # give up trying to load commits for this repo
             elif status != 200:
-                if self.retry_count.get(api_url) < MAX_RETRY_COUNT:
+                if self.retry_count.get(api_url, 0) < MAX_RETRY_COUNT:
                     print(' ' * 9 + 'Warning: Unexpected response from github '
                         'api (HTTP %d); failed to retrieve some of the versions '
                         'of %s (%s).' % (status, project.get_name(), url))
