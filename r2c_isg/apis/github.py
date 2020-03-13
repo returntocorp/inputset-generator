@@ -6,6 +6,7 @@ from r2c_isg.apis import Api
 from r2c_isg.structures.projects import GithubRepo
 from r2c_isg.structures.versions import GithubCommit
 
+MAX_RETRY_COUNT = 3
 
 class Github(Api):
     def __init__(self, **kwargs):
@@ -14,7 +15,9 @@ class Github(Api):
 
         # set the default github personal access token
         self.github_pat = None
-
+        
+        # retry count per url
+        self.retry_count = {}
         super().__init__(**kwargs)
 
     def configure(self, **kwargs):
@@ -106,19 +109,21 @@ class Github(Api):
             url = '%s/commits?page=%d' % (api_url, i)
             status, data = self.request(url, **kwargs)
             i += 1
-
-            # skip this page if non-200 response
-            if status == 404:
-                print(' ' * 9 + 'Warning: Github api returned 404 for url %s;'
+            # return if 400x or 300x-s
+            if status > 300 and status < 500:
+                print(' ' * 9 + 'Warning: Github api returned (HTTP: %d) for url %s;'
                       ' assuming malformed url for project %s.'
-                      % (url, project.get_name()))
+                      % (status, url, project.get_name()))
                 return  # give up trying to load commits for this repo
             elif status != 200:
-                print(' ' * 9 + 'Warning: Unexpected response from github '
-                      'api (HTTP %d); failed to retrieve some of the versions '
-                      'of %s (%s).' % (status, project.get_name(), url))
-                continue  # keep trying to load commits; move on to next page
-
+                if self.retry_count.get(api_url, 0) < MAX_RETRY_COUNT:
+                    print(' ' * 9 + 'Warning: Unexpected response from github '
+                        'api (HTTP %d); failed to retrieve some of the versions '
+                        'of %s (%s).' % (status, project.get_name(), url))
+                    self.retry_count[api_url] = self.retry_count.get(api_url, 0) + 1
+                    continue  # keep trying to load commits; move on to next page
+                else:
+                    return
             if not data:
                 # no more pages; break
                 iterator.close()
