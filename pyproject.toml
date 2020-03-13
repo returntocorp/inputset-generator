@@ -18,17 +18,17 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.7"
-click = "*"
-click_shell = "*"
-python-dotenv = "*"
-requests = "*"
-dill = "*"
-urllib3 = "*"
-tqdm = "*"
+structures = "^0.9.5"
+click = "^7.1.1"
+click_shell = "^2.0"
+requests = "^2.23.0"
+dill = "^0.3.1"
+tqdm = "^4.43.0"
+urllib3 = "^1.25.8"
+python-dotenv = "^0.12.0"
 
 [tool.poetry.dev-dependencies]
 coverage = "~=4.5.4"
-lxml = "~=4.2"
 pytest = "~=3.9"
 mypy = "~=0.670"
 black = "==18.9b0"
