@@ -1,0 +1,41 @@
+[tool.poetry]
+name = "inputset-generator"
+version = "0.3.1"
+description = "An input set generator for R2C"
+readme = "README.md"
+homepage = "r2c.dev"
+license = "Proprietary"
+authors = ["Return To Corporation <hello@r2c.dev>", "Ben Fulton <fulton.benjamin@gmail.com>"]
+exclude = ["tests*"]
+packages = [
+  { include = "r2c_isg" },
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: Other/Proprietary License",
+    "Operating System :: OS Independent",
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+click = "*"
+click_shell = "*"
+python-dotenv = "*"
+requests = "*"
+dill = "*"
+urllib3 = "*"
+tqdm = "*"
+
+[tool.poetry.dev-dependencies]
+coverage = "~=4.5.4"
+lxml = "~=4.2"
+pytest = "~=3.9"
+mypy = "~=0.670"
+black = "==18.9b0"
+
+[tool.poetry.scripts]
+r2c-isg = "r2c_isg.cli:cli"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
