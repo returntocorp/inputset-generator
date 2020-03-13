@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "inputset-generator"
+name = "r2c-inputset-generator"
 version = "0.3.2"
 description = "An input set generator for R2C"
 readme = "README.md"
