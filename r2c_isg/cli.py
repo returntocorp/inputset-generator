@@ -11,7 +11,7 @@ from datetime import timedelta
 from click import argument, option, Choice, Path
 from click_shell import shell
 
-from r2c_isg.structures import Dataset
+from r2c_isg.dataset import Dataset
 from r2c_isg.structures.projects import project_map
 from r2c_isg.util import get_dataset, print_error
 from r2c_isg.loaders.file import fileloader_map
