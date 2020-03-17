@@ -15,7 +15,7 @@ from r2c_isg.structures import Dataset
 from r2c_isg.structures.projects import project_map
 from r2c_isg.util import get_dataset, print_error
 from r2c_isg.loaders.file import fileloader_map
-from r2c_isg.loaders.web import webloader_map
+from r2c_isg.loaders.weblist import webloader_map
 
 
 DEBUG = False
