@@ -2,10 +2,9 @@ import json
 from tqdm import tqdm
 
 from r2c_isg.loaders import Loader
-from r2c_isg.structures import DefaultProject, DefaultVersion
+from r2c_isg.structures import GenericProject, GenericVersion
 from r2c_isg.dataset import Dataset
-from r2c_isg.structures.projects import project_map
-from r2c_isg.structures.versions import version_map
+from r2c_isg.structures import project_map, version_map
 
 
 class R2cLoader(Loader):
@@ -63,7 +62,7 @@ class R2cLoader(Loader):
                     uuids['url'] = lambda p: p.url
 
                 # create the new project & add it to the dataset
-                p_class = project_map.get(ds.registry, DefaultProject)
+                p_class = project_map.get(ds.registry, GenericProject)
                 project = p_class(uuids_=uuids, **p_data)
                 ds.projects.append(project)
 
@@ -83,7 +82,7 @@ class R2cLoader(Loader):
                         uuids['commit'] = lambda v: v.commit_hash
 
                     # create the new version & add it to the project
-                    v_class = version_map.get(ds.registry, DefaultVersion)
+                    v_class = version_map.get(ds.registry, GenericVersion)
                     project.versions.append(v_class(uuids_=uuids, **v_data))
 
         return ds

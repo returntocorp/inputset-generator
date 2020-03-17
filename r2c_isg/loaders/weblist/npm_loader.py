@@ -70,7 +70,7 @@ class NpmLoader(Loader):
 
     @staticmethod
     def _parse_niceregistry(ds: Dataset, data: list):
-        from r2c_isg.structures.projects import NpmPackage
+        from r2c_isg.structures.npm import NpmPackage
 
         # map data keys to package keywords
         uuids = {

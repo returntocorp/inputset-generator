@@ -6,13 +6,13 @@ from typing import List, Optional
 from types import MethodType
 from pathlib import Path
 
-from r2c_isg.structures.projects import Project
+from r2c_isg.structures.core import Project
 
 
 class Dataset(object):
     def __init__(self, registry: str = None, **kwargs):
         from r2c_isg.apis import api_map
-        from r2c_isg.structures.projects import project_map as registry_map
+        from r2c_isg.structures import project_map as registry_map
         from r2c_isg.structures import Project
         from r2c_isg.functions import function_map
         from r2c_isg.util import get_name, get_email
@@ -106,7 +106,7 @@ class Dataset(object):
     @classmethod
     def restore(cls, filepath: str) -> 'Dataset':
         """Factory method that restores a pickled dataset."""
-        from r2c_isg.loaders.core import DatasetLoader
+        from r2c_isg.loaders import DatasetLoader
 
         # check if the path is valid
         if not Path(filepath).is_file():
@@ -137,7 +137,7 @@ class Dataset(object):
     def import_inputset(cls, filepath: str,
                         registry: str = None, **kwargs) -> 'Dataset':
         """Factory method that builds a dataset from an R2C input set json."""
-        from r2c_isg.loaders.core import R2cLoader
+        from r2c_isg.loaders import R2cLoader
 
         # check if the path is valid
         if not Path(filepath).is_file():

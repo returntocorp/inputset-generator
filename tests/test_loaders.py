@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-from structures import Dataset
+from dataset import Dataset
 
 
 load_dotenv()

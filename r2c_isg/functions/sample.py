@@ -1,6 +1,6 @@
 import random
 
-from r2c_isg.structures import Dataset
+from r2c_isg.dataset import Dataset
 
 
 def sample(ds: Dataset, n: int,

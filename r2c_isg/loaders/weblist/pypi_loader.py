@@ -67,7 +67,7 @@ class PypiLoader(Loader):
 
     @staticmethod
     def _parse_hugovk(ds: Dataset, data: list) -> None:
-        from r2c_isg.structures.projects import PypiProject
+        from r2c_isg.structures.pypi import PypiProject
 
         # map data keys to project keywords
         uuids = {

@@ -1,4 +1,4 @@
-from r2c_isg.structures import Dataset
+from r2c_isg.dataset import Dataset
 
 
 def trim(ds: Dataset, n: int, on_versions: bool = False) -> None:

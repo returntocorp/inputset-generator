@@ -1,8 +1,7 @@
 from typing import Optional, Union
 
 from r2c_isg.apis import Api
-from r2c_isg.structures.projects import NpmPackage
-from r2c_isg.structures.versions import NpmVersion
+from r2c_isg.structures.npm import NpmPackage, NpmVersion
 
 
 class Npm(Api):

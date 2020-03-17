@@ -116,7 +116,7 @@ class GithubLoader(Loader):
 
     @staticmethod
     def _parse_github(ds: Dataset, data: list) -> None:
-        from r2c_isg.structures.projects import GithubRepo
+        from r2c_isg.structures.github import GithubRepo
 
         # map data keys to project keywords
         uuids = {

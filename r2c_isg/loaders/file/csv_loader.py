@@ -1,10 +1,9 @@
 import csv
 
 from r2c_isg.loaders import Loader
-from r2c_isg.structures import DefaultProject, DefaultVersion
+from r2c_isg.structures import GenericProject, GenericVersion
 from r2c_isg.dataset import Dataset
-from r2c_isg.structures.projects import project_map
-from r2c_isg.structures.versions import version_map
+from r2c_isg.structures import project_map, version_map
 
 
 class CsvLoader(Loader):
@@ -69,7 +68,7 @@ class CsvLoader(Loader):
                             uuids['url'] = lambda p: p.url
 
                         # create the new project & add it to the dataset
-                        p_class = project_map.get(ds.registry, DefaultProject)
+                        p_class = project_map.get(ds.registry, GenericProject)
                         project = p_class(uuids_=uuids, meta_=meta, **p_data)
                         ds.projects.append(project)
 
@@ -89,7 +88,7 @@ class CsvLoader(Loader):
                                 uuids['commit'] = lambda v: v.commit
 
                             # create the new version & add it to the project
-                            v_class = version_map.get(ds.registry, DefaultVersion)
+                            v_class = version_map.get(ds.registry, GenericVersion)
                             project.versions.append(v_class(uuids_=uuids, **v_data))
 
         return ds
