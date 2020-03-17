@@ -1,1 +1,1 @@
-from ._loader import Loader
+from .core import Loader
