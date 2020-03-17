@@ -16,7 +16,7 @@ Try the following command sequences:
 	    sort "desc download_count"
 	    trim 100
 	    get -mv all
-	    set-meta -n test -v 1.0
+	    set-meta -n test -v 1.0.0
 	    export inputset.json
 
 - Load all npm projects, sample 100, download the latest versions, and generate an input set json.
@@ -24,14 +24,14 @@ Try the following command sequences:
 	    load npm list allbydependents
 	    sample 100
 	    get -v latest
-	    set-meta -n test -v 1.0
+	    set-meta -n test -v 1.0.0
 	    export inputset.json
 
 - Load a csv containing github urls and commit hashes, get project metadata and the latest versions, generate an input set json of type GitRepoCommit, remove all versions, and generate an input set json of type GitRepo.
 
 	    load --columns "url v.commit" github file list_of_github_urls_and_commits.csv
 	    get -mv latest
-	    set-meta -n test -v 1.0
+	    set-meta -n test -v 1.0.0
 	    export inputset_1.json
 	    trim -v 0
 	    export inputset_2.json
@@ -39,6 +39,9 @@ Try the following command sequences:
 - Load a list of github repos from an organization name.
 
 	    load github org netflix
+	    get -mv latest
+	    set-meta -n test -v 1.0.0
+	    export inputset.json
 
 ## Shell Usage
 
