@@ -1,7 +1,7 @@
 from tqdm import tqdm
 
 from r2c_isg.loaders import Loader
-from r2c_isg.structures import Dataset
+from r2c_isg.dataset import Dataset
 
 
 class NpmLoader(Loader):

@@ -1,4 +1,4 @@
-from ._api import Api
+from .core import Api
 from .github import Github
 from .npm import Npm
 from .pypi import Pypi

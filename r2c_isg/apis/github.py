@@ -8,6 +8,7 @@ from r2c_isg.structures.versions import GithubCommit
 
 MAX_RETRY_COUNT = 3
 
+
 class Github(Api):
     def __init__(self, **kwargs):
         # set base url for github's api

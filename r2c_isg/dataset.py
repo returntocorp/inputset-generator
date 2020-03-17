@@ -86,7 +86,7 @@ class Dataset(object):
     def load_web(cls, name: str,
                  registry: str = None, **kwargs) -> 'Dataset':
         """Factory method that builds a dataset from a weblist or org name (github only)."""
-        from r2c_isg.loaders.web import webloader_map
+        from r2c_isg.loaders.weblist import webloader_map
 
         # check if the registry is valid
         loader = webloader_map.get(registry)
