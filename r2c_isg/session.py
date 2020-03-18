@@ -2,6 +2,7 @@ import dataclasses
 import json
 import os
 import shutil
+from typing import Optional
 import webbrowser
 
 from apis import Github, Npm, Pypi#, Requester
@@ -72,7 +73,7 @@ class Session(object):
     def load_dataset(self, filepath: str) -> Dataset:
         """Restore a jsonified dataset."""
 
-        return self.load_json(filepath, 9999999999999999, 'dataset')
+        return self.load_json(filepath, registry=None, schema='dataset')
 
     def save_dataset(self, dataset: Dataset, filepath: str):
         """Save a jsonified dataset."""
@@ -83,7 +84,7 @@ class Session(object):
         # save to disk
         self._save_json(filepath, dataset_dict)
 
-    def load_json(self, filepath: str, registry: str, schema: str) -> Dataset:
+    def load_json(self, filepath: str, registry: Optional[str], schema: str) -> Dataset:
         """Read in a json file based on a particular schema."""
 
         return JsonLoader.load(filepath, registry, schema=schema)
@@ -109,10 +110,10 @@ class Session(object):
         """Load project versions using the relevant API."""
         pass
 
-    def import_inputset(self, filepath: str, registry: str = None) -> Dataset:
+    def import_inputset(self, filepath: str, registry: Optional[str]) -> Dataset:
         """Import an r2c inputset json."""
 
-        return self.load_json(filepath, registry, 'inputset')
+        return self.load_json(filepath, registry, schema='inputset')
 
     def export_inputset(self, dataset: Dataset, filepath: str):
         """Export a dataset to an r2c inputset json."""
