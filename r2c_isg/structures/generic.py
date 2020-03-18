@@ -1,7 +1,8 @@
-from r2c_isg.structures.projects import Project
+from r2c_isg.structures.core import Project
+from r2c_isg.structures.core import Version as GenericVersion
 
 
-class DefaultProject(Project):
+class GenericProject(Project):
     def check_guarantees(self) -> None:
         """Guarantees a url."""
         assert 'url' in self.uuids_, \

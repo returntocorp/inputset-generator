@@ -1,8 +1,18 @@
-from .projects import Project, DefaultProject, project_map
-from .versions import Version, DefaultVersion, version_map
+from .core import Project, Version
+from .generic import GenericProject, GenericVersion
+from .github import GithubRepo, GithubCommit
+from .npm import NpmPackage, NpmVersion
+from .pypi import PypiProject, PypiRelease
 
 
-# check to ensure project/version map keys match
-assert project_map.keys() == version_map.keys(), (
-    'R2C input set generator init failure: '
-    'Project_map and version_map must have the same map keys.')
+project_map = {
+    'github': GithubRepo,
+    'npm': NpmPackage,
+    'pypi': PypiProject
+}
+
+version_map = {
+    'github': GithubCommit,
+    'npm': NpmVersion,
+    'pypi': PypiRelease
+}

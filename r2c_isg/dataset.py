@@ -1,4 +1,5 @@
 import json
+import random
 import dill as pickle
 from dill.source import getsource
 from tqdm import tqdm
@@ -6,15 +7,14 @@ from typing import List, Optional
 from types import MethodType
 from pathlib import Path
 
-from r2c_isg.structures.projects import Project
+from r2c_isg.structures.core import Project
 
 
 class Dataset(object):
     def __init__(self, registry: str = None, **kwargs):
         from r2c_isg.apis import api_map
-        from r2c_isg.structures.projects import project_map as registry_map
+        from r2c_isg.structures import project_map as registry_map
         from r2c_isg.structures import Project
-        from r2c_isg.functions import function_map
         from r2c_isg.util import get_name, get_email
 
         # a dataset contains projects
@@ -40,10 +40,6 @@ class Dataset(object):
         api_class = api_map.get(self.registry, None)
         if api_class:
             self.api = api_class(**kwargs)
-
-        # register the various transformation functions
-        for name, function in function_map.items():
-            setattr(self, name, MethodType(function, self))
 
     def update(self, **kwargs):
         """Updates a dataset's metadata."""
@@ -106,7 +102,7 @@ class Dataset(object):
     @classmethod
     def restore(cls, filepath: str) -> 'Dataset':
         """Factory method that restores a pickled dataset."""
-        from r2c_isg.loaders.core import DatasetLoader
+        from r2c_isg.loaders import DatasetLoader
 
         # check if the path is valid
         if not Path(filepath).is_file():
@@ -137,7 +133,7 @@ class Dataset(object):
     def import_inputset(cls, filepath: str,
                         registry: str = None, **kwargs) -> 'Dataset':
         """Factory method that builds a dataset from an R2C input set json."""
-        from r2c_isg.loaders.core import R2cLoader
+        from r2c_isg.loaders import R2cLoader
 
         # check if the path is valid
         if not Path(filepath).is_file():
@@ -164,6 +160,154 @@ class Dataset(object):
         with open(filepath, 'w') as file:
             json.dump(inputset, file, indent=4)
         print('         Exported input set to %s.' % filepath)
+
+    def sample(self, n: int, on_versions: bool = True, seed: str = None):
+        """Samples n projects in place."""
+
+        # seed random, if a seed was provided
+        if seed:
+            random.seed(seed)
+
+        # select a sample of versions in each project
+        if on_versions:
+            dropped = 0
+            for project in self.projects:
+                dropped += len(project.versions)
+                if len(project.versions) > n:
+                    project.versions = random.sample(project.versions, n)
+                dropped -= len(project.versions)
+
+            print('         Sampled {:,} versions from each of {:,} projects ({:,} '
+                  'total versions dropped).'.format(n, len(self.projects), dropped))
+
+        # select a sample of projects
+        elif len(self.projects) > n:
+            orig_count = len(self.projects)
+            self.projects = random.sample(self.projects, n)
+            print('         Sampled {:,} projects from {:,} (dropped {:,}).'
+                  .format(n, orig_count, max(orig_count - n, 0)))
+
+        else:
+            # this should never happen...
+            raise Exception('Dataset has no projects; cannot sample.')
+
+    def sort(self, params: List[str]) -> None:
+        """Sorts the projects/versions based on the given parameters."""
+        # useful url: https://realpython.com/python-sort/
+
+        # organize the params list--sort by last param first
+        # default sort order is ascending
+        if params[0] not in ['asc', 'desc']:
+            params.insert(0, 'asc')
+        # reverse the list
+        params = params[::-1]
+        # re-insert the sort orders before their associated sort keys
+        insert_at = 0
+        for i in range(len(params)):
+            if params[i] in ['asc', 'desc']:
+                param = params.pop(i)
+                params.insert(insert_at, param)
+                insert_at = i + 1
+
+        # sort the dataset
+        reverse = True
+        for param in params:
+            if param in ['asc', 'desc']:
+                # set the sort order
+                reverse = (param == 'desc')
+
+            else:
+                # sort on this parameter
+                # Note: Parameter strings can follow these formats:
+                #   'attr'               sort on project attribute
+                #   'uuids.key'          sort on project uuid
+                #   'meta.key'           sort on project meta
+                #   'v.attr'             sort on version attribute
+                #   'v.uuids.key'   sort on version uuid
+                #   'v.meta.key'         sort on version meta
+
+                p_list = param.split('.')
+
+                # determine if we're sorting on project or version
+                on_project = True
+                if p_list[0] == 'v':
+                    on_project = False
+                    p_list.pop(0)
+
+                # build a sort function
+                attr = p_list[0]
+                if attr == 'uuids':
+                    # sort on a uuid value
+                    def sort_uuid(o: object):
+                        if not key in o.uuids_:
+                            raise Exception('Nonexistent sort key.')
+
+                        return o.uuids_[key]()
+
+                    key = p_list[1]
+                    sort_func = lambda o: sort_uuid(o)
+
+                elif attr == 'meta':
+                    # sort on a meta value
+                    def sort_meta(o: object):
+                        if not key in o.meta_:
+                            raise Exception('Nonexistent sort key.')
+
+                        return o.meta_[key]()
+
+                    key = p_list[1]
+                    sort_func = lambda o: sort_meta(o)
+
+                else:
+                    # sort on a regular attribute
+                    def sort_attr(o: object):
+                        if not hasattr(o, attr):
+                            print("         Warning: Sort key '%s' was not "
+                                  'found in all projects/versions; assuming '
+                                  "'' for those items." % attr)
+
+                        # get & clean up the attribute
+                        val = getattr(o, attr, '')
+                        if isinstance(val, str):
+                            val = val.lower()
+
+                        return val
+
+                    sort_func = lambda o: sort_attr(o)
+
+                # perform the sort
+                if on_project:
+                    # sort on project
+                    self.projects.sort(key=sort_func, reverse=reverse)
+                else:
+                    # sort on version
+                    for project in self.projects:
+                        project.versions.sort(key=sort_func, reverse=reverse)
+
+        total_versions = sum([len(p.versions) for p in self.projects])
+        print('         Sorted {:,} projects and {:,} versions by {}.'
+              .format(len(self.projects), total_versions, str(params)))
+
+    def trim(self, n: int, on_versions: bool = False) -> None:
+        """Keep only the first n projects inplace."""
+
+        # select a sample of versions in each project
+        if on_versions:
+            dropped = 0
+            for project in self.projects:
+                dropped += len(project.versions)
+                project.versions = project.versions[:n]
+                dropped -= len(project.versions)
+
+            print('         Trimmed to first {:,} versions in each project '
+                  '({:,} total versions dropped).'.format(n, dropped))
+
+        # select a sample of projects
+        else:
+            orig_count = len(self.projects)
+            self.projects = self.projects[:n]
+            print('         Trimmed to first {:,} projects ({:,} dropped).'
+                  .format(n, max(orig_count - n, 0)))
 
     def to_inputset(self) -> dict:
         """Converts a dataset to an input set json."""

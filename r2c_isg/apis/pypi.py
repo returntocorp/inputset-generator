@@ -1,8 +1,7 @@
 from typing import Optional, Union
 
 from r2c_isg.apis import Api
-from r2c_isg.structures.projects import PypiProject
-from r2c_isg.structures.versions import PypiRelease
+from r2c_isg.structures.pypi import PypiProject, PypiRelease
 
 
 class Pypi(Api):
