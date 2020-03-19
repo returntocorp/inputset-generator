@@ -1,18 +1,23 @@
-from r2c_isg.structures.core import Project
-from r2c_isg.structures.core import Version as GenericVersion
+from dataclasses import dataclass
+from typing import Optional
+
+from structures.core import Project, Version
 
 
+@dataclass
+class GenericVersion(Version):
+
+    @property
+    def id(self) -> Optional[str]:
+        return self._get_metadata('version')
+
+
+@dataclass
 class GenericProject(Project):
-    def check_guarantees(self) -> None:
-        """Guarantees a url."""
-        assert 'url' in self.uuids_, \
-            'Default project guarantees not met; ' \
-            'project url must be provided.'
 
-    def to_inputset(self) -> list:
-        """Converts default project to HttpUrl dict."""
-        self.check_guarantees()
-        return [{
-            'input_type': 'HttpUrl',
-            'url': self.uuids_['url']()
-        }]
+    @property
+    def id(self) -> Optional[str]:
+        return self._get_metadata('name') or self._get_metadata('url')
+
+    def to_inputset(self) -> dict:
+        pass
