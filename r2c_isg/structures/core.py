@@ -12,24 +12,43 @@ class BaseStructure(ABC):
 
     @abstractmethod
     def get_ids(self) -> dict:
-        """The unique identifiers of the structure."""
+        """
+        A name:value dict of all the unique identifiers of the structure. For
+        most structures, ids will consist of some variant of name and url (for
+        projects) or version (for versions).
+
+        This function is used for:
+        1. Comparing structures. See `__eq__()` below for details.
+        2. Adding new projects/versions to existing project/version lists. See
+           the `load_...()` functions in the dataset for details.
+        """
+
         pass
 
     # set by user or obtained from a weblist or other non-authoritative source
     data: dict = field(default_factory=lambda: {}, repr=False)
 
     # obtained from a registry api; should be treated as readonly
-    metadata: dict = field(default_factory=lambda: {}, repr=False, init=False)
+    metadata: dict = field(default_factory=lambda: {}, init=False, repr=False)
 
     def keep(self, to_keep: List[str]):
         """???"""
+
         pass
 
     def drop(self, to_drop: List[str]):
         """???"""
+
         pass
 
     def __eq__(self, other):
+        """
+        Two structures are considered equal if:
+        1. they are of the same type,
+        2. they share at least one id key, and
+        3. they do not disagree on any values of shared id keys.
+        """
+
         # must be the same class type
         if type(self) != type(other):
             return False
@@ -37,7 +56,6 @@ class BaseStructure(ABC):
         self_ids = self.get_ids()
         other_ids = other.get_ids()
 
-        # must share at least one id
         shared_ids = set(self_ids.keys()).intersection(set(other_ids.keys()))
 
         for key in shared_ids:
@@ -45,15 +63,17 @@ class BaseStructure(ABC):
             if self_ids[key] != other_ids[key]:
                 return False
 
+        # must share at least one id
         return True if len(shared_ids) > 0 else False
 
 
 @dataclass(eq=False)
 class Version(BaseStructure, ABC):
     """
-    A Version is an abstract class used to store all version-related data.
-    It is extended by GenericVersion, GithubCommit, NpmVersion, and PypiRelease.
+    A Version is an abstract class used to store all version-related data. It is
+    extended by GenericVersion, GithubCommit, NpmVersion, and PypiRelease.
     """
+
     pass
 
 
@@ -69,5 +89,8 @@ class Project(BaseStructure, ABC):
 
     @abstractmethod
     def to_inputset(self, include_invalid: bool = False) -> list:
-        """Convert a project and its versions into a list of input set items."""
+        """
+        Convert a project and its versions into a list of input set items.
+        """
+
         pass
