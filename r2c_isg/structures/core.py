@@ -41,6 +41,13 @@ class BaseStructure(ABC):
 
         pass
 
+    def __post_init__(self):
+        if not self.get_ids():
+            # Give early warning that no ids means we can't compare structures.
+            # It's not the end of the world, but it limits functionality.
+            # TODO: log a warning
+            pass
+
     def __eq__(self, other):
         """
         Two structures are considered equal if:
@@ -55,6 +62,10 @@ class BaseStructure(ABC):
 
         self_ids = self.get_ids()
         other_ids = other.get_ids()
+        if not self_ids or not other_ids:
+            # can't effectively compare structures
+            # TODO: log a warning
+            pass
 
         shared_ids = set(self_ids.keys()).intersection(set(other_ids.keys()))
 
