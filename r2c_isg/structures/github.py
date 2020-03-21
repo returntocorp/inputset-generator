@@ -1,12 +1,18 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 from structures.core import Project, Version
 from util import get_str, name_from_url, url_from_name
 
 
-@dataclass
+@dataclass(eq=False)
 class GithubCommit(Version):
+
+    def get_ids(self) -> dict:
+        ids = dict()
+        if self.commit:
+            ids['version'] = self.commit
+        return ids
 
     @property
     def commit(self) -> Optional[str]:
@@ -15,27 +21,19 @@ class GithubCommit(Version):
             or get_str('sha', self.metadata)
         ) or None
 
+    commit: str = field(default=commit, init=False)
 
-@dataclass
+
+@dataclass(eq=False)
 class GithubRepo(Project):
 
-    @property
-    def url(self) -> Optional[str]:
-        url_literal = 'https://github.com/{name}'
-
-        org = get_str('org', self.data)
-        name = get_str('name', self.data)
-        data_fullname = f'{org}/{name}' if org and name else ''
-
-        meta_fullname = get_str('full_name', self.metadata)
-
-        return (
-            get_str('url', self.data)
-            or url_from_name(name, url_literal) if '/' in name else None
-            or url_from_name(data_fullname, url_literal)
-            or get_str('html_url', self.metadata)
-            or url_from_name(meta_fullname, url_literal)
-        ) or None
+    def get_ids(self) -> dict:
+        ids = dict()
+        if self.full_name:
+            ids['name'] = self.full_name
+        if self.url:
+            ids['url'] = self.url
+        return ids
 
     @property
     def full_name(self) -> Optional[str]:
@@ -55,6 +53,28 @@ class GithubRepo(Project):
             or get_str('full_name', self.metadata)
             or name_from_url(meta_url, pattern)
         ) or None
+
+    full_name: str = field(default=full_name, init=False)
+
+    @property
+    def url(self) -> Optional[str]:
+        url_literal = 'https://github.com/{name}'
+
+        org = get_str('org', self.data)
+        name = get_str('name', self.data)
+        data_fullname = f'{org}/{name}' if org and name else ''
+
+        meta_fullname = get_str('full_name', self.metadata)
+
+        return (
+            get_str('url', self.data)
+            or url_from_name(name, url_literal) if '/' in name else None
+            or url_from_name(data_fullname, url_literal)
+            or get_str('html_url', self.metadata)
+            or url_from_name(meta_fullname, url_literal)
+        ) or None
+
+    url: str = field(default=url, init=False)
 
     def to_inputset(self, include_invalid: bool = False) -> list:
         if not self.url and not include_invalid:

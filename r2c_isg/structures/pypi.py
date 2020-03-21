@@ -1,12 +1,18 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 from structures.core import Project, Version
 from util import get_str, name_from_url, url_from_name
 
 
-@dataclass
+@dataclass(eq=False)
 class PypiRelease(Version):
+
+    def get_ids(self) -> dict:
+        ids = dict()
+        if self.version:
+            ids['version'] = self.version
+        return ids
 
     @property
     def version(self) -> Optional[str]:
@@ -15,9 +21,19 @@ class PypiRelease(Version):
             or get_str('version', self.metadata)
         ) or None
 
+    version: str = field(default=version, init=False)
 
-@dataclass
+
+@dataclass(eq=False)
 class PypiProject(Project):
+
+    def get_ids(self) -> dict:
+        ids = dict()
+        if self.name:
+            ids['name'] = self.name
+        if self.url:
+            ids['url'] = self.url
+        return ids
 
     @property
     def name(self) -> Optional[str]:
@@ -29,6 +45,8 @@ class PypiProject(Project):
             or get_str('name', self.metadata)
         ) or None
 
+    name: str = field(default=name, init=False)
+
     @property
     def url(self) -> Optional[str]:
         url_literal = 'https://pypi.org/project/{name}'
@@ -38,6 +56,8 @@ class PypiProject(Project):
             or url_from_name(get_str('name', self.data), url_literal)
             or url_from_name(get_str('name', self.metadata), url_literal)
         ) or None
+
+    url: str = field(default=url, init=False)
 
     def to_inputset(self, include_invalid: bool = False) -> list:
         if not self.name and not include_invalid:
