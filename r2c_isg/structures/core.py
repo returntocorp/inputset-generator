@@ -10,18 +10,11 @@ class BaseStructure(ABC):
     Version classes.
     """
 
-    @property
-    @abstractmethod
-    def id(self) -> Optional[str]:
-        """
-        The ID is the primary identifier of the structure. It is typically name
-        (for projects) or version (for versions), but this can be modified as
-        needed by BaseStructure's subclasses.
-        """
-        pass
+    # set by user or obtained from a weblist or other non-authoritative source
+    data: dict = field(default_factory=lambda: {}, repr=False)
 
-    id: str = field(default=id, init=False)
-    metadata: dict = field(default_factory=lambda: {}, repr=False)
+    # obtained from a registry api; should be treated as readonly
+    metadata: dict = field(default_factory=lambda: {}, repr=False, init=False)
 
     def keep(self, to_keep: List[str]):
         """???"""
@@ -32,11 +25,6 @@ class BaseStructure(ABC):
         """???"""
 
         pass
-
-    def _get_metadata(self, key: str) -> Optional[str]:
-        """Helper function to get a value from the metadata dict."""
-        val = self.metadata.get(key)
-        return val if isinstance(val, str) else None
 
 
 @dataclass
@@ -56,8 +44,10 @@ class Project(BaseStructure, ABC):
     It is extended by GenericProject, GithubRepo, NpmPackage, and PypiProject.
     """
 
+    # every project contains a list of versions
     versions: List[Version] = field(default_factory=lambda: [], repr=False)
 
     @abstractmethod
-    def to_inputset(self) -> dict:
+    def to_inputset(self, include_invalid: bool = False) -> list:
+        """Convert a project and its versions into a list of input set items."""
         pass

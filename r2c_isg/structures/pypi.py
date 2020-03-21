@@ -1,33 +1,66 @@
-import re
 from dataclasses import dataclass
 from typing import Optional
 
 from structures.core import Project, Version
+from util import get_str, name_from_url, url_from_name
 
 
 @dataclass
 class PypiRelease(Version):
 
     @property
-    def id(self) -> Optional[str]:
-        return self._get_metadata('version')
+    def version(self) -> Optional[str]:
+        return (
+            get_str('version', self.data)
+            or get_str('version', self.metadata)
+        ) or None
 
 
 @dataclass
 class PypiProject(Project):
 
-    def _name_from_url(self):
-        url = self._get_metadata('project_url') or ''
+    @property
+    def name(self) -> Optional[str]:
+        pattern = r'^.*pypi.org/project/(?P<name>[\w-]+).*$'
 
-        url_pattern = r'^.*pypi.org/project/(?P<name>[\w-]+).*$'
-        match = re.match(url_pattern, url)
-
-        return match['name'] if match else None
+        return (
+            get_str('name', self.data)
+            or name_from_url(get_str('url', self.data), pattern)
+            or get_str('name', self.metadata)
+        ) or None
 
     @property
-    def id(self) -> Optional[str]:
-        return self._get_metadata('name') or self._name_from_url()
+    def url(self) -> Optional[str]:
+        url_literal = 'https://pypi.org/project/{name}'
 
-    def to_inputset(self) -> dict:
-        url = f'https://pypi.org/project/{self.id}'
-        pass
+        return (
+            get_str('url', self.data)
+            or url_from_name(get_str('name', self.data), url_literal)
+            or url_from_name(get_str('name', self.metadata), url_literal)
+        ) or None
+
+    def to_inputset(self, include_invalid: bool = False) -> list:
+        if not self.name and not include_invalid:
+            # skip this project
+            # TODO: log a warning...
+            return []
+
+        inputs = []
+        for v in self.versions:
+            if not isinstance(v, PypiRelease):
+                # version is wrong object type
+                # TODO: log an exception...
+                continue
+
+            if not v.version and not include_invalid:
+                # skip this version
+                # TODO: log a warning...
+                continue
+
+            inputs.append({
+                'input_type': 'PackageVersion',
+                'package_name': self.name,
+                'version': v.version,
+            })
+
+        return inputs
