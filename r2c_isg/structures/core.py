@@ -25,10 +25,10 @@ class BaseStructure(ABC):
 
         pass
 
-    # set by user or obtained from a weblist or other non-authoritative source
+    # data obtained from a non-authoritative source (user, file, weblist, etc.)
     data: dict = field(default_factory=lambda: {}, repr=False)
 
-    # obtained from a registry api; should be treated as readonly
+    # data obtained from an authoritative source (typically a registry api)
     metadata: dict = field(default_factory=lambda: {}, init=False, repr=False)
 
     def keep(self, to_keep: List[str]):
