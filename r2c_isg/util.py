@@ -40,7 +40,7 @@ def name_from_url(url: str, pattern) -> Optional[str]:
 
 
 def url_from_name(name: str, url_literal) -> Optional[str]:
-    return url_literal.format(name) if name else None
+    return url_literal.format(name=name) if name else None
 
 
 def get_dataset(ctx):

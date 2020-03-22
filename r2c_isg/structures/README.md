@@ -31,6 +31,7 @@ items. This function's implementation is unique to each registry.
 - Each registry structure may also add its own custom properties. For example,
 `GithubRepo` provides `full_name` and `url` properties.
 
+
 ### Improvements vs. `0.3.x`
 
 The `0.4.x` structures have significant advantages over the older structures.
@@ -81,3 +82,42 @@ or other non-authoritative source.
     This functionality is complemented with support for a more robust system for
     logging warnings and errors, making it easier for users to quickly identify
     invalid data in their datasets.
+
+
+### Notes
+
+- Values in a project or version's `data` dict take precedence over any values
+in the `metadata` dict, and little validation is performed on these values, as
+the ISG assumes the user is inputting valid data. As such, if the `data` dict of
+a`GithubRepo`, `NpmPackage`, or `PypiProject` contains a malformed url, the
+metadata/versions retrieval process will fail. While this may seem drastic, it
+is an intentional design decision based on the following factors:
+
+    - A structure's attributes should be relatively invariant throughout its
+    life, to avoid breaking any external mappings built by users. For example,
+    if a user has built a mapping of attr:project, retrieving the project's
+    metadata should not change the attribute, thereby breaking the mapping.
+    Since, as mentioned previously, the typical life cycle of a structure is
+    that first its `data` dict is populated, then its `metadata` dict is
+    populated from that, it seems reasonable to prioritize `data` attrs over
+    `metadata` attrs.
+
+    - Input validation code is inherently "magical", and would have to be custom
+    built for each structure. This adds substantial debugging and maintenance
+    overhead, and there's already enough of that with the `name_from_url()` and
+    `url_from_name()` utility functions.
+
+    Given these circumstances, Python's "we're all adults here" philosophy seems
+    appropriate. ISG allows users to provide invalid data, contenting itself
+    with providing extensive and informative logging when such errors do occur.
+
+- The `Project` attribute functions (eg, `PypiProject`'s `name` and `url`)
+should never need to refer to metadata, since in order to get the metadata in
+the first place the data dict must have contained sufficient identifying
+information for the metadata to be retrieved in the first place. It doesn't hurt
+to leave the extra fallback methods in the `Project` attrs though, and Future
+registries may may not have the same interchangeability between a project's name
+and url that Github, NPM, and Pypi share.
+
+    The same cannot be said of `Version` though, as its metadata is obtained
+    based on the `Project` class's data dict, not its own data dict. 
