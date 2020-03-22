@@ -31,16 +31,6 @@ class BaseStructure(ABC):
     # data obtained from an authoritative source (typically a registry api)
     metadata: dict = field(default_factory=lambda: {}, init=False, repr=False)
 
-    def keep(self, to_keep: List[str]):
-        """???"""
-
-        pass
-
-    def drop(self, to_drop: List[str]):
-        """???"""
-
-        pass
-
     def __post_init__(self):
         if not self.get_ids():
             # Give early warning that no ids means we can't compare structures.

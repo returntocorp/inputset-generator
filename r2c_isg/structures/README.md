@@ -18,9 +18,7 @@ registry-specific classes are as follows:
 These structures provide the following functionality: 
 
 - A `metadata` dictionary for storing data from authoritative sources, namely
-data obtained from a registry api. `keep([attrs...])` and `drop([attrs...])`
-utility functions are also provided to allow users to easily trim metadata down
-to only desired fields.
+data obtained from a registry api.
 - A `data` dictionary for storing data from non-authoritative sources such as
 files, weblists, and user-provided data.
 - A `get_ids()` function which returns a dictionary of name:value pairs of
