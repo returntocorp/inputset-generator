@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-from structures import Dataset
+from r2c_isg.structures import Dataset
 
 
 load_dotenv()
