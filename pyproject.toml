@@ -4,7 +4,7 @@ version = "0.3.2"
 description = "An input set generator for R2C"
 readme = "README.md"
 homepage = "https://r2c.dev"
-license = "Proprietary"
+license = "MIT"
 authors = ["Return To Corporation <hello@r2c.dev>", "Ben Fulton <fulton.benjamin@gmail.com>"]
 exclude = ["tests*"]
 packages = [
@@ -12,7 +12,7 @@ packages = [
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: Other/Proprietary License",
+    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
 
