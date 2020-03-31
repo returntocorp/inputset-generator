@@ -56,7 +56,8 @@ class Api(ABC):
             cache_timeout = cache_timeout or self.cache_timeout
             if os.path.isfile(filepath):
                 # load the file from disk
-                cached = json.load(open(filepath))
+                with open(filepath) as f:
+                    cached = json.load(f)
                 cached_date = datetime.strptime(cached['timestamp'],
                                                 '%Y-%m-%d %H:%M:%S.%f')
 
